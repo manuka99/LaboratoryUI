@@ -22,10 +22,10 @@
                         </div>
                       </div>
                       <h5 class="card-title text-center pb-0 fs-4">
-                        Setup Two Factor Authentication
+                        Verify Mobile Number
                       </h5>
                       <h6 class="text-danger text-center pb-0 font-14">
-                        All users must enable Two Factor Authentication
+                        All users must have verified Mobile Number
                       </h6>
                     </div>
 
@@ -53,52 +53,58 @@
                     </div>
 
                     <p class="small font-13">
-                      Use your phone as your second step to sign in. Two-factor
-                      authentication adds an additional layer of security to
-                      your account by requiring more than just a password to log
-                      in. Two-factor authentication adds an extra layer of
-                      security to your account. In addition to your username and
-                      password, you’ll need to enter a code that MetaSpeck sends
-                      to you via text or an app on your phone.
+                      Use your phone as your primary step to recover your
+                      account. This adds an additional layer of security to your
+                      account by requiring the verification of your mobile
+                      number to recover your account and Lock / Unlock your
+                      account. Make sure you provide your private mobile number.
                     </p>
 
                     <h6 class="text-muted pb-0 font-13 font-weight-bold mt-2">
                       * Make sure that you follow the bellow two methods and
-                      save the codes and scan the qr code properly. You can
-                      disable Two Factor Authentication at any moment by
-                      confirming your password.
+                      verify your account. You can change this number after
+                      logged into your profile.
                     </h6>
 
                     <h5 class="text-danger pb-0 font-15 font-weight-bold mt-4">
-                      1. Scan QR Code.
+                      1. Enter Mobile Number
                     </h5>
 
-                    <img
-                      src="https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=otpauth://totp/METASPECK%3ANIC%3A%20199920610568%3Fsecret=IKPBGOYSAHYH3V7AJ6ZRPFKR6MNY2HHJ%26issuer=METASPECK"
-                      alt=""
+                    <input
+                      type="text"
+                      class="form-control mt-3"
+                      placeholder="Mobile Number"
+                      required
                     />
 
-                    <h6 class="text-dark pb-0 font-13 font-weight-bold mt-2">
-                      Scan the above QR Code with the two-factor authentication
-                      app on your phone. After scanning the QR Code, the app
-                      will display a six-digit code that you can enter after
-                      sign in with your credentials.
+                    <h6 class="text-dark pb-0 font-13 font-weight-bold mt-3">
+                      Make sure the number you enter is secure from attackers.
+                      If this number was compromised your account will be in
+                      hands of another person. In case, contact our team
+                      immediately.
                     </h6>
 
                     <p class="small font-13">
-                      We recommend using an application such as Authy,
-                      1Password, or LastPass Authenticator. These applications
-                      support secure backup of your authentication codes in the
-                      cloud and can be restored if you lose access to your
-                      device.
+                      We recommend using a seperate mobile device with a new SIM
+                      which is registered for your Name and NIC. This will be
+                      helpfull to recover your account if it was compromised by
+                      an attacker.
                     </p>
 
+                    <button
+                      class="btn btn-primary mt-2  d-flex justify-content-center align-items-center"
+                      type="submit"
+                    >
+                      <i class="mdi mdi-lock text-white mr-1"></i> Request
+                      Verification Code
+                    </button>
+
                     <h5 class="text-danger pb-0 font-15 font-weight-bold mt-4">
-                      2. Enter the six-digit code from the application
+                      2. Enter the six-digit verification code
                     </h5>
                     <h6 style="font-size: 12px; " class="text-muted mb-3">
-                      After scanning the barcode image, the app will display a
-                      six-digit code that you can enter below.
+                      After request verification code, a six-digit verification
+                      code will be sent to the device.
                     </h6>
 
                     <input
@@ -106,7 +112,7 @@
                       name="password"
                       class="form-control"
                       id="yourPassword"
-                      placeholder="TOTP Code"
+                      placeholder="OTP Code"
                       required
                     />
                     <h6 style="font-size: 12px; " class="text-danger my-2">
@@ -119,8 +125,8 @@
                       class="btn btn-danger w-100 my-4 d-flex justify-content-center align-items-center"
                       type="submit"
                     >
-                      <i class="mdi mdi-lock text-white mr-1"></i> Enable Two
-                      Factor Authentication
+                      <i class="mdi mdi-lock text-white mr-1"></i> Verify &
+                      Enable Mobile Authentication
                     </button>
                   </div>
                 </div>

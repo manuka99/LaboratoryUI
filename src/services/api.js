@@ -1,13 +1,15 @@
 import axios from "axios";
-import { APP_URL } from "@/services/config";
+import { APP_URL, APP_USER_TOKEN, APP_USER } from "@/services/config";
 import router from "@/routes/router";
 import store from "@/store";
 
 export default function Api(nonApi = false, opts = {}) {
+  let user_token = localStorage.getItem(APP_USER_TOKEN);
   const Api = axios.create({
     baseURL: `${APP_URL}${nonApi ? "" : "/api"}`,
     timeout: 30 * 60000,
     headers: {
+      Authorization: `Bearer ${user_token}`,
       "Content-Type": "application/json",
       ...opts
     }

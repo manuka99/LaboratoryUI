@@ -41,7 +41,7 @@
               </div>
             </li>
           </ul> -->
-          <ul class="navbar-nav navbar-nav-right">
+          <!-- <ul class="navbar-nav navbar-nav-right">
             <li
               class="nav-item nav-profile dropdown"
               @click="showProfileMenu = !showProfileMenu"
@@ -79,7 +79,18 @@
                 </a>
               </div>
             </li>
-          </ul>
+          </ul> -->
+
+          <div>
+            <router-link to="/sign-in" class="text-decoration-none">
+              <a
+                class="btn btn-secondary d-flex justify-content-center align-items-center"
+              >
+                <i class="mdi mdi-account-key mr-1"></i>
+                Sign In
+              </a>
+            </router-link>
+          </div>
           <button
             class="navbar-toggler navbar-toggler-right d-lg-none align-self-center"
             type="button"
