@@ -1,7 +1,7 @@
 import axios from "axios";
 import { APP_URL, APP_USER_TOKEN, APP_USER } from "@/services/config";
 import router from "@/routes/router";
-import store from "@/store";
+import { BToast } from "bootstrap-vue";
 
 export default function Api(nonApi = false, opts = {}) {
   let user_token = localStorage.getItem(APP_USER_TOKEN);
@@ -16,24 +16,40 @@ export default function Api(nonApi = false, opts = {}) {
   });
 
   Api.interceptors.response.use(
-    response => response,
+    response => {
+      let bootStrapToaster = new BToast();
+      bootStrapToaster.$bvToast.toast(response.data.data.message, {
+        title: "SUCCESS! Task was completed.",
+        autoHideDelay: 6000,
+        appendToast: false,
+        variant: "success",
+        solid: true,
+        toaster: "b-toaster-bottom-right",
+        appendToast: true
+      });
+      return Promise.resolve(response);
+    },
     error => {
       const {
         response,
         response: { data, status }
       } = error;
 
-      var errMessage = "Unexpected error";
-      if (response && data && data.data) errMessage = data.data.message;
-      else errMessage = error.message || "Unexpected error";
-      let payloadNotify = {
-        isToast: true,
-        title: "ERROR! Unable to perform task",
-        content: "There are errors that you need to pay attention.",
-        list: [errMessage],
-        variant: "danger"
-      };
-      store.dispatch("notification/setNotify", payloadNotify);
+      var errMessage =
+        response && data && data.data
+          ? data.data.message
+          : error.message || "Unexpected error";
+
+      let bootStrapToaster = new BToast();
+      bootStrapToaster.$bvToast.toast(errMessage, {
+        title: "ERROR! Task was not completed.",
+        autoHideDelay: 6000,
+        appendToast: false,
+        variant: "danger",
+        solid: true,
+        toaster: "b-toaster-bottom-right",
+        appendToast: true
+      });
 
       // else if (status === 401) alert("Not Authorized");
       // else if (status === 404) alert("Page not Found");

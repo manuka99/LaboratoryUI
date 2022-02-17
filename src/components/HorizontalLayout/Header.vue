@@ -82,47 +82,62 @@
         class="d-flex justify-content-start justify-content-md-center w-100 flex-wrap"
       >
         <div
-          class="d-flex flex-column flex-md-row justify-content-start justify-content-lg-between flex-wrap"
+          class="d-flex flex-column flex-md-row justify-content-start flex-wrap"
         >
-          <router-link to="/" active-class="border border-white rounded" exact>
-            <b-navbar-brand class="font-16 py-2 px-4"
+          <router-link
+            to="/"
+            class="border border-primary"
+            active-class="border border-white rounded"
+            exact
+          >
+            <b-navbar-brand
+              class="btn btn-ripple font-16 py-2 px-4"
               >Introduction</b-navbar-brand
             >
           </router-link>
-          <router-link to="/sign-in" active-class="border border-white rounded">
-            <b-navbar-brand class="font-16 py-2 px-4"
+          <router-link
+            to="/sign-in"
+            class="border border-primary"
+            active-class="border border-white rounded"
+          >
+            <b-navbar-brand
+              class="btn btn-ripple font-16 py-2 px-4"
               >Account & Payment Management</b-navbar-brand
             >
           </router-link>
           <router-link
             to="/activate-2fa"
+            class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="font-16 py-2 px-4"
+            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
               >Services Explorer</b-navbar-brand
             >
           </router-link>
           <router-link
             to="/two-factor-challenge"
+            class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="font-16 py-2 px-4"
+            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
               >Transaction Builder</b-navbar-brand
             >
           </router-link>
           <router-link
             to="/activate-phone"
+            class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="font-16 py-2 px-4"
+            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
               >Sign Transaction</b-navbar-brand
             >
           </router-link>
           <router-link
             to="/reset-password"
+            class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="font-16 py-2 px-4"
+            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
               >Documentation</b-navbar-brand
             >
           </router-link>

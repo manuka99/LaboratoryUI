@@ -40,9 +40,10 @@
                         <input
                           type="text"
                           class="form-control"
-                          :value="nationalID"
+                          autosave="nationalID"
+                          v-model="nationalID"
                           placeholder="Your National ID"
-                          required
+                          autocomplete
                         />
                       </div>
                     </div>
@@ -54,9 +55,10 @@
                       <input
                         type="password"
                         class="form-control"
-                        :value="raw_password"
+                        v-model="raw_password"
                         placeholder="Your Account Password"
-                        required
+                        autosave="raw_password"
+                        autocomplete
                       />
                     </div>
 
@@ -103,6 +105,8 @@
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
 import { LoginAPI } from "@/services/user.service";
+import { mapActions } from "vuex";
+
 export default {
   components: {
     Layout
@@ -114,38 +118,17 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      setJwtToken: "user/setJwtToken"
+    }),
     loginFn() {
       const payload = {
         nationalID: this.nationalID,
         raw_password: this.raw_password
       };
-      this.$bvToast.toast(`This is toast number ${this.nationalID}`, {
-        title: "BootstrapVue Toast",
-        autoHideDelay: 50000000000000,
-        appendToast: false
+      LoginAPI(payload).then(response => {
+        this.setJwtToken({ jwtToken: response.data.data.token });
       });
-      LoginAPI(payload)
-        .then(response => {
-          console.log(response);
-          var notifyPayload = {
-            isToast: true,
-            title: "SUCCESS! User Was Created",
-            content: "All data was saved successfully",
-            variant: "success"
-          };
-          this.$store.dispatch("notification/setNotify", notifyPayload);
-        })
-        .catch(err => {
-          console.log(err);
-          // alert(err.message);
-          var notifyPayload = {
-            isToast: true,
-            title: "Error! User Was Created",
-            content: "All data was saved successfully",
-            variant: "danger"
-          };
-          this.$store.dispatch("notification/setNotify", notifyPayload);
-        });
     }
   }
 };

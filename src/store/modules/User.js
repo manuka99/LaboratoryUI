@@ -1,3 +1,6 @@
+import { APP_USER_TOKEN, APP_USER } from "@/services/config";
+import { GetRequestUserAPI } from "@/services/user.service";
+
 export default {
   namespaced: true,
   state: {
@@ -19,11 +22,12 @@ export default {
     approvedBy: null,
     phone_verified_at: null,
     email_verified_at: null,
-    created_at: null,
-    updated_at: null,
+    createdAt: null,
+    updatedAt: null,
     current_session: null,
     active_sessions: [],
-    all_sessions: []
+    all_sessions: [],
+    // jwtToken: null
   },
   mutations: {
     SET_USER(state, payload) {
@@ -43,8 +47,8 @@ export default {
       state.approvalReason = payload.approvalReason;
       state.approvedBy = payload.approvedBy;
       state.phone_verified_at = payload.phone_verified_at;
-      state.created_at = payload.created_at;
-      state.updated_at = payload.updated_at;
+      state.createdAt = payload.createdAt;
+      state.updatedAt = payload.updatedAt;
     },
     SET_SESSION(state, payload) {
       state.current_session = payload.current_session;
@@ -53,17 +57,38 @@ export default {
     },
     SET_TX_PWD(state, payload) {
       state.transactionPassword = payload.transactionPassword;
-    }
+    },
+    // SET_JWT_TOKEN(state, payload) {
+    //   state.jwtToken = payload.jwtToken;
+    // }
   },
   actions: {
-    setNotify({ commit }, payload) {
+    setUser({ commit }, payload) {
       commit("SET_USER", payload);
     },
-    setNotify({ commit }, payload) {
+    setSession({ commit }, payload) {
       commit("SET_SESSION", payload);
     },
-    setNotify({ commit }, payload) {
+    setTxPassword({ commit }, payload) {
       commit("SET_TX_PWD", payload);
+    },
+    setJwtToken({ dispatch }, payload) {
+      localStorage.setItem(APP_USER_TOKEN, payload.jwtToken);
+      // commit("SET_JWT_TOKEN", payload);
+      dispatch("fetchCurrentUserDetails");
+    },
+    fetchCurrentUserDetails(context) {
+      return new Promise((resolve, reject) => {
+        GetRequestUserAPI()
+          .then(res => {
+            context.dispatch(
+              "setUser",
+              res.data && res.data.data ? res.data.data.user : {}
+            );
+            resolve(res.data);
+          })
+          .catch(e => reject(e));
+      });
     }
   },
   getters: {
@@ -85,8 +110,8 @@ export default {
         approvalReason: state.approvalReason,
         approvedBy: state.approvedBy,
         phone_verified_at: state.phone_verified_at,
-        created_at: state.created_at,
-        updated_at: state.updated_at
+        createdAt: state.createdAt,
+        updatedAt: state.updatedAt
       };
     },
     getSessionDetails: state => {
@@ -96,11 +121,14 @@ export default {
         all_sessions: state.all_sessions
       };
     },
-    getSessionDetails: state => {
+    getTxPassword: state => {
       return {
-        current_session: state.current_session,
-        active_sessions: state.active_sessions,
-        all_sessions: state.all_sessions
+        transactionPassword: state.transactionPassword
+      };
+    },
+    getJwtToken: state => {
+      return {
+        jwtToken: state.jwtToken
       };
     }
   }
