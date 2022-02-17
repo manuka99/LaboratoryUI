@@ -1,8 +1,8 @@
 export default {
     namespaced: true,
     state: {
-        isToast: false,
-        title: null,
+        isToast: true,
+        title: "asasa",
         content: null,
         list: null,
         variant: "success", // success, danger, warning

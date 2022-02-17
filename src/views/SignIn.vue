@@ -29,71 +29,66 @@
                       </p>
                     </div>
 
-                    <form class="row needs-validation" novalidate>
-                      <div class="col-12">
-                        <label for="yourUsername" class="form-label"
-                          >National ID</label
-                        >
-                        <div class="input-group has-validation">
-                          <span class="input-group-text" id="inputGroupPrepend"
-                            >@</span
-                          >
-                          <input
-                            type="text"
-                            name="username"
-                            class="form-control"
-                            id="yourUsername"
-                            placeholder="Your National ID"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div class="col-12 mt-3">
-                        <label for="yourPassword" class="form-label"
-                          >Password</label
+                    <div class="">
+                      <label for="yourUsername" class="form-label"
+                        >National ID</label
+                      >
+                      <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrepend"
+                          >@</span
                         >
                         <input
-                          type="password"
-                          name="password"
+                          type="text"
                           class="form-control"
-                          id="yourPassword"
-                          placeholder="Your Account Password"
+                          :value="nationalID"
+                          placeholder="Your National ID"
                           required
                         />
                       </div>
+                    </div>
 
-                      <div class="col-12 mt-3">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="remember"
-                            value="true"
-                            id="rememberMe"
-                          />
-                          <label class="form-check-label" for="rememberMe"
-                            >Remember me</label
-                          >
-                        </div>
-                      </div>
+                    <div class=" mt-3">
+                      <label for="yourPassword" class="form-label"
+                        >Password</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        :value="raw_password"
+                        placeholder="Your Account Password"
+                        required
+                      />
+                    </div>
 
-                      <div>
-                        <router-link to="/recover-account">
-                          <a class="font-13 font-weight-bold"
-                            >Recover account?</a
-                          >
-                        </router-link>
-                      </div>
-                      <div class="col-12 mt-3">
-                        <button
-                          class="btn btn-primary w-100 mt-0 mb-4 d-flex justify-content-center align-items-center"
-                          type="submit"
+                    <div class=" mt-3">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          name="remember"
+                          value="true"
+                          id="rememberMe"
+                        />
+                        <label class="form-check-label" for="rememberMe"
+                          >Remember me</label
                         >
-                          <i class="mdi mdi-lock text-white mr-1"></i> Sign In
-                        </button>
                       </div>
-                    </form>
+                    </div>
+
+                    <div>
+                      <router-link to="/recover-account">
+                        <a class="font-13 font-weight-bold">Recover account?</a>
+                      </router-link>
+                    </div>
+                    <div class=" mt-3">
+                      <button
+                        class="btn btn-primary w-100 mt-0 mb-4 d-flex justify-content-center align-items-center"
+                        type="submit"
+                        @click="loginFn"
+                      >
+                        <i class="mdi mdi-lock text-white mr-1"></i> Sign In
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -107,9 +102,51 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
+import { LoginAPI } from "@/services/user.service";
 export default {
   components: {
     Layout
+  },
+  data() {
+    return {
+      nationalID: null,
+      raw_password: null
+    };
+  },
+  methods: {
+    loginFn() {
+      const payload = {
+        nationalID: this.nationalID,
+        raw_password: this.raw_password
+      };
+      this.$bvToast.toast(`This is toast number ${this.nationalID}`, {
+        title: "BootstrapVue Toast",
+        autoHideDelay: 50000000000000,
+        appendToast: false
+      });
+      LoginAPI(payload)
+        .then(response => {
+          console.log(response);
+          var notifyPayload = {
+            isToast: true,
+            title: "SUCCESS! User Was Created",
+            content: "All data was saved successfully",
+            variant: "success"
+          };
+          this.$store.dispatch("notification/setNotify", notifyPayload);
+        })
+        .catch(err => {
+          console.log(err);
+          // alert(err.message);
+          var notifyPayload = {
+            isToast: true,
+            title: "Error! User Was Created",
+            content: "All data was saved successfully",
+            variant: "danger"
+          };
+          this.$store.dispatch("notification/setNotify", notifyPayload);
+        });
+    }
   }
 };
 </script>

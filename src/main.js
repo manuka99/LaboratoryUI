@@ -45,8 +45,9 @@ Vue.config.productionTip = false
 // import "./assets/css/demo_2/style.css";
 // import "./assets/images/favicon.png";
 
-import "@/assets/css/layout.css"
+// import "@/assets/css/layout.css"
 import "@/assets/css/layout_a.css"
+import "@/assets/css/main.css"
 
 // plugin setup
 // Vue.use(DashboardPlugin);
