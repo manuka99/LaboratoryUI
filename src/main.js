@@ -1,5 +1,5 @@
 import Vue from "vue";
-// import DashboardPlugin from "./plugins/dashboard-plugin";
+import GlobalComponents from "./plugins/globalComponents";
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import App from "./App.vue";
 
@@ -50,7 +50,7 @@ import "@/assets/css/layout_a.css"
 import "@/assets/css/main.css"
 
 // plugin setup
-// Vue.use(DashboardPlugin);
+Vue.use(GlobalComponents);
 
 /* eslint-disable no-new */
 new Vue({

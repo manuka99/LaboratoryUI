@@ -9,7 +9,7 @@ import RecoverAccount from "@/views/RecoverAccount.vue";
 import ResetPassword from "@/views/ResetPassword.vue";
 
 const routes = [
-  { path: "/", name: "Dashboard", component: MainPage },
+  { path: "/", name: "Introduction", component: MainPage },
   { path: "/sign-in", name: "Sign In", component: SignIn },
   { path: "/two-factor-challenge", name: "Authorize 2FA", component: Authorize2FA },
   { path: "/setup-2fa", name: "Setup 2FA", component: Setup2FA },

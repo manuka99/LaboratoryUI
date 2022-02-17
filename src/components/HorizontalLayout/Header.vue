@@ -39,6 +39,7 @@
 
               <!-- sign in -->
               <b-navbar-nav
+                v-if="!user.nationalID"
                 class="d-flex justify-content-end align-items-end align-items-sm-center"
               >
                 <router-link to="/sign-in" class="text-decoration-none">
@@ -52,21 +53,38 @@
               </b-navbar-nav>
 
               <!-- profile -->
-              <!-- <b-navbar-nav
+              <b-navbar-nav
+                v-else
                 class="d-flex justify-content-end align-items-end align-items-sm-center"
               >
-                <b-nav-item-dropdown right class="font-14">
+                <b-nav-item-dropdown right no-caret>
                   <template #button-content>
-                    <b-avatar
-                      href="#bar"
-                      src="https://placekitten.com/300/300"
-                    ></b-avatar>
-                    Manuka Yasas
+                    <div class="d-flex">
+                      <b-avatar
+                        href="#bar"
+                        src="user.imagePaths && user.imagePaths[user.imagePaths.length - 1]"
+                      ></b-avatar>
+                      <div class="ml-2 d-flex flex-column">
+                        <span class="font-weight-bold font-13"
+                          >{{ user.firstName }} {{ user.lastName }}</span
+                        >
+                        <span class="text-mutted font-weight-bold font-12"
+                          >NIC: {{ user.nationalID }}</span
+                        >
+                      </div>
+                      <div
+                        class="ml-2 d-flex flex-column justify-content-end align-items-end"
+                      >
+                        <i
+                          class="mdi mdi-arrow-down-drop-circle-outline font-18 text-mutted"
+                        ></i>
+                      </div>
+                    </div>
                   </template>
                   <b-dropdown-item href="#">Profile</b-dropdown-item>
                   <b-dropdown-item href="#">Sign Out</b-dropdown-item>
                 </b-nav-item-dropdown>
-              </b-navbar-nav> -->
+              </b-navbar-nav>
               <!-- end profile -->
             </b-navbar-nav>
           </b-collapse>
@@ -91,7 +109,7 @@
             exact
           >
             <b-navbar-brand
-              class="btn btn-ripple font-16 py-2 px-4"
+              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
               >Introduction</b-navbar-brand
             >
           </router-link>
@@ -101,7 +119,7 @@
             active-class="border border-white rounded"
           >
             <b-navbar-brand
-              class="btn btn-ripple font-16 py-2 px-4"
+              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
               >Account & Payment Management</b-navbar-brand
             >
           </router-link>
@@ -110,7 +128,8 @@
             class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
+            <b-navbar-brand
+              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
               >Services Explorer</b-navbar-brand
             >
           </router-link>
@@ -119,7 +138,8 @@
             class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
+            <b-navbar-brand
+              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
               >Transaction Builder</b-navbar-brand
             >
           </router-link>
@@ -128,7 +148,8 @@
             class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
+            <b-navbar-brand
+              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
               >Sign Transaction</b-navbar-brand
             >
           </router-link>
@@ -137,7 +158,8 @@
             class="border border-primary"
             active-class="border border-white rounded"
           >
-            <b-navbar-brand class="btn btn-ripple font-16 py-2 px-4"
+            <b-navbar-brand
+              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
               >Documentation</b-navbar-brand
             >
           </router-link>
@@ -148,12 +170,18 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       showNavbar: false,
       showProfileMenu: false
     };
+  },
+  computed: {
+    ...mapGetters({
+      user: "user/getUser"
+    })
   },
   methods: {}
 };

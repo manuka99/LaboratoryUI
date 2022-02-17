@@ -83,13 +83,15 @@
                       </router-link>
                     </div>
                     <div class=" mt-3">
-                      <button
+                      <base-button
                         class="btn btn-primary w-100 mt-0 mb-4 d-flex justify-content-center align-items-center"
                         type="submit"
                         @click="loginFn"
+                        :loading="isLoading"
+                        nativeType="submit"
                       >
                         <i class="mdi mdi-lock text-white mr-1"></i> Sign In
-                      </button>
+                      </base-button>
                     </div>
                   </div>
                 </div>
@@ -113,6 +115,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       nationalID: null,
       raw_password: null
     };
@@ -122,13 +125,17 @@ export default {
       setJwtToken: "user/setJwtToken"
     }),
     loginFn() {
+      this.isLoading = true;
       const payload = {
         nationalID: this.nationalID,
         raw_password: this.raw_password
       };
-      LoginAPI(payload).then(response => {
-        this.setJwtToken({ jwtToken: response.data.data.token });
-      });
+      LoginAPI(payload)
+        .then(response => {
+          this.setJwtToken({ jwtToken: response.data.data.token });
+          this.$router.push({ name: "Introduction", replace: true });
+        })
+        .finally(() => (this.isLoading = false));
     }
   }
 };

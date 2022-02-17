@@ -1,4 +1,4 @@
-import { APP_USER_TOKEN, APP_USER } from "@/services/config";
+import { APP_USER_TOKEN } from "@/services/config";
 import { GetRequestUserAPI } from "@/services/user.service";
 
 export default {
@@ -26,7 +26,7 @@ export default {
     updatedAt: null,
     current_session: null,
     active_sessions: [],
-    all_sessions: [],
+    all_sessions: []
     // jwtToken: null
   },
   mutations: {
@@ -57,7 +57,7 @@ export default {
     },
     SET_TX_PWD(state, payload) {
       state.transactionPassword = payload.transactionPassword;
-    },
+    }
     // SET_JWT_TOKEN(state, payload) {
     //   state.jwtToken = payload.jwtToken;
     // }
@@ -81,10 +81,11 @@ export default {
       return new Promise((resolve, reject) => {
         GetRequestUserAPI()
           .then(res => {
-            context.dispatch(
-              "setUser",
-              res.data && res.data.data ? res.data.data.user : {}
-            );
+            const user =
+              res.data && res.data.data && res.data.data.user
+                ? res.data.data.user
+                : {};
+            context.dispatch("setUser", user);
             resolve(res.data);
           })
           .catch(e => reject(e));
