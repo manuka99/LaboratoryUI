@@ -30,14 +30,11 @@ export default function Api(nonApi = false, opts = {}) {
       return Promise.resolve(response);
     },
     error => {
-      const {
-        response,
-        response: { data, status }
-      } = error;
+      const { response } = error;
 
       var errMessage =
-        response && data && data.data
-          ? data.data.message
+        response && response.data && response.data.data
+          ? response.data.data.message
           : error.message || "Unexpected error";
 
       let bootStrapToaster = new BToast();

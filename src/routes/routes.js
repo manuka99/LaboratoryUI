@@ -16,7 +16,7 @@ const routes = [
   { path: "/activate-2fa", name: "Activate 2FA", component: Activate2FA },
   { path: "/activate-phone", name: "Activate Phone", component: ActivatePhone },
   { path: "/recover-account", name: "Recover Account", component: RecoverAccount },
-  { path: "/reset-password", name: "Reset Password", component: ResetPassword },
+  { path: "/reset-password/:nic", name: "Reset Password", component: ResetPassword },
   { path: "/:pathMatch(.*)*", name: "NOTFOUND", component: NotFound }
 ];
 

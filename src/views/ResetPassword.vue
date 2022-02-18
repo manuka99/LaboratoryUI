@@ -27,20 +27,24 @@
                     </div>
 
                     <div
-                      class="d-flex w-100 align-items-center mt-4 mb-4 p-2 bg-light"
+                      v-if="user"
+                      class="d-flex w-100 align-items-center mt-4 mb-4 px-3 py-2 bg-light rounded"
                     >
                       <div class="d-flex w-100 align-items-center">
                         <b-avatar
-                          variant="light"
-                          src="https://placekitten.com/300/300"
+                          variant="info"
+                          :src="
+                            user.imagePaths &&
+                              user.imagePaths[user.imagePaths.length - 1]
+                          "
                         ></b-avatar>
                         <div class="nav-profile-text ml-2">
                           <p class="text-black font-weight-semibold m-0">
-                            Olson jass
+                            {{ user.firstName }} {{ user.lastName }}
                           </p>
                           <span
                             class="font-12 online-color text-muted font-weight-bold"
-                            >NIC: 199920610568</span
+                            >NIC: {{ user.nationalID }}</span
                           >
                         </div>
                       </div>
@@ -58,11 +62,9 @@
 
                     <input
                       type="password"
-                      name="password"
                       class="form-control"
-                      id="yourPassword"
-                      placeholder="Your Account Password"
-                      required
+                      placeholder="Verification Code"
+                      v-model="reset_code"
                     />
                     <h6
                       style="font-size: 13px; margin-top: 22px;"
@@ -73,11 +75,9 @@
 
                     <input
                       type="password"
-                      name="password"
                       class="form-control"
-                      id="yourPassword"
-                      placeholder="Your Account Password"
-                      required
+                      placeholder="Your New Account Password"
+                      v-model="raw_password"
                     />
                     <h6
                       style="font-size: 13px; margin-top: 22px;"
@@ -88,19 +88,18 @@
 
                     <input
                       type="password"
-                      name="password"
                       class="form-control"
-                      id="yourPassword"
-                      placeholder="Your Account Password"
-                      required
+                      placeholder="Confirm Your Account Password"
+                      v-model="confirm_password"
                     />
 
-                    <button
+                    <base-button
+                      @click="submitFn"
+                      :loading="isLoading"
                       class="btn btn-primary w-100 my-4 d-flex justify-content-center align-items-center"
-                      type="submit"
                     >
                       <i class="mdi mdi-lock text-white mr-1"></i>Reset Password
-                    </button>
+                    </base-button>
                   </div>
                 </div>
               </div>
@@ -114,9 +113,58 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
+import { GetUserByNicAPI } from "@/services/explorer.user.service";
+import { ResetPasswordAPI } from "@/services/user.service";
+import { mapActions } from "vuex";
+
 export default {
   components: {
     Layout
+  },
+  data() {
+    return {
+      isLoading: false,
+      nationalID: null,
+      reset_code: null,
+      raw_password: null,
+      confirm_password: null,
+      user: null
+    };
+  },
+  created() {
+    this.nationalID = this.$route.params.nic;
+    this.getUserFn();
+  },
+  methods: {
+    ...mapActions({
+      setJwtToken: "user/setJwtToken"
+    }),
+    getUserFn() {
+      GetUserByNicAPI(this.nationalID).then(response => {
+        this.user =
+          response.data && response.data && response.data.data
+            ? response.data.data.user
+            : null;
+        if (!this.user)
+          this.$router.push({ name: "Recover Account", replace: true });
+      });
+    },
+    submitFn() {
+      this.isLoading = true;
+      const payload = {
+        nationalID: this.nationalID,
+        reset_code: this.reset_code,
+        raw_password: this.raw_password,
+        confirm_password: this.confirm_password
+      };
+
+      ResetPasswordAPI(payload)
+        .then(response => {
+          this.setJwtToken({ jwtToken: response.data.data.token });
+          this.$router.push({ name: "Introduction", replace: true });
+        })
+        .finally(() => (this.isLoading = false));
+    }
   }
 };
 </script>

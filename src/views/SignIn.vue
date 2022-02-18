@@ -62,29 +62,22 @@
                       />
                     </div>
 
-                    <div class=" mt-3">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          name="remember"
-                          value="true"
-                          id="rememberMe"
-                        />
-                        <label class="form-check-label" for="rememberMe"
+                    <div class="mt-3">
+                      <div
+                        class="d-flex align-items-center justify-content-start"
+                      >
+                        <input type="checkbox" id="rememberMe" />
+                        <label
+                          class="form-check-label my-0 ml-1"
+                          for="rememberMe"
                           >Remember me</label
                         >
                       </div>
                     </div>
 
-                    <div>
-                      <router-link to="/recover-account">
-                        <a class="font-13 font-weight-bold">Recover account?</a>
-                      </router-link>
-                    </div>
-                    <div class=" mt-3">
+                    <div class="mt-3">
                       <base-button
-                        class="btn btn-primary w-100 mt-0 mb-4 d-flex justify-content-center align-items-center"
+                        class="btn btn-primary w-100 mt-0 d-flex justify-content-center align-items-center"
                         type="submit"
                         @click="loginFn"
                         :loading="isLoading"
@@ -92,6 +85,14 @@
                       >
                         <i class="mdi mdi-lock text-white mr-1"></i> Sign In
                       </base-button>
+                    </div>
+
+                    <div class="mt-2 mb-4">
+                      <router-link to="/recover-account">
+                        <a class="font-13 font-weight-bold text-secondary"
+                          >Recover account ?</a
+                        >
+                      </router-link>
                     </div>
                   </div>
                 </div>

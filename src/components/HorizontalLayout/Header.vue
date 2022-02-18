@@ -61,8 +61,10 @@
                   <template #button-content>
                     <div class="d-flex">
                       <b-avatar
-                        href="#bar"
-                        src="user.imagePaths && user.imagePaths[user.imagePaths.length - 1]"
+                        :src="
+                          user.imagePaths &&
+                            user.imagePaths[user.imagePaths.length - 1]
+                        "
                       ></b-avatar>
                       <div class="ml-2 d-flex flex-column">
                         <span class="font-weight-bold font-13"
@@ -82,7 +84,7 @@
                     </div>
                   </template>
                   <b-dropdown-item href="#">Profile</b-dropdown-item>
-                  <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+                  <b-dropdown-item @click="signOutFn">Sign Out</b-dropdown-item>
                 </b-nav-item-dropdown>
               </b-navbar-nav>
               <!-- end profile -->
@@ -170,7 +172,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -183,7 +185,14 @@ export default {
       user: "user/getUser"
     })
   },
-  methods: {}
+  methods: {
+    ...mapActions({
+      setJwtToken: "user/setJwtToken"
+    }),
+    signOutFn() {
+      this.setJwtToken({ jwtToken: "" });
+    }
+  }
 };
 </script>
 

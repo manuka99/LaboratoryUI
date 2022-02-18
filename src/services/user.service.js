@@ -28,8 +28,17 @@ export const VerifyAndUpdatePhoneAPI = payload => {
   return Api().patch(`/auth/general/update-phone`, payload);
 };
 
-export const Authorize2FAAPI = payload => {
-  return Api().post(`/auth/general/authorize2fa`, payload);
+export const ConfirmPasswordAPI = payload => {
+  return Api().post(`/auth/general/verify-password`, payload);
+};
+export const ConfirmMobileRequestAPI = payload => {
+  return Api().post(`/auth/general/verify-phone-request`, payload);
+};
+export const ConfirmMobileAPI = payload => {
+  return Api().post(`/auth/general/verify-phone`, payload);
+};
+export const Confirm2FAAPI = payload => {
+  return Api().post(`/auth/general/verify-2fa`, payload);
 };
 
 export const Register2FAAPI = payload => {
@@ -37,7 +46,7 @@ export const Register2FAAPI = payload => {
 };
 
 export const Activate2FAAPI = payload => {
-  return Api().post(`/api/auth/general/activate2fa`, payload);
+  return Api().post(`/auth/general/activate2fa`, payload);
 };
 
 export const UpdateAccountPasswordAPI = payload => {

@@ -41,16 +41,27 @@
                       type="text"
                       class="form-control"
                       placeholder="Your National ID"
-                      required
+                      v-model="nationalID"
                     />
 
-                    <button
-                      class="btn btn-primary w-100 my-4 d-flex justify-content-center align-items-center"
+                    <base-button
+                      class="btn btn-primary w-100 mt-4 d-flex justify-content-center align-items-center"
                       type="submit"
+                      @click="submitFn"
+                      :loading="isLoading"
+                      nativeType="submit"
                     >
                       <i class="mdi mdi-lock text-white mr-1"></i> Send
                       Verification Code
-                    </button>
+                    </base-button>
+
+                    <div class="mt-2 mb-4">
+                      <a
+                        @click="resetPasswordFn(nationalID)"
+                        class="font-13 font-weight-bold text-secondary"
+                        >Have a recovery code ?</a
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
@@ -64,9 +75,43 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
+import { RecoverPasswordAPI } from "@/services/user.service";
+
 export default {
   components: {
     Layout
+  },
+  data() {
+    return {
+      isLoading: false,
+      nationalID: null
+    };
+  },
+  methods: {
+    submitFn() {
+      this.isLoading = true;
+      const nationalID = this.nationalID;
+      RecoverPasswordAPI({ nationalID })
+        .then(() => this.resetPasswordFn(nationalID))
+        .finally(() => (this.isLoading = false));
+    },
+    resetPasswordFn(nic) {
+      if (!nic)
+        this.$bvToast.toast("Please enter your National ID", {
+          title: "ERROR! Task was not completed.",
+          autoHideDelay: 6000,
+          appendToast: false,
+          variant: "danger",
+          solid: true,
+          toaster: "b-toaster-bottom-right",
+          appendToast: true
+        });
+      else
+        this.$router.push({
+          name: "Reset Password",
+          params: { nic }
+        });
+    }
   }
 };
 </script>
