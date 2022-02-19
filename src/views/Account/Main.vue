@@ -14,12 +14,13 @@
           <b-tab
             active
             title-link-class="py-3 my-1 font-15 font-weight-600 text-muted"
+            lazy
           >
             <template #title>
               <i class="mdi mdi-account-check"></i> User Profile
             </template>
-            <b-card-text>User Profile</b-card-text></b-tab
-          >
+            <Profile
+          /></b-tab>
           <b-tab
             title-link-class="py-3 my-1 font-15 font-weight-600 text-muted"
           >
@@ -70,9 +71,11 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
+import Profile from "./Profile";
 export default {
   components: {
-    Layout
+    Layout,
+    Profile
   },
   data() {
     return {};

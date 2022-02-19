@@ -58,15 +58,17 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  switch (userDetails.type) {
-    case "GENERAL":
-      protectedAccessRoutes = generalAccountProtectedRoutes;
-      break;
-    case "SERVICE":
-      protectedAccessRoutes = serviceAccountProtectedRoutes;
-      break;
-    default:
-      break;
+  if (userDetails) {
+    switch (userDetails.type) {
+      case "GENERAL":
+        protectedAccessRoutes = generalAccountProtectedRoutes;
+        break;
+      case "SERVICE":
+        protectedAccessRoutes = serviceAccountProtectedRoutes;
+        break;
+      default:
+        break;
+    }
   }
 
   const allRoutes = [
@@ -74,12 +76,6 @@ router.beforeEach((to, from, next) => {
     ...generalAccountProtectedRoutes,
     ...serviceAccountProtectedRoutes
   ];
-
-  console.log(
-    protectedAccessRoutes,
-    to.name,
-    protectedAccessRoutes.includes(to.name)
-  );
 
   if (publicRoutes.includes(to.name)) next();
   else if (userDetails) {
