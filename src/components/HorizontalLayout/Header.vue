@@ -84,7 +84,7 @@
                     </div>
                   </template>
                   <b-dropdown-item href="#">Profile</b-dropdown-item>
-                  <b-dropdown-item @click="signOutFn">Sign Out</b-dropdown-item>
+                  <b-dropdown-item @click="signOut">Sign Out</b-dropdown-item>
                 </b-nav-item-dropdown>
               </b-navbar-nav>
               <!-- end profile -->
@@ -187,11 +187,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      setJwtToken: "user/setJwtToken"
-    }),
-    signOutFn() {
-      this.setJwtToken({ jwtToken: "" });
-    }
+      setJwtToken: "user/setJwtToken",
+      signOut: "user/signOut"
+    })
   }
 };
 </script>

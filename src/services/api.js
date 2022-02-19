@@ -1,7 +1,8 @@
 import axios from "axios";
-import { APP_URL, APP_USER_TOKEN, APP_USER } from "@/services/config";
+import { APP_URL, APP_USER_TOKEN } from "@/services/config";
 import router from "@/routes/router";
 import { BToast } from "bootstrap-vue";
+import { ErrorCodes } from "./config";
 
 export default function Api(nonApi = false, opts = {}) {
   let user_token = localStorage.getItem(APP_USER_TOKEN);
@@ -53,10 +54,35 @@ export default function Api(nonApi = false, opts = {}) {
       // else if (status === 500) alert("500 Error");
       // else alert(error.message);
 
-      if (status === 401) {
+      if (response.status === 401) {
         localStorage.clear(APP_USER_TOKEN);
         localStorage.clear(APP_USER);
         router.push({ name: "Login" });
+      } else if (response.status === 403) {
+        const code =
+          response && response.data && response.data.data
+            ? response.data.data.code
+            : null;
+        switch (code) {
+          case ErrorCodes.TWO_FACTOR_AUTH:
+            break;
+          case ErrorCodes.PHONE_AUTH:
+            break;
+          case ErrorCodes.ACCOUNT_APPROVAL:
+            break;
+          case ErrorCodes.ACCOUNT_LOCKED:
+            break;
+          case ErrorCodes.PASSWORD_VERIFICATION:
+            break;
+          case ErrorCodes.PHONE_VERIFICATION:
+            break;
+          case ErrorCodes.TWO_FACTOR_VERIFICATION:
+            break;
+          case ErrorCodes.TX_PASSWORD_VERIFICATION:
+            break;
+          default:
+            break;
+        }
       }
 
       return Promise.reject(error);

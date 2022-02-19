@@ -31,12 +31,15 @@ export const VerifyAndUpdatePhoneAPI = payload => {
 export const ConfirmPasswordAPI = payload => {
   return Api().post(`/auth/general/verify-password`, payload);
 };
+
 export const ConfirmMobileRequestAPI = payload => {
   return Api().post(`/auth/general/verify-phone-request`, payload);
 };
+
 export const ConfirmMobileAPI = payload => {
   return Api().post(`/auth/general/verify-phone`, payload);
 };
+
 export const Confirm2FAAPI = payload => {
   return Api().post(`/auth/general/verify-2fa`, payload);
 };
@@ -55,10 +58,6 @@ export const UpdateAccountPasswordAPI = payload => {
 
 export const UpdateTxPasswordAPI = payload => {
   return Api().patch(`/general/update-tx-password`, payload);
-};
-
-export const ConfirmPasswordAPI = payload => {
-  return Api().post(`/general/confirm-password`, payload);
 };
 
 export const Revoke2FAAPI = payload => {

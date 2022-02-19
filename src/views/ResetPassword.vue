@@ -48,9 +48,9 @@
                           >
                         </div>
                       </div>
-                      <div class="">
+                      <router-link to="/sign-in" replace>
                         <button class="btn btn-danger btn-sm">Cancel</button>
-                      </div>
+                      </router-link>
                     </div>
 
                     <h6
