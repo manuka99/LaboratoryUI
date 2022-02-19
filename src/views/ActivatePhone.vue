@@ -22,7 +22,7 @@
                         </div>
                       </div>
                       <h5 class="card-title text-center pb-0 fs-4">
-                        Verify Mobile Number
+                        Set-up Mobile/SMS Authentication
                       </h5>
                       <h6 class="text-danger text-center pb-0 font-14">
                         All users must have a verified Mobile Number
@@ -132,7 +132,9 @@
                       </h5>
                       <h6 style="font-size: 12px; " class="text-muted mb-3">
                         After request verification code, a six-digit
-                        verification code will be sent to the device.
+                        verification code will be sent to the device ({{
+                          user.tempPhone
+                        }}).
                       </h6>
 
                       <input
@@ -207,7 +209,8 @@ export default {
   methods: {
     ...mapActions({
       signOut: "user/signOut",
-      setJwtToken: "user/setJwtToken"
+      setJwtToken: "user/setJwtToken",
+      setTempPhone: "user/setTempPhone"
     }),
     requestVerificationCodeFn() {
       const payload = {
@@ -215,7 +218,10 @@ export default {
       };
       this.isLoading1 = true;
       UpdateTempPhoneAPI(payload)
-        .then(() => (this.isStep1 = false))
+        .then(response => {
+          this.isStep1 = false;
+          this.setTempPhone({ tempPhone: response.data.data.user.tempPhone });
+        })
         .finally(() => (this.isLoading1 = false));
     },
     verifyAndEnableMobileAuth() {
@@ -224,8 +230,11 @@ export default {
       };
       this.isLoading2 = true;
       VerifyAndUpdatePhoneAPI(payload)
-        .then((response) => {
-          this.setJwtToken({ jwtToken: response.data.data.token });
+        .then(response => {
+          this.setJwtToken({
+            jwtToken: response.data.data.token,
+            autoNavigate: true
+          });
           this.$router.push({ name: "Introduction", replace: true });
         })
         .finally(() => (this.isLoading2 = false));

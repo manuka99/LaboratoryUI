@@ -1,6 +1,7 @@
 import { APP_USER_TOKEN } from "@/services/config";
 import { GetRequestUserAPI, LogoutAPI } from "@/services/user.service";
 import router from "@/routes/router";
+import Store from "@/store";
 
 export default {
   namespaced: true,
@@ -33,6 +34,7 @@ export default {
     isLocked: null,
     phone_verified_at: null,
     email_verified_at: null,
+    jwtTokenData: null,
     current_session: null,
     active_sessions: [],
     all_sessions: []
@@ -75,6 +77,12 @@ export default {
     },
     SET_TX_PWD(state, payload) {
       state.transactionPassword = payload.transactionPassword;
+    },
+    SET_JWT_TOKEN_DATA(state, payload) {
+      state.jwtTokenData = payload.jwtTokenData;
+    },
+    SET_TEMP_PHONE(state, payload) {
+      state.tempPhone = payload.tempPhone;
     }
   },
   actions: {
@@ -87,17 +95,31 @@ export default {
     setTxPassword({ commit }, payload) {
       commit("SET_TX_PWD", payload);
     },
-    setJwtToken({ dispatch }, payload) {
-      localStorage.setItem(APP_USER_TOKEN, payload.jwtToken);
-      dispatch("fetchCurrentUserDetails");
+    setJwtTokenData({ commit }, payload) {
+      commit("SET_JWT_TOKEN_DATA", payload);
+    },
+    setTempPhone({ commit }, payload) {
+      commit("SET_TEMP_PHONE", payload);
+    },
+    setJwtToken({ dispatch }, { jwtToken, autoNavigate }) {
+      localStorage.setItem(APP_USER_TOKEN, jwtToken);
+      try {
+        const jwtTokenData = JSON.parse(
+          Buffer.from(jwtToken.split(".")[1], "base64").toString()
+        );
+        dispatch("setJwtTokenData", { jwtTokenData });
+      } catch (error) {
+        dispatch("setJwtTokenData", { jwtTokenData: null });
+      }
+      dispatch("fetchCurrentUserDetails", { autoNavigate });
     },
     signOut({ dispatch }) {
       LogoutAPI();
       dispatch("setJwtToken", { jwtToken: "" });
-      dispatch("fetchCurrentUserDetails");
+      dispatch("fetchCurrentUserDetails", { autoNavigate: true });
       router.push({ name: "Introduction" });
     },
-    fetchCurrentUserDetails(context) {
+    fetchCurrentUserDetails(context, { autoNavigate }) {
       return new Promise((resolve, reject) => {
         GetRequestUserAPI()
           .then(res => {
@@ -106,10 +128,29 @@ export default {
                 ? res.data.data.user
                 : {};
             context.dispatch("setUser", user);
+            context.dispatch("autoAuthNavigation", {
+              autoNavigate
+            });
             resolve(res.data);
           })
           .catch(e => reject(e));
       });
+    },
+    autoAuthNavigation({ state }, { autoNavigate }) {
+      if (autoNavigate) {
+        if (!state.jwtTokenData) {
+          router.push("/sign-in");
+        } else if (!state.isMobileAuthenticationEnabled) {
+          router.push("/activate-phone");
+        } else if (
+          state.isMobileAuthenticationEnabled &&
+          !state.jwtTokenData.data.isMobileAuthorized
+        ) {
+          Store.dispatch("modal/setModalsInfo", { showMobileVerify: true });
+        } else {
+          router.push("/introduction");
+        }
+      }
     }
   },
   getters: {

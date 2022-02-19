@@ -3,6 +3,7 @@ import { APP_URL, APP_USER_TOKEN } from "@/services/config";
 import router from "@/routes/router";
 import { BToast } from "bootstrap-vue";
 import { ErrorCodes } from "./config";
+import Store from "@/store";
 
 export default function Api(nonApi = false, opts = {}) {
   let user_token = localStorage.getItem(APP_USER_TOKEN);
@@ -65,24 +66,34 @@ export default function Api(nonApi = false, opts = {}) {
             : null;
         switch (code) {
           case ErrorCodes.TWO_FACTOR_AUTH:
+            Store.dispatch("modal/setModalsInfo", { show2FAVerify: true });
             break;
           case ErrorCodes.PHONE_AUTH:
+            Store.dispatch("modal/setModalsInfo", { showMobileVerify: true });
             break;
           case ErrorCodes.ACCOUNT_APPROVAL:
             break;
           case ErrorCodes.ACCOUNT_LOCKED:
             break;
           case ErrorCodes.PASSWORD_VERIFICATION:
+            Store.dispatch("modal/setModalsInfo", { showPasswordVerify: true });
             break;
           case ErrorCodes.PHONE_VERIFICATION:
+            Store.dispatch("modal/setModalsInfo", { showMobileVerify: true });
             break;
           case ErrorCodes.TWO_FACTOR_VERIFICATION:
+            Store.dispatch("modal/setModalsInfo", { show2FAVerify: true });
             break;
           case ErrorCodes.TX_PASSWORD_VERIFICATION:
+            Store.dispatch("modal/setModalsInfo", {
+              showTxPasswordVerify: true
+            });
             break;
           default:
             break;
         }
+      } else if (response.status === 406) {
+        Store.dispatch("user/autoAuthNavigation", { autoNavigate: true });
       }
 
       return Promise.reject(error);

@@ -187,7 +187,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      setJwtToken: "user/setJwtToken",
       signOut: "user/signOut"
     })
   }

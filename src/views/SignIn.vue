@@ -133,8 +133,10 @@ export default {
       };
       LoginAPI(payload)
         .then(response => {
-          this.setJwtToken({ jwtToken: response.data.data.token });
-          this.$router.push({ name: "Introduction", replace: true });
+          this.setJwtToken({
+            jwtToken: response.data.data.token,
+            autoNavigate: true
+          });
         })
         .finally(() => (this.isLoading = false));
     }

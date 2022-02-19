@@ -160,7 +160,10 @@ export default {
 
       ResetPasswordAPI(payload)
         .then(response => {
-          this.setJwtToken({ jwtToken: response.data.data.token });
+          this.setJwtToken({
+            jwtToken: response.data.data.token,
+            autoNavigate: true
+          });
           this.$router.push({ name: "Introduction", replace: true });
         })
         .finally(() => (this.isLoading = false));
