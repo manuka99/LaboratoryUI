@@ -16,22 +16,22 @@
 
       <!-- Right -->
       <div>
-        <a href="" class="me-4 text-reset">
+        <a href="" class="mr-4 text-reset">
           <i class="fab fa-facebook-f"></i>
         </a>
-        <a href="" class="me-4 text-reset">
+        <a href="" class="mr-4 text-reset">
           <i class="fab fa-twitter"></i>
         </a>
-        <a href="" class="me-4 text-reset">
+        <a href="" class="mr-4 text-reset">
           <i class="fab fa-google"></i>
         </a>
-        <a href="" class="me-4 text-reset">
+        <a href="" class="mr-4 text-reset">
           <i class="fab fa-instagram"></i>
         </a>
-        <a href="" class="me-4 text-reset">
+        <a href="" class="mr-4 text-reset">
           <i class="fab fa-linkedin"></i>
         </a>
-        <a href="" class="me-4 text-reset">
+        <a href="" class="mr-4 text-reset">
           <i class="fab fa-github"></i>
         </a>
       </div>
@@ -41,18 +41,19 @@
 
     <!-- Section: Links  -->
     <section class="">
-      <div class="container text-center text-md-start mt-5">
+      <div class="container text-left text-md-start mt-5">
         <!-- Grid row -->
         <div class="row mt-3">
           <!-- Grid column -->
           <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
             <!-- Content -->
             <h6 class="text-uppercase fw-bold mb-4">
-              <i class="fas fa-gem me-3"></i>Company name
+              <i class="fas fa-gem me-3"></i> MetaSpeck
             </h6>
             <p>
-              Here you can use rows and columns to organize your footer content.
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde, eum
+              in quod ex ipsum optio corrupti iure omnis provident tenetur
+              beatae nostrum sint, saepe et error quidem!
             </p>
           </div>
           <!-- Grid column -->
@@ -121,10 +122,15 @@
     <!-- Section: Links  -->
 
     <!-- Copyright -->
-    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-      © 2021 Copyright:
-      <a class="text-reset fw-bold" href="https://mdbootstrap.com/"
-        >MDBootstrap.com</a
+    <div
+      class="text-center font-weight-bold p-4 font-14"
+      style="background-color: rgba(0, 0, 0, 0.05);"
+    >
+      © 2022 Copyright
+      <a
+        class="font-16 font-weight-bold text-mutted"
+        href="https://metaspeck.com/"
+        >MetaSpeck.com</a
       >
     </div>
     <!-- Copyright -->

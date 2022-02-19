@@ -34,17 +34,16 @@
                         >National ID</label
                       >
                       <div class="input-group has-validation">
-                        <span class="input-group-text" id="inputGroupPrepend"
-                          >@</span
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          autosave="nationalID"
-                          v-model="nationalID"
-                          placeholder="Your National ID"
-                          autocomplete
-                        />
+                        <b-input-group prepend="@">
+                          <input
+                            type="text"
+                            class="form-control"
+                            autosave="nationalID"
+                            v-model="nationalID"
+                            placeholder="Your National ID"
+                            autocomplete
+                          />
+                        </b-input-group>
                       </div>
                     </div>
 
@@ -90,7 +89,7 @@
                     <div class="mt-2 mb-4">
                       <router-link to="/recover-account">
                         <a class="font-13 font-weight-bold text-secondary"
-                          >Recover account ?</a
+                          >Recover your account ?</a
                         >
                       </router-link>
                     </div>

@@ -12,7 +12,7 @@
             >
               <a class="navbar-brand brand-logo">
                 <img src="@/assets/images/metaspeck_logo2.jpg" alt="logo" />
-                <span class="font-11 d-block font-weight-bold text-muted"
+                <span class="font-13 d-block font-weight-600 text-muted"
                   >Smart Legal Contract Laboratory
                 </span>
               </a>
@@ -29,7 +29,7 @@
               <b-nav-item-dropdown
                 text="Lang"
                 right
-                class="d-flex justify-content-end align-items-center font-14"
+                class="d-flex justify-content-end align-items-center font-14 font-weight-bold"
               >
                 <b-dropdown-item href="#">EN</b-dropdown-item>
                 <b-dropdown-item href="#">ES</b-dropdown-item>
@@ -44,7 +44,7 @@
               >
                 <router-link to="/sign-in" class="text-decoration-none">
                   <a
-                    class="btn btn-secondary d-inline-flex justify-content-end align-items-end font-14 text-nowrap"
+                    class="btn btn-secondary d-inline-flex justify-content-end align-items-end font-15 text-nowrap font-weight-600"
                   >
                     <i class="mdi mdi-account-key mr-1"></i>
                     Sign In
@@ -111,17 +111,17 @@
             exact
           >
             <b-navbar-brand
-              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
+              class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600 text-center"
               >Introduction</b-navbar-brand
             >
           </router-link>
           <router-link
-            to="/sign-in"
+            to="/account-management"
             class="border border-primary"
             active-class="border border-white rounded"
           >
             <b-navbar-brand
-              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
+              class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600 text-center"
               >Account & Payment Management</b-navbar-brand
             >
           </router-link>
@@ -131,7 +131,7 @@
             active-class="border border-white rounded"
           >
             <b-navbar-brand
-              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
+              class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600"
               >Services Explorer</b-navbar-brand
             >
           </router-link>
@@ -141,8 +141,8 @@
             active-class="border border-white rounded"
           >
             <b-navbar-brand
-              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
-              >Transaction Builder</b-navbar-brand
+              class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600"
+              >Contract Builder</b-navbar-brand
             >
           </router-link>
           <router-link
@@ -151,17 +151,17 @@
             active-class="border border-white rounded"
           >
             <b-navbar-brand
-              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
+              class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600"
               >Sign Transaction</b-navbar-brand
             >
           </router-link>
           <router-link
-            to="/reset-password"
+            to="/reset-password/wewewe"
             class="border border-primary"
             active-class="border border-white rounded"
           >
             <b-navbar-brand
-              class="btn btn-ripple font-14 py-2 px-4 font-weight-bold"
+              class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600"
               >Documentation</b-navbar-brand
             >
           </router-link>
@@ -205,7 +205,7 @@ export default {
   align-items: flex-start;
 }
 .navbar-brand .brand-logo img {
-  height: 44px;
+  height: 52px;
 }
 
 .width-1000 {
