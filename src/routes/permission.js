@@ -14,8 +14,6 @@ export const PermissionedRouting = (to, from, next) => {
     "No Required Permissions",
     "Already Authorized",
     "Authorize 2FA",
-    "Setup 2FA",
-    "Activate 2FA",
     "Activate Phone",
     "Account Management"
   ];

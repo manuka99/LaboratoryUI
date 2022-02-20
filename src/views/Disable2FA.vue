@@ -20,10 +20,10 @@
                     </div>
                   </div>
                   <h5 class="card-title text-center pb-0 fs-4">
-                    Setup Two Factor Authentication
+                    Two Factor Authentication
                   </h5>
-                  <h6 class="text-danger text-center pb-0 font-15">
-                    Two Factor Authentication is not enabled for this account
+                  <h6 class="text-success text-center pb-0 font-15">
+                    Two Factor Authentication is enabled for this account
                   </h6>
                 </div>
 
@@ -77,12 +77,12 @@
                 </p>
 
                 <base-button
-                  class="btn btn-primary w-100 my-4 d-flex justify-content-center align-items-center"
-                  @click="twoFactorAuthRegFn"
+                  class="btn btn-danger w-100 my-4 d-flex justify-content-center align-items-center"
+                  @click="twoFactorAuthDisableFn"
                   :loading="isLoading"
                   nativeType="submit"
                 >
-                  Register for Two Factor Authentication
+                  Disable Two Factor Authentication
                   <i class="mdi mdi-gesture-two-double-tap text-white mr-1"></i>
                 </base-button>
               </div>
@@ -92,10 +92,10 @@
       </div>
     </section>
   </div>
-</template>
+</template>DeActivate2FA
 
 <script>
-import { Register2FAAPI } from "@/services/user.service";
+import { Revoke2FAAPI } from "@/services/user.service";
 export default {
   components: {},
   data() {
@@ -104,11 +104,11 @@ export default {
     };
   },
   methods: {
-    twoFactorAuthRegFn() {
+    twoFactorAuthDisableFn() {
       this.isLoading = true;
-      Register2FAAPI()
+      Revoke2FAAPI()
         .then(response => {
-          this.$emit("registered", response.data.data);
+          this.$emit("disabled2FA", response.data.data);
         })
         .finally(() => (this.isLoading = false));
     }

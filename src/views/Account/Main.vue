@@ -61,6 +61,15 @@
             lazy
           >
             <template #title>
+              <i class="mdi mdi-cellphone-android"></i> Two Factor
+              Authentication </template
+            ><TwoFactorAuthentication
+          /></b-tab>
+          <b-tab
+            title-link-class="py-3 my-1 font-15 font-weight-600 text-muted"
+            lazy
+          >
+            <template #title>
               <i class="mdi mdi-security"></i> Security </template
             ><Security
           /></b-tab>
@@ -74,10 +83,13 @@
 import Layout from "@/components/HorizontalLayout/Layout";
 import Profile from "./Profile";
 import Security from "./Security";
+import TwoFactorAuthentication from "./TwoFactorAuthentication";
+
 export default {
   components: {
     Layout,
     Profile,
+    TwoFactorAuthentication,
     Security
   },
   data() {

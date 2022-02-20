@@ -160,18 +160,15 @@ export default {
     // auth
     autoAuthNavigation({ state }, { autoNavigate }) {
       if (autoNavigate) {
-        if (!state.jwtTokenData) {
-          router.push("/sign-in");
-        } else if (!state.isMobileAuthenticationEnabled) {
+        if (!state.jwtTokenData) router.push("/sign-in");
+        else if (!state.isMobileAuthenticationEnabled)
           router.push("/activate-phone");
-        } else if (
+        else if (
           state.isMobileAuthenticationEnabled &&
           !state.jwtTokenData.data.isMobileAuthorized
-        ) {
+        )
           Store.dispatch("modal/setModalsInfo", { showMobileVerify: true });
-        } else {
-          router.push("/introduction");
-        }
+        else router.push("/");
       }
     }
   },

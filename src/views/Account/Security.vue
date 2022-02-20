@@ -8,125 +8,170 @@
             Account Security
           </h5>
         </b-col>
-        <!-- <b-col cols="4" class="text-right">
-        <a href="#!" class="btn btn-sm btn-primary"
-          ><i class="mdi mdi-account-edit"></i> Edit Content</a
-        >
-      </b-col> -->
-        <!-- <b-col cols="4" class="text-right">
-        <a href="#!" class="btn btn-sm btn-success"
-          ><i class="mdi mdi-content-save-all"></i> Save Content</a
-        >
-      </b-col> -->
       </b-row>
 
-      <b-form>
-        <h6 class="text-muted mb-3">
-          1. User Identity Image
-        </h6>
-        <img
-          :src="user.imagePaths[user.imagePaths.length - 1]"
-          style="object-fit: contain;"
-          class="bg-light"
-          alt=""
-          width="240"
-          height="240"
-        />
-        <hr class="my-4" />
-        <h6 class="text-muted mb-3">
-          2. General Information
-          <span class="font-12">(Cannot be editted)</span>
-        </h6>
+      <h6 class="text-muted mb-3">
+        1. Account Password
+      </h6>
+      <p class="text-muted font-14">
+        Choose a strong password and don't reuse it for other accounts.
+        <a href="#"> Learn more.</a> Changing your password will sign you out on
+        your devices, with some <a href="#">exceptions</a>.
+      </p>
+      <div>
+        <b-row>
+          <b-col lg="6">
+            <b-form-input
+              type="password"
+              label="*New Password"
+              placeholder="New Password"
+              class="font-14 font-weight-600"
+              v-model="raw_password"
+            ></b-form-input>
+          </b-col>
+          <b-col lg="6">
+            <b-form-input
+              type="password"
+              label="*Confirm New Password"
+              placeholder="Confirm New Password"
+              class="font-14 font-weight-600"
+              v-model="confirm_raw_password"
+            ></b-form-input>
+          </b-col>
+        </b-row>
+      </div>
+      <h6 class="text-muted font-14 mt-3">Password strength:</h6>
+      <p class="font-14">
+        Use at least 8 characters. Don’t use a password from another site, or
+        something too obvious like your pet’s name. <a href="#">Why?</a>
+      </p>
 
-        <div>
-          <b-row>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="First Name"
-                placeholder="First Name"
-                class="font-14 font-weight-600"
-                :value="user.firstName"
-              >
-              </base-input>
-            </b-col>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="Middle Name"
-                placeholder="Middle Name"
-                class="font-14 font-weight-600"
-                :value="user.middleName"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="Last Name"
-                placeholder="Last Name"
-                class="font-14 font-weight-600"
-                :value="user.lastName"
-              >
-              </base-input>
-            </b-col>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="Gender"
-                placeholder="Gender"
-                class="font-14 font-weight-600"
-                :value="user.gender"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="National ID"
-                placeholder="National ID"
-                class="font-14 font-weight-600"
-                :value="user.nationalID"
-              >
-              </base-input>
-            </b-col>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="Date of Birth"
-                placeholder="Date of Birth"
-                class="font-14 font-weight-600"
-                :value="user.dateOfBirth"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col lg="6">
-              <base-input
-                disabled
-                type="text"
-                label="Nationality"
-                placeholder="Nationality"
-                class="font-14 font-weight-600"
-                :value="user.nationality.toString()"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-        </div>
-        <hr class="mt-3 mb-4" />
-      </b-form>
+      <base-button
+        class="btn btn-primary mt-0 d-flex justify-content-center align-items-center font-14"
+        type="submit"
+        @click="changePwdFn"
+        :loading="isLoading1"
+        nativeType="submit"
+      >
+        <i class="mdi mdi-lock text-white mr-1"></i> Change Password
+      </base-button>
+
+      <hr class="my-4" />
+      <h6 class="text-muted mb-3">
+        2. Transaction Password
+      </h6>
+      <p class="text-muted font-14">
+        Choose a strong password and don't reuse it for other accounts. Changing
+        your transaction password will take some time to construct a
+        cryptographic proof on blockchain payment channel accounts.<a href="#">
+          Learn more</a
+        >
+      </p>
+      <div>
+        <b-row>
+          <b-col lg="6">
+            <b-form-input
+              type="password"
+              label="*New Transaction Password"
+              placeholder="New Transaction Password"
+              class="font-14 font-weight-600"
+              v-model="raw_tx_password"
+            ></b-form-input>
+          </b-col>
+          <b-col lg="6">
+            <b-form-input
+              type="password"
+              label="*Confirm New Transaction Password"
+              placeholder="Confirm New Transaction Password"
+              class="font-14 font-weight-600"
+              v-model="confirm_tx_raw_password"
+            ></b-form-input>
+          </b-col>
+        </b-row>
+      </div>
+      <base-button
+        class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
+        type="submit"
+        @click="changePwdFn"
+        :loading="isLoading1"
+        nativeType="submit"
+      >
+        <i class="mdi mdi-lock text-white mr-1"></i> Change Transaction Password
+      </base-button>
+
+      <hr class="my-4" />
+
+      <h6 class="text-muted mb-3">
+        3. Change Phone Number/SMS Authentication
+      </h6>
+      <p class="text-muted font-14">
+        All users must verify their identity by using the account's registered
+        phone number to authenticate. Therefore, before using any service, all
+        users must authenticate and register a mobile number. This account is
+        currently associated with the phone number <b>{{ user.phone }}</b
+        >. To make changes, click on "Update & Set-up SMS Authentication".<a
+          href="#"
+        >
+          Learn more</a
+        >
+      </p>
+      <a
+        class="w-auto btn btn-danger d-inline-flex justify-content-center align-items-center font-14"
+        href="/activate-phone"
+        target="_blank"
+      >
+        <i class="mdi mdi-cellphone-iphone text-white mr-1"></i>Update & Set-up
+        SMS Authentication
+      </a>
+
+      <hr class="my-4" />
+
+      <h6 class="text-muted mb-3">
+        4. Primary Email Address
+      </h6>
+      <p class="text-muted font-14">
+        Your primary email is used to reach you in case we detect unusual
+        activity in your account or you accidentally get locked out. Your
+        primary email will be used as the recovery email address which helps you
+        to reset your password if:
+      </p>
+      <ul class="text-muted font-14">
+        <li>
+          You forget your password
+        </li>
+        <li>
+          Someone else is using your account
+        </li>
+        <li>
+          You’re locked out of your account for another reason
+        </li>
+      </ul>
+      <div>
+        <b-row>
+          <b-col lg="6">
+            <b-form-input
+              type="text"
+              placeholder="Your Primary Email"
+              class="font-14 font-weight-600"
+              v-model="primaryEmail"
+            ></b-form-input>
+          </b-col>
+          <b-col lg="6">
+            <base-button
+              class="btn btn-sm btn-success mt-0 d-flex justify-content-center align-items-center"
+              type="submit"
+              @click="sendEmailVerificationCodeFn"
+              :loading="isLoading2"
+              size="sm"
+              nativeType="submit"
+            >
+              <i class="mdi mdi-email text-white mr-1"></i> Send Verification
+              Code
+            </base-button>
+          </b-col>
+        </b-row>
+      </div>
+      <hr class="mt-3 mb-4" />
     </b-card>
     <div
       v-else
@@ -145,15 +190,26 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
+  data() {
+    return {
+      isLoading1: false,
+      isLoading2: false,
+      raw_password: null,
+      confirm_raw_password: null,
+      raw_tx_password: null,
+      confirm_tx_raw_password: null,
+      primaryEmail: null
+    };
+  },
   computed: {
     ...mapGetters({
       user: "user/getUser"
     })
   },
   methods: {
-    updateProfile() {
-      alert("Your data: " + JSON.stringify(this.user));
-    }
+    changePwdFn() {},
+    sendEmailVerificationCodeFn() {},
+    changePwdFn() {}
   }
 };
 </script>
