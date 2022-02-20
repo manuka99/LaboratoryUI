@@ -56,9 +56,10 @@ export default function Api(nonApi = false, opts = {}) {
       // else alert(error.message);
 
       if (response.status === 401) {
-        localStorage.clear(APP_USER_TOKEN);
-        localStorage.clear(APP_USER);
-        router.push({ name: "Login" });
+        Store.dispatch("user/setJwtToken", {
+          jwtToken: "",
+          autoNavigate: true
+        });
       } else if (response.status === 403) {
         const code =
           response && response.data && response.data.data

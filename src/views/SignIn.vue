@@ -132,6 +132,7 @@ export default {
       };
       LoginAPI(payload)
         .then(response => {
+          this.$router.push({ name: "Introduction" });
           this.setJwtToken({
             jwtToken: response.data.data.token,
             autoNavigate: true

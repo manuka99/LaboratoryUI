@@ -4,8 +4,8 @@
       <b-row align-v="center" slot="header">
         <b-col cols="8">
           <h5 class="mb-0 text-white font-18">
-            <i class="mdi mdi-account-check"></i>
-            User Profile
+            <i class="mdi mdi-security"></i>
+            Account Security
           </h5>
         </b-col>
         <!-- <b-col cols="4" class="text-right">
@@ -126,81 +126,6 @@
           </b-row>
         </div>
         <hr class="mt-3 mb-4" />
-
-        <!-- Address -->
-        <h6 class=" text-muted mb-4">
-          3. Locality Information
-          <span class="font-12">(Cannot be editted)</span>
-        </h6>
-
-        <div>
-          <b-row>
-            <b-col md="12">
-              <base-input
-                disabled
-                type="text"
-                label="Address"
-                placeholder="Home Address"
-                :value="user.address"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col lg="4">
-              <base-input
-                disabled
-                type="text"
-                label="Street"
-                placeholder="Street"
-                :value="user.street"
-              >
-              </base-input>
-            </b-col>
-            <b-col lg="4">
-              <base-input
-                disabled
-                type="text"
-                label="Province"
-                placeholder="Province"
-                :value="user.province"
-              >
-              </base-input>
-            </b-col>
-            <b-col lg="4">
-              <base-input
-                disabled
-                label="District"
-                placeholder="District"
-                :value="user.district"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col lg="4">
-              <base-input
-                disabled
-                type="text"
-                label="Country"
-                placeholder="Country"
-                :value="user.country"
-              >
-              </base-input>
-            </b-col>
-            <b-col lg="4">
-              <base-input
-                disabled
-                label="Postal Code"
-                placeholder="ZIP Code"
-                :value="user.zipCode"
-              >
-              </base-input>
-            </b-col>
-          </b-row>
-        </div>
-
-        <hr class="my-4" />
       </b-form>
     </b-card>
     <div

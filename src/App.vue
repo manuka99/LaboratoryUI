@@ -30,7 +30,7 @@ export default {
     onInitFn() {
       var jwtToken = localStorage.getItem(APP_USER_TOKEN);
       if (jwtToken) {
-        this.setJwtToken({ jwtToken, autoNavigate: true });
+        this.setJwtToken({ jwtToken, autoNavigate: false });
       }
     }
   }

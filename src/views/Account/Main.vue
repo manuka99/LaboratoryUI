@@ -53,16 +53,17 @@
             title-link-class="py-3 my-1 font-15 font-weight-600 text-muted"
           >
             <template #title>
-              <i class="mdi mdi-laptop-mac"></i> Logged In Devices </template
+              <i class="mdi mdi-laptop-mac"></i> Signed In Devices </template
             ><b-card-text>Tab contents 3</b-card-text></b-tab
           >
           <b-tab
             title-link-class="py-3 my-1 font-15 font-weight-600 text-muted"
+            lazy
           >
             <template #title>
               <i class="mdi mdi-security"></i> Security </template
-            ><b-card-text>Tab contents 3</b-card-text></b-tab
-          >
+            ><Security
+          /></b-tab>
         </b-tabs>
       </b-card>
     </div>
@@ -72,19 +73,26 @@
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
 import Profile from "./Profile";
+import Security from "./Security";
 export default {
   components: {
     Layout,
-    Profile
+    Profile,
+    Security
   },
   data() {
-    return {};
+    return {
+      tabIndex: 0,
+      tabs: ["#dogs", "#cats"]
+    };
   },
   mounted() {
     this.initFn();
   },
   methods: {
-    initFn() {}
+    initFn() {
+      this.tabIndex = this.tabs.findIndex(tab => tab === this.$route.hash);
+    }
   }
 };
 </script>

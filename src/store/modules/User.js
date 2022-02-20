@@ -2,6 +2,7 @@ import { APP_USER_TOKEN } from "@/services/config";
 import { GetRequestUserAPI, LogoutAPI } from "@/services/user.service";
 import router from "@/routes/router";
 import Store from "@/store";
+import { PermissionedRouting } from "../../routes/permission";
 
 export default {
   namespaced: true,
@@ -101,7 +102,10 @@ export default {
     setTempPhone({ commit }, payload) {
       commit("SET_TEMP_PHONE", payload);
     },
-    setJwtToken({ dispatch }, { jwtToken, autoNavigate }) {
+    setJwtToken(
+      { dispatch },
+      { jwtToken, autoNavigate, isFetchCurrentUserDetails = true }
+    ) {
       localStorage.setItem(APP_USER_TOKEN, jwtToken);
       try {
         const jwtTokenData = JSON.parse(
@@ -111,7 +115,8 @@ export default {
       } catch (error) {
         dispatch("setJwtTokenData", { jwtTokenData: null });
       }
-      dispatch("fetchCurrentUserDetails", { autoNavigate });
+      if (isFetchCurrentUserDetails)
+        dispatch("fetchCurrentUserDetails", { autoNavigate });
     },
     signOut({ dispatch }) {
       LogoutAPI();
@@ -127,15 +132,32 @@ export default {
               res.data && res.data.data && res.data.data.user
                 ? res.data.data.user
                 : {};
+            if (!user || !user.nationalID)
+              context.dispatch("setJwtToken", {
+                jwtToken: "",
+                isFetchCurrentUserDetails: false
+              });
             context.dispatch("setUser", user);
             context.dispatch("autoAuthNavigation", {
               autoNavigate
             });
+            PermissionedRouting(router.history.current);
             resolve(res.data);
           })
-          .catch(e => reject(e));
+          .catch(e => {
+            context.dispatch("setJwtToken", {
+              jwtToken: "",
+              isFetchCurrentUserDetails: false
+            });
+            context.dispatch("setUser", {});
+            context.dispatch("autoAuthNavigation", {
+              autoNavigate
+            });
+            reject(e);
+          });
       });
     },
+    // auth
     autoAuthNavigation({ state }, { autoNavigate }) {
       if (autoNavigate) {
         if (!state.jwtTokenData) {
