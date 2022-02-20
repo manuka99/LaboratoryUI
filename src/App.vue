@@ -3,6 +3,7 @@
     <router-view></router-view>
     <VerifyMobileModal />
     <Verify2FAModal />
+    <VerifyACTPWDModal />
   </div>
 </template>
 
@@ -11,11 +12,13 @@ import { mapActions } from "vuex";
 import { APP_USER_TOKEN } from "@/services/config";
 import VerifyMobileModal from "@/views/modals/VerifyMobileModal";
 import Verify2FAModal from "@/views/modals/Verify2FAModal";
+import VerifyACTPWDModal from "./views/modals/VerifyACTPWDModal.vue";
 
 export default {
   components: {
     VerifyMobileModal,
-    Verify2FAModal
+    Verify2FAModal,
+    VerifyACTPWDModal
   },
   created() {
     this.onInitFn();
