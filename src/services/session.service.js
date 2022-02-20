@@ -1,9 +1,21 @@
 import Api from "./api";
 
-export const GetAllAnalytics = Authorization => {
-  return Api(false, { Authorization }).get(`/auth/analytics`);
+export const GetUserSessionsAPI = () => {
+  return Api().get(`/general/sessions`);
 };
 
-export const GetAllSessions = Authorization => {
-  return Api(false, { Authorization }).get(`/auth/sessions`);
+export const GetUserSessionAPI = id => {
+  return Api().get(`/general/sessions/${id}`);
+};
+
+export const RevokeAllUserSessionsAPI = () => {
+  return Api().delete(`/general/revoke-sessions`);
+};
+
+export const RevokeUserSessionAPI = id => {
+  return Api().delete(`/general/revoke-sessions/${id}`);
+};
+
+export const DeleteAllInvalidUserSessionAPI = () => {
+  return Api().delete(`/general/sessions`);
 };

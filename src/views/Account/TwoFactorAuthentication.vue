@@ -36,6 +36,7 @@ export default {
   data() {
     return {
       isRegStep1: true,
+      isRegStep2: true,
       registrationData: null
     };
   },
@@ -58,12 +59,16 @@ export default {
         jwtToken: data.token,
         autoNavigate: false
       });
+      this.isRegStep1 = false;
+      this.isRegStep2 = false;
     },
     on2FADisFn(data) {
       this.setJwtToken({
         jwtToken: data.token,
         autoNavigate: false
       });
+      this.isRegStep1 = true;
+      this.isRegStep2 = false;
     }
   }
 };

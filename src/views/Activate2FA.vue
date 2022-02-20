@@ -15,9 +15,9 @@
                     <div class="d-flex justify-content-center mb-2">
                       <div
                         class="rounded-circle bg-dark d-flex justify-content-center align-items-center"
-                        style="width: 36px; height: 34px;"
+                        style="width: 46px; height: 42px;"
                       >
-                        <i class="mdi mdi-lock text-white"></i>
+                        <i class="mdi mdi-lock text-white font-22"></i>
                       </div>
                     </div>
                     <h5 class="card-title text-center pb-0 fs-4">
@@ -28,7 +28,7 @@
                     </h6>
                   </div>
 
-                  <p class="small font-13 mt-3">
+                  <p class="small font-15 mt-3">
                     Use your phone as your second step to sign in. Two-factor
                     authentication adds an additional layer of security to your
                     account by requiring more than just a password to log in.
@@ -38,7 +38,7 @@
                     text or an app on your phone.
                   </p>
 
-                  <h6 class="text-muted pb-0 font-13 font-weight-bold mt-2">
+                  <h6 class="text-muted pb-0 font-15 font-weight-bold mt-2">
                     * Make sure that you follow the bellow two methods and save
                     the codes and scan the qr code properly. You can disable Two
                     Factor Authentication at any moment by confirming your
@@ -51,14 +51,14 @@
 
                   <img :src="registrationData.qr" alt="" />
 
-                  <h6 class="text-dark pb-0 font-13 font-weight-bold mt-2">
+                  <h6 class="text-dark pb-0 font-15 font-weight-bold mt-2">
                     Scan the above QR Code with the two-factor authentication
                     app on your phone. After scanning the QR Code, the app will
                     display a six-digit code that you can enter after sign in
                     with your credentials.
                   </h6>
 
-                  <p class="small font-13">
+                  <p class="small font-15">
                     We recommend using an application such as Authy, 1Password,
                     or LastPass Authenticator. These applications support secure
                     backup of your authentication codes in the cloud and can be
@@ -68,7 +68,7 @@
                   <h5 class="text-danger pb-0 font-15 font-weight-bold mt-4">
                     2. Enter the six-digit code from the application
                   </h5>
-                  <h6 style="font-size: 12px; " class="text-muted mb-3">
+                  <h6 class="text-muted mb-3 font-13">
                     After scanning the barcode image, the app will display a
                     six-digit code that you can enter below.
                   </h6>
@@ -80,7 +80,7 @@
                     v-model="auth_code"
                     required
                   />
-                  <h6 style="font-size: 12px; " class="text-danger my-2">
+                  <h6 class="text-danger my-2 font-15">
                     * You will not be able to access your account if you do not
                     follow the above steps properly. You can request support
                     from our team at any moment.

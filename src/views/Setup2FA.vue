@@ -14,9 +14,9 @@
                   <div class="d-flex justify-content-center mb-2">
                     <div
                       class="rounded-circle bg-dark d-flex justify-content-center align-items-center"
-                      style="width: 36px; height: 34px;"
+                      style="width: 46px; height: 42px;"
                     >
-                      <i class="mdi mdi-lock text-white"></i>
+                      <i class="mdi mdi-lock text-white font-22"></i>
                     </div>
                   </div>
                   <h5 class="card-title text-center pb-0 fs-4">
@@ -27,7 +27,7 @@
                   </h6>
                 </div>
 
-                <p class="small font-14 mt-3">
+                <p class="small font-15 mt-3">
                   Two-factor authentication adds an extra layer of security to
                   your account. In addition to your username and password,
                   you’ll need to enter a code that Pizza Apes sends to you via
@@ -69,7 +69,7 @@
                   authentication codes when prompted.
                 </h6>
 
-                <p class="small font-14">
+                <p class="small font-15">
                   We recommend using an application such as Authy, 1Password, or
                   LastPass Authenticator. These applications support secure
                   backup of your authentication codes in the cloud and can be
