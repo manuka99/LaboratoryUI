@@ -45,11 +45,11 @@ export const Confirm2FAAPI = payload => {
 };
 
 export const Register2FAAPI = payload => {
-  return Api().post(`/auth/general/register2fa`, payload);
+  return Api().post(`/general/register2fa`, payload);
 };
 
 export const Activate2FAAPI = payload => {
-  return Api().post(`/auth/general/activate2fa`, payload);
+  return Api().post(`/general/activate2fa`, payload);
 };
 
 export const UpdateAccountPasswordAPI = payload => {
