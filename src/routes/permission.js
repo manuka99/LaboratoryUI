@@ -1,5 +1,7 @@
 import { APP_USER_TOKEN } from "../services/config";
 import router from "./router";
+import Store from "@/store";
+
 export const PermissionedRouting = (to, from, next) => {
   const publicRoutes = ["Introduction", "NOTFOUND"];
   const guestAccessRoutes = [
@@ -48,6 +50,15 @@ export const PermissionedRouting = (to, from, next) => {
       default:
         break;
     }
+  }
+
+  if (!userDetails || !userDetails.data || tokenExpired) {
+    Store.dispatch("user/setJwtToken", {
+      jwtToken: "",
+      autoNavigate: false,
+      isFetchCurrentUserDetails: false
+    });
+    Store.dispatch("user/setUser", {});
   }
 
   const allRoutes = [

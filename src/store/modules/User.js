@@ -125,37 +125,33 @@ export default {
       router.push({ name: "Introduction" });
     },
     fetchCurrentUserDetails(context, { autoNavigate }) {
-      return new Promise((resolve, reject) => {
-        GetRequestUserAPI()
-          .then(res => {
-            const user =
-              res.data && res.data.data && res.data.data.user
-                ? res.data.data.user
-                : {};
-            if (!user || !user.nationalID)
-              context.dispatch("setJwtToken", {
-                jwtToken: "",
-                isFetchCurrentUserDetails: false
-              });
-            context.dispatch("setUser", user);
-            context.dispatch("autoAuthNavigation", {
-              autoNavigate
-            });
-            PermissionedRouting(router.history.current);
-            resolve(res.data);
-          })
-          .catch(e => {
+      GetRequestUserAPI()
+        .then(res => {
+          const user =
+            res.data && res.data.data && res.data.data.user
+              ? res.data.data.user
+              : {};
+          context.dispatch("setUser", user);
+          if (!user || !user.nationalID)
             context.dispatch("setJwtToken", {
               jwtToken: "",
               isFetchCurrentUserDetails: false
             });
-            context.dispatch("setUser", {});
-            context.dispatch("autoAuthNavigation", {
-              autoNavigate
-            });
-            reject(e);
+          context.dispatch("autoAuthNavigation", {
+            autoNavigate
           });
-      });
+          PermissionedRouting(router.history.current);
+        })
+        .catch(() => {
+          context.dispatch("setJwtToken", {
+            jwtToken: "",
+            isFetchCurrentUserDetails: false
+          });
+          context.dispatch("setUser", {});
+          context.dispatch("autoAuthNavigation", {
+            autoNavigate
+          });
+        });
     },
     // auth
     autoAuthNavigation({ state }, { autoNavigate }) {

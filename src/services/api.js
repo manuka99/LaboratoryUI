@@ -1,6 +1,5 @@
 import axios from "axios";
 import { APP_URL, APP_USER_TOKEN } from "@/services/config";
-import router from "@/routes/router";
 import { BToast } from "bootstrap-vue";
 import { ErrorCodes } from "./config";
 import Store from "@/store";
