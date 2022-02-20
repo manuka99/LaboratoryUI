@@ -63,3 +63,7 @@ export const UpdateTxPasswordAPI = payload => {
 export const Revoke2FAAPI = payload => {
   return Api().post(`/general/revoke2fa`, payload);
 };
+
+export const VerifyAndUpdateEmailRequestAPI = payload => {
+  return Api().patch(`/general/verify-email-request`, payload);
+};

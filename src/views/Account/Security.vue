@@ -92,8 +92,8 @@
       <base-button
         class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
         type="submit"
-        @click="changePwdFn"
-        :loading="isLoading1"
+        @click="changeTxPwdFn"
+        :loading="isLoading2"
         nativeType="submit"
       >
         <i class="mdi mdi-lock text-white mr-1"></i> Change Transaction Password
@@ -153,7 +153,7 @@
               type="text"
               placeholder="Your Primary Email"
               class="font-14 font-weight-600"
-              v-model="primaryEmail"
+              v-model="temp_email"
             ></b-form-input>
           </b-col>
           <b-col lg="6">
@@ -161,7 +161,7 @@
               class="btn btn-sm btn-success mt-0 d-flex justify-content-center align-items-center"
               type="submit"
               @click="sendEmailVerificationCodeFn"
-              :loading="isLoading2"
+              :loading="isLoading3"
               size="sm"
               nativeType="submit"
             >
@@ -189,16 +189,23 @@
 
 <script>
 import { mapGetters } from "vuex";
+import {
+  UpdateAccountPasswordAPI,
+  UpdateTxPasswordAPI,
+  VerifyAndUpdateEmailRequestAPI
+} from "@/services/user.service";
+
 export default {
   data() {
     return {
       isLoading1: false,
       isLoading2: false,
+      isLoading3: false,
       raw_password: null,
       confirm_raw_password: null,
       raw_tx_password: null,
       confirm_tx_raw_password: null,
-      primaryEmail: null
+      temp_email: null
     };
   },
   computed: {
@@ -206,10 +213,46 @@ export default {
       user: "user/getUser"
     })
   },
+  watch: {
+    user: {
+      handler(newVal, oldVal) {
+        this.temp_email = newVal.email;
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   methods: {
-    changePwdFn() {},
-    sendEmailVerificationCodeFn() {},
-    changePwdFn() {}
+    changePwdFn() {
+      this.isLoading1 = true;
+      const payload = {
+        raw_password: this.raw_password
+      };
+      UpdateAccountPasswordAPI(payload)
+        .then(response => {
+          this.setJwtToken({
+            jwtToken: response.data.data.token,
+            autoNavigate: false
+          });
+        })
+        .finally(() => (this.isLoading1 = false));
+    },
+    changeTxPwdFn() {
+      this.isLoading2 = true;
+      const payload = {
+        raw_tx_password: this.raw_tx_password
+      };
+      UpdateTxPasswordAPI(payload).finally(() => (this.isLoading2 = false));
+    },
+    sendEmailVerificationCodeFn() {
+      this.isLoading3 = true;
+      const payload = {
+        temp_email: this.temp_email
+      };
+      VerifyAndUpdateEmailRequestAPI(payload).finally(
+        () => (this.isLoading3 = false)
+      );
+    }
   }
 };
 </script>
