@@ -146,30 +146,60 @@
           You’re locked out of your account for another reason
         </li>
       </ul>
-      <div>
-        <b-row>
-          <b-col lg="6">
-            <b-form-input
-              type="text"
-              placeholder="Your Primary Email"
-              class="font-14 font-weight-600"
-              v-model="temp_email"
-            ></b-form-input>
-          </b-col>
-          <b-col lg="6">
-            <base-button
-              class="btn btn-sm btn-success mt-0 d-flex justify-content-center align-items-center"
-              type="submit"
-              @click="sendEmailVerificationCodeFn"
-              :loading="isLoading3"
-              size="sm"
-              nativeType="submit"
+      <div
+        v-if="user && user.email"
+        class="bg-secondary text-white rounded d-inline-block font-14 font-weight-600 mb-1 py-2 px-3"
+      >
+        <div v-if="user.email_verified_at">
+          <span>{{ user.email }}</span>
+          <b-badge variant="success" class="cursor-pointer ml-2 py-1 px-2">
+            <i class="mdi mdi-check-circle"></i>
+            Verified</b-badge
+          >
+        </div>
+        <div v-else>
+          <span>{{ user.email }}</span>
+          <b-badge class="cursor-pointer ml-2  py-1 px-2 bg-white text-danger"
             >
-              <i class="mdi mdi-email text-white mr-1"></i> Send Verification
-              Code
-            </base-button>
-          </b-col>
-        </b-row>
+            <i class="mdi mdi-cancel"></i>
+            Not Verified</b-badge
+          >
+        </div>
+      </div>
+      <div class="d-flex justify-content-start align-items-center flex-wrap">
+        <b-form-input
+          type="text"
+          v-if="showEmailInput"
+          placeholder="New Primary Email"
+          class="font-14 font-weight-600 my-2 mr-2 w-auto"
+          v-model="temp_email"
+        ></b-form-input>
+        <base-button
+          class="btn btn-sm btn-success my-2 mr-2 d-flex justify-content-center align-items-center"
+          type="submit"
+          v-if="temp_email"
+          @click="sendEmailVerificationCodeFn"
+          :loading="isLoading3"
+          size="sm"
+          nativeType="submit"
+        >
+          <i class="mdi mdi-email text-white mr-1"></i> Send Verification Code
+        </base-button>
+        <base-button
+          v-if="showEmailInput"
+          @click="showEmailInput = false"
+          type="submit"
+          class="btn btn-sm btn-outline-danger my-2 mr-2 font-12 font-weight-600"
+          >Cancel</base-button
+        >
+      </div>
+      <div>
+        <span
+          v-if="!showEmailInput"
+          @click="showEmailInput = true"
+          class="text-primary text-decoration-underline cursor-pointer mb-1 ml-1 font-14 font-weight-600"
+          >Change primary email?</span
+        >
       </div>
       <hr class="mt-3 mb-4" />
     </b-card>
@@ -198,6 +228,7 @@ import {
 export default {
   data() {
     return {
+      showEmailInput: false,
       isLoading1: false,
       isLoading2: false,
       isLoading3: false,
@@ -216,7 +247,7 @@ export default {
   watch: {
     user: {
       handler(newVal, oldVal) {
-        this.temp_email = newVal.email;
+        if (newVal && !newVal.email_verified_at) this.temp_email = newVal.email;
       },
       deep: true,
       immediate: true

@@ -65,5 +65,5 @@ export const Revoke2FAAPI = payload => {
 };
 
 export const VerifyAndUpdateEmailRequestAPI = payload => {
-  return Api().patch(`/general/verify-email-request`, payload);
+  return Api().post(`/general/verify-email-request`, payload);
 };

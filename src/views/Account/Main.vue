@@ -127,9 +127,9 @@ export default {
     this.initFn();
   },
   watch: {
-    tabIndex(val) {
-      console.log(val);
-    }
+    // tabIndex(val) {
+    //   console.log(val);
+    // }
   },
   methods: {
     initFn() {
