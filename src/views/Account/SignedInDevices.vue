@@ -32,21 +32,43 @@
         </li>
       </ul>
 
-      <base-button
-        class="btn btn-outline-primary mt-0 d-flex justify-content-center align-items-center font-14"
-        type="submit"
-        @click="refreshDevicesFn"
-        :loading="isLoading"
-        nativeType="submit"
-      >
-        <i class="mdi mdi-repeat mr-1"></i> Refresh Devices
-      </base-button>
+      <div class="d-flex justify-content-start align-items-center flex-wrap">
+        <base-button
+          class="btn btn-outline-primary mt-0 d-flex justify-content-center align-items-center font-14 mr-2"
+          type="submit"
+          @click="refreshDevicesFn"
+          :loading="isLoading"
+          nativeType="submit"
+        >
+          <i class="mdi mdi-repeat mr-1"></i> Refresh Devices
+        </base-button>
+
+        <base-button
+          class="btn btn-outline-danger mt-0 d-flex justify-content-center align-items-center font-14 mr-2 my-2 my-lg-0"
+          type="submit"
+          @click="revokeAllDevicesFn"
+          :loading="isLoading2"
+          nativeType="submit"
+        >
+          <i class="mdi mdi-cancel mr-1"></i> Revoke All Devices
+        </base-button>
+
+        <base-button
+          class="btn btn-outline-danger mt-0 d-flex justify-content-center align-items-center font-14"
+          type="submit"
+          @click="removeRevokedDevicesFn"
+          :loading="isLoading3"
+          nativeType="submit"
+        >
+          <i class="mdi mdi-delete-forever mr-1"></i> Remove All Revoke Devices
+        </base-button>
+      </div>
 
       <div v-if="!isLoading" class="d-flex justify-content-start flex-wrap">
         <div
           v-for="session in sessions"
           :key="session._id"
-          class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 d-flex flex-column justify-content-center align-items-center py-3"
+          class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 d-flex flex-column justify-content-center align-items-center py-3 cursor-pointer"
         >
           <div
             class="d-flex justify-content-center align-items-center font-32"
@@ -84,6 +106,15 @@
                   : session.osInfo
               }}
             </span>
+            <b-badge
+              v-if="session.isValid"
+              variant="success"
+              class="cursor-pointer mt-1"
+              >Device Active</b-badge
+            >
+            <b-badge v-else variant="danger" class="cursor-pointer mt-1"
+              >Device Revoked</b-badge
+            >
           </div>
           <div class="d-flex justify-content-center align-items-center mt-3">
             <button
@@ -111,6 +142,7 @@
         :isShow="isShow"
         :sessionID="selectedSessionID"
         @onClose="onCloseFn"
+        @onRevoked="onRevokedFn"
       />
     </b-card>
   </div>
@@ -118,13 +150,20 @@
 
 <script>
 import SignInDeviceInfo from "../modals/SignInDeviceInfo.vue";
-import { GetUserSessionsAPI } from "@/services/session.service";
+import {
+  GetUserSessionsAPI,
+  RevokeAllUserSessionsAPI,
+  DeleteAllInvalidUserSessionAPI
+} from "@/services/session.service";
 import moment from "moment";
+import { mapActions } from "vuex";
 
 export default {
   data() {
     return {
       isLoading: false,
+      isLoading2: false,
+      isLoading3: false,
       sessions: null,
       currentSession: null,
       isShow: false,
@@ -135,6 +174,9 @@ export default {
     this.onInitFn();
   },
   methods: {
+    ...mapActions({
+      setJwtToken: "user/setJwtToken"
+    }),
     onInitFn() {
       this.refreshDevicesFn();
     },
@@ -151,6 +193,22 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
+    revokeAllDevicesFn() {
+      this.isLoading2 = true;
+      RevokeAllUserSessionsAPI()
+        .then(response => {
+          const data = response.data.data;
+          this.setJwtToken({ jwtToken: data.token, autoNavigate: false });
+          this.refreshDevicesFn();
+        })
+        .finally(() => (this.isLoading2 = false));
+    },
+    removeRevokedDevicesFn() {
+      this.isLoading2 = true;
+      DeleteAllInvalidUserSessionAPI()
+        .then(() => this.refreshDevicesFn())
+        .finally(() => (this.isLoading2 = false));
+    },
     showMoreDetailsFn(session) {
       this.selectedSessionID = session._id;
       this.isShow = true;
@@ -158,6 +216,11 @@ export default {
     onCloseFn() {
       this.isShow = false;
       this.selectedSessionID = null;
+    },
+    onRevokedFn() {
+      this.isShow = false;
+      this.selectedSessionID = null;
+      this.refreshDevicesFn();
     }
   },
   components: { SignInDeviceInfo }

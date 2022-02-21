@@ -9,13 +9,17 @@ export const GetUserSessionAPI = id => {
 };
 
 export const RevokeAllUserSessionsAPI = () => {
-  return Api().delete(`/general/revoke-sessions`);
+  return Api().post(`/general/revoke-sessions`);
 };
 
 export const RevokeUserSessionAPI = id => {
-  return Api().delete(`/general/revoke-sessions/${id}`);
+  return Api().post(`/general/revoke-sessions/${id}`);
 };
 
 export const DeleteAllInvalidUserSessionAPI = () => {
   return Api().delete(`/general/sessions`);
+};
+
+export const DeleteInvalidUserSessionAPI = (id) => {
+  return Api().delete(`/general/sessions/${id}`);
 };

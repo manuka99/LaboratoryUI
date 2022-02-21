@@ -61,94 +61,124 @@
                     </ul>
                   </div>
 
-                  <div v-if="!isLoading" class="row">
-                    <div v-if="session" class="col-12 col-md-6">
-                      <div
-                        class="d-flex flex-column justify-content-center align-items-center py-3"
-                      >
+                  <div v-if="!isLoading">
+                    <div v-if="session" class="row">
+                      <div class="col-12 col-md-6">
                         <div
-                          class="d-flex justify-content-center align-items-center font-32"
-                          :class="
-                            currentSession._id === session._id && 'text-success'
-                          "
+                          class="d-flex flex-column justify-content-center align-items-center py-3 cursor-pointer"
                         >
-                          <i
-                            v-if="session.deviceType == 'bot'"
-                            class="mdi mdi-robot "
-                          ></i>
-                          <i
-                            v-if="session.deviceType == 'desktop'"
-                            class="mdi mdi-laptop-chromebook"
-                          ></i>
-                          <i
-                            v-if="
-                              session.deviceType != 'bot' &&
-                                session.deviceType != 'desktop'
+                          <div
+                            class="d-flex justify-content-center align-items-center font-32"
+                            :class="
+                              currentSession._id === session._id &&
+                                'text-success'
                             "
-                            class="mdi mdi-cellphone-android"
-                          ></i>
-                        </div>
-                        <div
-                          class="d-flex flex-column justify-content-center align-items-center font-14 mt-0 font-weight-600"
-                        >
-                          <span class="d-block">
-                            {{ session.ip_address }}
-                          </span>
-                          <span class="d-block">
-                            {{
-                              currentSession._id === session._id
-                                ? "Current device"
-                                : moment(new Date(session.updatedAt)).fromNow()
-                            }}
-                          </span>
-                          <span class="d-block">
-                            {{
-                              session.deviceType === "bot"
-                                ? "Robot | Machine"
-                                : session.osInfo
-                            }}
-                          </span>
-                        </div>
-                        <div
-                          class="d-flex justify-content-center align-items-center mt-3"
-                        >
-                          <button
-                            @click="showMoreDetailsFn(session)"
-                            class="btn btn-sm btn-primary font-13 py-0 px-2 font-weight-bold"
                           >
-                            more
-                          </button>
+                            <i
+                              v-if="session.deviceType == 'bot'"
+                              class="mdi mdi-robot "
+                            ></i>
+                            <i
+                              v-if="session.deviceType == 'desktop'"
+                              class="mdi mdi-laptop-chromebook"
+                            ></i>
+                            <i
+                              v-if="
+                                session.deviceType != 'bot' &&
+                                  session.deviceType != 'desktop'
+                              "
+                              class="mdi mdi-cellphone-android"
+                            ></i>
+                          </div>
+                          <div
+                            class="d-flex flex-column justify-content-center align-items-center font-14 mt-0 font-weight-600"
+                          >
+                            <span class="d-block">
+                              {{ session.ip_address }}
+                            </span>
+                            <span class="d-block">
+                              {{
+                                currentSession._id === session._id
+                                  ? "Current device"
+                                  : moment(
+                                      new Date(session.updatedAt)
+                                    ).fromNow()
+                              }}
+                            </span>
+                            <span class="d-block">
+                              {{
+                                session.deviceType === "bot"
+                                  ? "Robot | Machine"
+                                  : session.osInfo
+                              }}
+                            </span>
+                            <b-badge
+                              v-if="session.isValid"
+                              variant="success"
+                              class="cursor-pointer mt-1"
+                              >Device Active</b-badge
+                            >
+                            <b-badge
+                              v-else
+                              variant="danger"
+                              class="cursor-pointer mt-1"
+                              >Device Revoked</b-badge
+                            >
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div v-if="geoData" class="col-12 col-md-6 font-14">
-                      <span class="d-block">
-                        <strong> Last location:</strong>
-                      </span>
-                      <span class="d-block">
-                        {{
-                          `${geoData.city}, ${geoData.region},
+                      <div v-if="geoData" class="col-12 col-md-6 font-14">
+                        <span class="d-block">
+                          <strong> Last location:</strong>
+                        </span>
+                        <span class="d-block">
+                          {{
+                            `${geoData.city}, ${geoData.region},
                         ${geoData.country}`
-                        }}
-                      </span>
-                      <span class="d-block mt-2">
-                        <strong> Time zone:</strong>
-                      </span>
-                      <span class="d-block">
-                        {{ geoData.timezone }}
-                      </span>
-                      <span class="d-block mt-2">
-                        <strong> Longitudes & Latitutes:</strong>
-                      </span>
-                      <span class="d-block">
-                        {{ geoData.ll }}
-                      </span>
-                      <span class="d-block mt-2">
-                        <strong> The approximate accuracy radius (km): </strong>
-                      </span>
-                      <span class="d-block">
-                        {{ geoData.area }}
-                      </span>
+                          }}
+                        </span>
+                        <span class="d-block mt-2">
+                          <strong> Time zone:</strong>
+                        </span>
+                        <span class="d-block">
+                          {{ geoData.timezone }}
+                        </span>
+                        <span class="d-block mt-2">
+                          <strong> Longitudes & Latitutes:</strong>
+                        </span>
+                        <span class="d-block">
+                          {{ geoData.ll }}
+                        </span>
+                        <span class="d-block mt-2">
+                          <strong>
+                            The approximate accuracy radius (km):
+                          </strong>
+                        </span>
+                        <span class="d-block">
+                          {{ geoData.area }}
+                        </span>
+                      </div>
+                      <base-button
+                        class="btn btn-danger w-100 my-4 d-flex justify-content-center align-items-center mx-4"
+                        v-if="session.isValid"
+                        type="submit"
+                        :loading="isLoading2"
+                        nativeType="submit"
+                        @click="revokeDeviceFn"
+                      >
+                        <i class="mdi mdi-lock mr-1"></i> REVOKE DEVICE
+                      </base-button>
+                      <base-button
+                        class="btn btn-outline-danger w-100 my-4 d-flex justify-content-center align-items-center mx-4"
+                        v-else
+                        type="submit"
+                        :loading="isLoading3"
+                        nativeType="submit"
+                        @click="removeRevokedDeviceFn"
+                      >
+                        <i class="mdi mdi-delete-forever mr-1"></i> REMOVE
+                        DEVICE INFORMATION
+                      </base-button>
                     </div>
                     <div v-else class="p-4">
                       <h6>
@@ -169,15 +199,6 @@
                       style="width: 120px; height: 120px;"
                     ></b-spinner>
                   </div>
-
-                  <base-button
-                    class="btn btn-danger w-100 my-4 d-flex justify-content-center align-items-center"
-                    :loading="isLoading2"
-                    nativeType="submit"
-                    @click="revokeDeviceFn"
-                  >
-                    <i class="mdi mdi-lock text-white mr-1"></i> REVOKE DEVICE
-                  </base-button>
                 </div>
               </div>
             </div>
@@ -191,7 +212,8 @@
 <script>
 import {
   GetUserSessionAPI,
-  RevokeUserSessionAPI
+  RevokeUserSessionAPI,
+  DeleteInvalidUserSessionAPI
 } from "@/services/session.service";
 import BaseButton from "../../components/BaseButton.vue";
 import moment from "moment";
@@ -206,6 +228,7 @@ export default {
     return {
       isLoading: false,
       isLoading2: false,
+      isLoading3: false,
       session: null,
       currentSession: null,
       geoData: null
@@ -233,13 +256,23 @@ export default {
     },
     revokeDeviceFn() {
       this.isLoading2 = true;
-      RevokeUserSessionAPI(this.sessionID).finally(
-        () => (this.isLoading2 = false)
-      );
+      RevokeUserSessionAPI(this.sessionID)
+        .then(() => this.getSessionInfo())
+        .finally(() => (this.isLoading2 = false));
+    },
+    removeRevokedDeviceFn() {
+      this.isLoading3 = true;
+      DeleteInvalidUserSessionAPI(this.sessionID)
+        .then(() => this.onRemovedFn())
+        .finally(() => (this.isLoading3 = false));
     },
     hideModalFn() {
       this.resetFn();
       this.$emit("onClose");
+    },
+    onRemovedFn() {
+      this.resetFn();
+      this.$emit("onRevoked");
     },
     resetFn() {
       this.isLoading = false;
