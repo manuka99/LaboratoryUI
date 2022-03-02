@@ -2,6 +2,7 @@ import Vue from "vue";
 import GlobalComponents from "./plugins/globalComponents";
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import App from "./App.vue";
+import { mixin } from "./util/mixin";
 
 // router setup
 import router from "./routes/router";
@@ -51,6 +52,8 @@ import "@/assets/css/main.css"
 
 // plugin setup
 Vue.use(GlobalComponents);
+
+Vue.mixin(mixin)
 
 /* eslint-disable no-new */
 new Vue({

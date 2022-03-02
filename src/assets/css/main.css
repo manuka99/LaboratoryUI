@@ -88,3 +88,7 @@
 .text-decoration-underline {
   text-decoration: underline;
 }
+
+.table-p td {
+  padding: 8px 10px !important;
+}

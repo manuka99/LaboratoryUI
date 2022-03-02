@@ -10,17 +10,17 @@
         </b-col>
       </b-row>
 
-      <h6 class="text-muted mb-3">
+      <h6 class="text-muted ">
         1. Account Password
       </h6>
-      <p class="text-muted font-14">
+      <p class="text-muted font-14 mb-0">
         Choose a strong password and don't reuse it for other accounts.
         <a href="#"> Learn more.</a> Changing your password will sign you out on
         your devices, with some <a href="#">exceptions</a>.
       </p>
       <div>
-        <b-row>
-          <b-col lg="6">
+        <b-row class="mt-0">
+          <b-col lg="6" class="mt-3">
             <b-form-input
               type="password"
               label="*New Password"
@@ -29,7 +29,7 @@
               v-model="raw_password"
             ></b-form-input>
           </b-col>
-          <b-col lg="6">
+          <b-col lg="6" class="mt-3">
             <b-form-input
               type="password"
               label="*Confirm New Password"
@@ -60,7 +60,7 @@
       <h6 class="text-muted mb-3">
         2. Transaction Password
       </h6>
-      <p class="text-muted font-14">
+      <p class="text-muted font-14 mb-0">
         Choose a strong password and don't reuse it for other accounts. Changing
         your transaction password will take some time to construct a
         cryptographic proof on blockchain payment channel accounts.<a href="#">
@@ -69,7 +69,7 @@
       </p>
       <div>
         <b-row>
-          <b-col lg="6">
+          <b-col lg="6" class="mt-3">
             <b-form-input
               type="password"
               label="*New Transaction Password"
@@ -78,7 +78,7 @@
               v-model="raw_tx_password"
             ></b-form-input>
           </b-col>
-          <b-col lg="6">
+          <b-col lg="6" class="mt-3">
             <b-form-input
               type="password"
               label="*Confirm New Transaction Password"
