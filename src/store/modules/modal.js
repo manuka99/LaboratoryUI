@@ -4,7 +4,7 @@ export default {
     showPasswordVerify: false,
     show2FAVerify: false,
     showMobileVerify: false,
-    showTxPasswordVerify: false
+    showTxPasswordVerify: false,
   },
   mutations: {
     SET_MODALS(state, payload) {
@@ -13,7 +13,7 @@ export default {
           "showPasswordVerify",
           "show2FAVerify",
           "showMobileVerify",
-          "showTxPasswordVerify"
+          "showTxPasswordVerify",
         ])
       );
       var newState = {
@@ -34,7 +34,7 @@ export default {
         showPasswordVerify: state.showPasswordVerify,
         show2FAVerify: state.show2FAVerify,
         showMobileVerify: state.showMobileVerify,
-        showTxPasswordVerify: state.showTxPasswordVerify
+        showTxPasswordVerify: state.showTxPasswordVerify,
       };
     }
   }

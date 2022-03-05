@@ -28,22 +28,23 @@
             /></b-tab>
             <b-tab
               title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
-              href="#blockchain-account"
+              href="#blockchain-accounts"
               lazy
             >
               <template #title>
-                <i class="mdi  mdi-key-change"></i> Blockchain Account </template
-              ><b-card-text>Tab contents 2</b-card-text></b-tab
-            >
+                <i class="mdi  mdi-key-change"></i> Blockchain Accounts
+              </template>
+              <BlockchainAccounts />
+            </b-tab>
             <b-tab
               title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
-              href="#wallet"
+              href="#blockchain-identification"
               lazy
             >
               <template #title>
-                <i class="mdi mdi-coin"></i> Crypto Wallet </template
-              ><b-card-text>Tab contents 3</b-card-text></b-tab
-            >
+                <i class="mdi mdi-coin"></i> Blockchain Identification </template
+              ><BlockchainIdentification
+            /></b-tab>
             <b-tab
               title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
               href="#payment-channels"
@@ -104,6 +105,8 @@ import Security from "./Security";
 import TwoFactorAuthentication from "./TwoFactorAuthentication";
 import SignedInDevices from "./SignedInDevices.vue";
 import PaymentChannels from "./PaymentChannels.vue";
+import BlockchainAccounts from "./BlockchainAccounts.vue";
+import BlockchainIdentification from "./BlockchainIdentification.vue";
 
 export default {
   components: {
@@ -112,15 +115,17 @@ export default {
     TwoFactorAuthentication,
     Security,
     SignedInDevices,
-    PaymentChannels
+    PaymentChannels,
+    BlockchainAccounts,
+    BlockchainIdentification
   },
   data() {
     return {
       tabIndex: 0,
       tabs: [
         "#profile",
-        "#blockchain-account",
-        "#wallet",
+        "#blockchain-accounts",
+        "#blockchain-identification",
         "#payment-channels",
         "#transactions",
         "#signed-in-devices",

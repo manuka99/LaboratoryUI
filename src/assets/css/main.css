@@ -92,3 +92,11 @@
 .table-p td {
   padding: 8px 10px !important;
 }
+
+.max-width-100 {
+  max-width: 100%;
+}
+
+.max-width-900px {
+  max-width: 900px;
+}
