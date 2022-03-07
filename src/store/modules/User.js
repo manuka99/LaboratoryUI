@@ -24,6 +24,7 @@ export default {
     nationality: null,
     address: null,
     zipCode: null,
+    transactionSignatureID: null,
     transactionPassword: null,
     imagePaths: null,
     mainAccountID: null,
@@ -70,6 +71,7 @@ export default {
       state.isLocked = payload.isLocked;
       state.phone_verified_at = payload.phone_verified_at;
       state.email_verified_at = payload.email_verified_at;
+      state.transactionSignatureID = payload.transactionSignatureID;
     },
     SET_SESSION(state, payload) {
       state.current_session = payload.current_session;
@@ -175,6 +177,7 @@ export default {
         firstName: state.firstName,
         middleName: state.middleName,
         lastName: state.lastName,
+        fullname: `${state.firstName} ${state.middleName} ${state.lastName}`,
         gender: state.gender,
         nationalID: state.nationalID,
         dateOfBirth: state.dateOfBirth,
@@ -197,7 +200,8 @@ export default {
         approvalReason: state.approvalReason,
         isLocked: state.isLocked,
         phone_verified_at: state.phone_verified_at,
-        email_verified_at: state.email_verified_at
+        email_verified_at: state.email_verified_at,
+        transactionSignatureID: state.transactionSignatureID
       };
     },
     getSessionDetails: state => {

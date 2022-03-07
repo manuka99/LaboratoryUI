@@ -36,8 +36,8 @@ export default {
   data() {
     return {
       isRegStep1: true,
-      isRegStep2: true,
-      registrationData: null
+      isRegStep2: false,
+      registrationData: {}
     };
   },
   computed: {

@@ -42,8 +42,8 @@
               <b-col lg="6" class="mt-3">
                 <b-form-input
                   type="text"
-                  label="*Channel Name"
-                  placeholder="Channel Name"
+                  label="*Blockchain Name"
+                  placeholder="Blockchain Name"
                   class="font-14 font-weight-600"
                   v-model="account_name"
                 ></b-form-input>
@@ -53,7 +53,7 @@
             <b-row>
               <b-col lg="8" class="mt-3">
                 <b-form-textarea
-                  label="Channel Description"
+                  label="Blockchain Description"
                   placeholder="Description..."
                   rows="4"
                   max-rows="8"
@@ -134,7 +134,10 @@
             <i class="mdi mdi-content-copy text-white mr-1"></i> Copy to
             Clipboard
           </base-button>
-          <div class="d-flex justify-content-center align-items-center mt-3">
+          <div
+            v-if="false"
+            class="d-flex justify-content-center align-items-center mt-3"
+          >
             <base-button
               class="btn btn-info btn-sm my-0 d-flex justify-content-center align-items-center font-14"
               type="submit"
@@ -192,7 +195,7 @@
           <base-button
             class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
             type="submit"
-            v-if="keypair != null"
+            v-if="keypair.secretKey != null"
             :loading="isLoading1"
             @click="createBlockchainAccountFn"
             nativeType="submit"
@@ -221,7 +224,10 @@ export default {
       isShowFundAccountModal: false,
       account_name: null,
       account_description: null,
-      keypair: null,
+      keypair: {
+        publicKey: null,
+        secretKey: null
+      },
       fundPublicKey: null,
       generatedKeypair: {
         publicKey: null,
@@ -262,7 +268,7 @@ export default {
       this.fundAccountModal.isShow = true;
     },
     onCloseFundAccountModalFn(data) {
-      alert(data && data.refresh ? data.refresh : "");
+      // alert(data && data.refresh ? data.refresh : "");
     },
     generateKeypairFn() {
       this.clearImportedKeypairFn();
@@ -271,12 +277,12 @@ export default {
       this.generatedKeypair.secretKey = keypair.secret();
     },
     copyToClipboardFn() {
-      let text = `Payment channel account credentials\nPublic key: ${this.keypair.publicKey}\nSecret key: ${this.keypair.secretKey}`;
+      let text = `Blockchain Account Credentials\nPublic key: ${this.keypair.publicKey}\nSecret key: ${this.keypair.secretKey}`;
       this.copyToClipboad(text);
     },
     createBlockchainAccountFn() {
       if (!this.account_name) {
-        this.$bvToast.toast("Channel account name is required", {
+        this.$bvToast.toast("Blockchain account name is required", {
           title: "ERROR! There are fields that requires your attention",
           autoHideDelay: 6000,
           appendToast: false,
@@ -285,7 +291,7 @@ export default {
           toaster: "b-toaster-bottom-right"
         });
       } else if (!this.keypair) {
-        this.$bvToast.toast("Channel account keypair is required", {
+        this.$bvToast.toast("Blockchain account keypair is required", {
           title: "ERROR! There are fields that requires your attention",
           autoHideDelay: 6000,
           appendToast: false,
@@ -321,7 +327,6 @@ export default {
     resetCreateChannelFn() {
       this.account_name = null;
       this.account_description = null;
-      this.keypair = null;
       this.generatedKeypair.publicKey = null;
       this.generatedKeypair.secretKey = null;
       this.importedKeypair.publicKey = null;

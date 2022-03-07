@@ -341,7 +341,7 @@ export default {
       this.isShowCreateAccountModal = !this.isShowCreateAccountModal;
     },
     onCloseCreateAccountModalFn(data) {
-      alert(data && data.refresh ? data.refresh : "");
+      // alert(data && data.refresh ? data.refresh : "");
       this.isShowCreateAccountModal = !this.isShowCreateAccountModal;
     },
     getAllAccountsFn() {

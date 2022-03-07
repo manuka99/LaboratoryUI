@@ -110,7 +110,12 @@ import { Activate2FAAPI } from "@/services/user.service";
 export default {
   components: {},
   props: {
-    registrationData: Object
+    registrationData: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
   },
   data() {
     return {

@@ -22,7 +22,10 @@
               lazy
             >
               <template #title>
-                <i class="mdi mdi-account-check"></i> User Profile
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-account-card-details font-18 mr-1"></i> User
+                  Profile
+                </div>
               </template>
               <Profile
             /></b-tab>
@@ -32,7 +35,10 @@
               lazy
             >
               <template #title>
-                <i class="mdi  mdi-key-change"></i> Blockchain Accounts
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-key-change font-16 mr-1"></i> Blockchain
+                  Accounts
+                </div>
               </template>
               <BlockchainAccounts />
             </b-tab>
@@ -42,34 +48,22 @@
               lazy
             >
               <template #title>
-                <i class="mdi mdi-coin"></i> Blockchain Identification </template
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-account-check font-20"></i> Blockchain
+                  Identification
+                </div> </template
               ><BlockchainIdentification
             /></b-tab>
-            <b-tab
-              title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
-              href="#payment-channels"
-              lazy
-            >
-              <template #title>
-                <i class="mdi mdi-cube-outline"></i> Payment Channels </template
-              ><PaymentChannels
-            /></b-tab>
-            <b-tab
-              title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
-              href="#transactions"
-              lazy
-            >
-              <template #title>
-                <i class="mdi mdi-file-document"></i>Blockchain Transactions </template
-              ><b-card-text>Tab contents 3</b-card-text></b-tab
-            >
             <b-tab
               title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
               lazy
               href="#signed-in-devices"
             >
               <template #title>
-                <i class="mdi mdi-cellphone-link"></i> Signed In Devices </template
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-cellphone-link font-18 mr-1"></i> Signed In
+                  Devices
+                </div> </template
               ><SignedInDevices
             /></b-tab>
             <b-tab
@@ -78,18 +72,34 @@
               href="#two-factor-authorization"
             >
               <template #title>
-                <i class="mdi mdi-cellphone-android"></i> Two Factor
-                Authentication </template
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-cellphone-android font-18"></i> Two Factor
+                  Authentication
+                </div> </template
               ><TwoFactorAuthentication
             /></b-tab>
             <b-tab
               title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
               lazy
-              href="#security"
+              href="#transaction-security"
             >
               <template #title>
-                <i class="mdi mdi-security"></i> Security </template
-              ><Security
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-playlist-check font-22"></i>Transaction
+                  Security
+                </div> </template
+              ><TransactionSecurity
+            /></b-tab>
+            <b-tab
+              title-link-class="py-3 my-1 font-15 font-weight-600 text-muted text-nowrap"
+              lazy
+              href="#account-security"
+            >
+              <template #title>
+                <div class="d-flex justify-content-start align-items-center">
+                  <i class="mdi mdi-security font-16"></i> Account Security
+                </div> </template
+              ><AccountSecurity
             /></b-tab>
           </b-tabs>
         </b-card>
@@ -101,21 +111,21 @@
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
 import Profile from "./Profile";
-import Security from "./Security";
-import TwoFactorAuthentication from "./TwoFactorAuthentication";
-import SignedInDevices from "./SignedInDevices.vue";
-import PaymentChannels from "./PaymentChannels.vue";
 import BlockchainAccounts from "./BlockchainAccounts.vue";
 import BlockchainIdentification from "./BlockchainIdentification.vue";
+import SignedInDevices from "./SignedInDevices.vue";
+import TwoFactorAuthentication from "./TwoFactorAuthentication";
+import TransactionSecurity from "./TransactionSecurity.vue";
+import AccountSecurity from "./AccountSecurity";
 
 export default {
   components: {
     Layout,
     Profile,
     TwoFactorAuthentication,
-    Security,
+    AccountSecurity,
     SignedInDevices,
-    PaymentChannels,
+    TransactionSecurity,
     BlockchainAccounts,
     BlockchainIdentification
   },
@@ -130,7 +140,8 @@ export default {
         "#transactions",
         "#signed-in-devices",
         "#two-factor-authorization",
-        "#security"
+        "#transaction-security",
+        "#account-security"
       ]
     };
   },

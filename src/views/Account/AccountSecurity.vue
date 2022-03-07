@@ -13,7 +13,7 @@
       <h6 class="text-muted ">
         1. Account Password
       </h6>
-      <p class="text-muted font-14 mb-0">
+      <p class="text-muted font-15 mb-0">
         Choose a strong password and don't reuse it for other accounts.
         <a href="#"> Learn more.</a> Changing your password will sign you out on
         your devices, with some <a href="#">exceptions</a>.
@@ -25,7 +25,7 @@
               type="password"
               label="*New Password"
               placeholder="New Password"
-              class="font-14 font-weight-600"
+              class="font-15 font-weight-600"
               v-model="raw_password"
             ></b-form-input>
           </b-col>
@@ -34,77 +34,35 @@
               type="password"
               label="*Confirm New Password"
               placeholder="Confirm New Password"
-              class="font-14 font-weight-600"
+              class="font-15 font-weight-600"
               v-model="confirm_raw_password"
             ></b-form-input>
           </b-col>
         </b-row>
       </div>
-      <h6 class="text-muted font-14 mt-3">Password strength:</h6>
-      <p class="font-14">
+      <h6 class="text-muted font-15 mt-3">Password strength:</h6>
+      <p class="font-15">
         Use at least 8 characters. Don’t use a password from another site, or
         something too obvious like your pet’s name. <a href="#">Why?</a>
       </p>
 
       <base-button
-        class="btn btn-primary mt-0 d-flex justify-content-center align-items-center font-14"
+        class="btn btn-primary mt-0 d-flex justify-content-center align-items-center font-15"
         type="submit"
         @click="changePwdFn"
         :loading="isLoading1"
+        :disabled="!raw_password || raw_password.length < 8 || raw_password != confirm_raw_password"
         nativeType="submit"
       >
         <i class="mdi mdi-lock text-white mr-1"></i> Change Password
       </base-button>
 
       <hr class="my-4" />
-      <h6 class="text-muted mb-3">
-        2. Transaction Password
-      </h6>
-      <p class="text-muted font-14 mb-0">
-        Choose a strong password and don't reuse it for other accounts. Changing
-        your transaction password will take some time to construct a
-        cryptographic proof on blockchain payment channel accounts.<a href="#">
-          Learn more</a
-        >
-      </p>
-      <div>
-        <b-row>
-          <b-col lg="6" class="mt-3">
-            <b-form-input
-              type="password"
-              label="*New Transaction Password"
-              placeholder="New Transaction Password"
-              class="font-14 font-weight-600"
-              v-model="raw_tx_password"
-            ></b-form-input>
-          </b-col>
-          <b-col lg="6" class="mt-3">
-            <b-form-input
-              type="password"
-              label="*Confirm New Transaction Password"
-              placeholder="Confirm New Transaction Password"
-              class="font-14 font-weight-600"
-              v-model="confirm_tx_raw_password"
-            ></b-form-input>
-          </b-col>
-        </b-row>
-      </div>
-      <base-button
-        class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
-        type="submit"
-        @click="changeTxPwdFn"
-        :loading="isLoading2"
-        nativeType="submit"
-      >
-        <i class="mdi mdi-lock text-white mr-1"></i> Change Transaction Password
-      </base-button>
-
-      <hr class="my-4" />
 
       <h6 class="text-muted mb-3">
-        3. Change Phone Number/SMS Authentication
+        2. Change Phone Number/SMS Authentication
       </h6>
-      <p class="text-muted font-14">
+      <p class="text-muted font-15">
         All users must verify their identity by using the account's registered
         phone number to authenticate. Therefore, before using any service, all
         users must authenticate and register a mobile number. This account is
@@ -116,7 +74,7 @@
         >
       </p>
       <a
-        class="w-auto btn btn-danger d-inline-flex justify-content-center align-items-center font-14"
+        class="w-auto btn btn-danger d-inline-flex justify-content-center align-items-center font-15"
         href="/activate-phone"
         target="_blank"
       >
@@ -127,15 +85,15 @@
       <hr class="my-4" />
 
       <h6 class="text-muted mb-3">
-        4. Primary Email Address
+        3. Primary Email Address
       </h6>
-      <p class="text-muted font-14">
+      <p class="text-muted font-15">
         Your primary email is used to reach you in case we detect unusual
         activity in your account or you accidentally get locked out. Your
         primary email will be used as the recovery email address which helps you
         to reset your password if:
       </p>
-      <ul class="text-muted font-14">
+      <ul class="text-muted font-15">
         <li>
           You forget your password
         </li>
@@ -148,7 +106,7 @@
       </ul>
       <div
         v-if="user && user.email"
-        class="bg-secondary text-white rounded d-inline-block font-14 font-weight-600 mb-1 py-2 px-3"
+        class="bg-secondary text-white rounded d-inline-block font-15 font-weight-600 mb-1 py-2 px-3"
       >
         <div v-if="user.email_verified_at">
           <span>{{ user.email }}</span>
@@ -159,8 +117,7 @@
         </div>
         <div v-else>
           <span>{{ user.email }}</span>
-          <b-badge class="cursor-pointer ml-2  py-1 px-2 bg-white text-danger"
-            >
+          <b-badge class="cursor-pointer ml-2  py-1 px-2 bg-white text-danger">
             <i class="mdi mdi-cancel"></i>
             Not Verified</b-badge
           >
@@ -171,7 +128,7 @@
           type="text"
           v-if="showEmailInput"
           placeholder="New Primary Email"
-          class="font-14 font-weight-600 my-2 mr-2 w-auto"
+          class="font-15 font-weight-600 my-2 mr-2 w-auto"
           v-model="temp_email"
         ></b-form-input>
         <base-button
@@ -179,7 +136,7 @@
           type="submit"
           v-if="temp_email"
           @click="sendEmailVerificationCodeFn"
-          :loading="isLoading3"
+          :loading="isLoading2"
           size="sm"
           nativeType="submit"
         >
@@ -187,7 +144,10 @@
         </base-button>
         <base-button
           v-if="showEmailInput"
-          @click="showEmailInput = false"
+          @click="
+            showEmailInput = false;
+            temp_email = null;
+          "
           type="submit"
           class="btn btn-sm btn-outline-danger my-2 mr-2 font-12 font-weight-600"
           >Cancel</base-button
@@ -197,7 +157,7 @@
         <span
           v-if="!showEmailInput"
           @click="showEmailInput = true"
-          class="text-primary text-decoration-underline cursor-pointer mb-1 ml-1 font-14 font-weight-600"
+          class="text-primary text-decoration-underline cursor-pointer mb-1 ml-1 font-15 font-weight-600"
           >Change primary email?</span
         >
       </div>
@@ -231,11 +191,8 @@ export default {
       showEmailInput: false,
       isLoading1: false,
       isLoading2: false,
-      isLoading3: false,
       raw_password: null,
       confirm_raw_password: null,
-      raw_tx_password: null,
-      confirm_tx_raw_password: null,
       temp_email: null
     };
   },
@@ -268,20 +225,13 @@ export default {
         })
         .finally(() => (this.isLoading1 = false));
     },
-    changeTxPwdFn() {
-      this.isLoading2 = true;
-      const payload = {
-        raw_tx_password: this.raw_tx_password
-      };
-      UpdateTxPasswordAPI(payload).finally(() => (this.isLoading2 = false));
-    },
     sendEmailVerificationCodeFn() {
-      this.isLoading3 = true;
+      this.isLoading2 = true;
       const payload = {
         temp_email: this.temp_email
       };
       VerifyAndUpdateEmailRequestAPI(payload).finally(
-        () => (this.isLoading3 = false)
+        () => (this.isLoading2 = false)
       );
     }
   }

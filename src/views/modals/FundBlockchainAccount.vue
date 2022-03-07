@@ -15,7 +15,7 @@
           class="mb-0 text-white"
           style="font-size: clamp(15px, 3.5vw, 20px);"
         >
-          <i class="mdi  mdi-key-change"></i> Blockchain Account Funding
+          <i class="mdi mdi-coin"></i> Blockchain Account Funding
         </span>
         <div class="cursor-pointer" @click="hideModalFn">
           <i class="mdi mdi-close-box-outline font-32 text-white"></i>
@@ -84,9 +84,11 @@ export default {
   props: {
     value: {
       type: Object,
-      default: {
-        destination: "",
-        isShow: false
+      default: function() {
+        return {
+          destination: "",
+          isShow: false
+        };
       }
     },
     destination: null
