@@ -56,14 +56,27 @@ export const UpdateAccountPasswordAPI = payload => {
   return Api().patch(`/general/update-password`, payload);
 };
 
-export const UpdateTxPasswordAPI = payload => {
-  return Api().patch(`/general/update-tx-password`, payload);
-};
-
 export const Revoke2FAAPI = payload => {
   return Api().post(`/general/revoke2fa`, payload);
 };
 
 export const VerifyAndUpdateEmailRequestAPI = payload => {
   return Api().post(`/general/verify-email-request`, payload);
+};
+
+// transaction
+export const GetTxSecurityInfoAPI = () => {
+  return Api().get(`/general/tx-security`);
+};
+
+export const UpdateTxPasswordAPI = payload => {
+  return Api().patch(`/general/tx-password`, payload);
+};
+
+export const UpdateTxSignatureAPI = payload => {
+  return Api().patch(`/general/tx-signature`, payload);
+};
+
+export const ResetTransactionSignatureAPI = () => {
+  return Api().delete(`/general/reset-tx-signature`);
 };

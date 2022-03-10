@@ -54,7 +54,8 @@
                   </h5>
                   <h6 style="font-size: 12px; " class="text-muted mb-3">
                     After request verification code, a six-digit verification
-                    code will be sent to the device ({{ user.tempPhone }}).
+                    code will be sent to the device
+                    {{ user.phone && "(" + user.phone + ")" }}.
                   </h6>
 
                   <input

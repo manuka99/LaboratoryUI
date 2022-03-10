@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-card
-      v-if="user && user.nationalID && !isLoading"
+      v-if="!isLoading && !mainError.status"
       header-bg-variant="secondary"
     >
       <b-row align-v="center" slot="header">
@@ -49,7 +49,9 @@
           <div class="mb-2 w-100 bg-info text-light p-3 rounded">
             <p class="font-14 font-weight-600 m-0 p-0">
               Transaction Signature ID:
-              <span class="font-weight-bold ml-1">{{ txSignatureID }}</span>
+            </p>
+            <p class="font-weight-bold font-13 mt-1 mb-0 p-0">
+              {{ txSignatureID }}
             </p>
           </div>
           <span
@@ -78,7 +80,7 @@
             <base-button
               class="btn btn-light btn-sm my-0 d-flex justify-content-center align-items-center py-0 font-12 font-weight-600 px-2 ml-2"
               type="submit"
-              v-if="keypair.secretKey != null"
+              v-if="keypair.privateKey != null"
               @click="clearGeneratedKeypairFn()"
               nativeType="submit"
             >
@@ -87,14 +89,18 @@
             </base-button>
           </div>
 
-          <div v-if="keypair.secretKey != null" class="mb-3 w-100">
+          <div v-if="keypair.privateKey != null" class="mb-3 w-100">
             <p class="font-14 font-weight-600 mt-3 mb-2 p-0">
-              Public Key :
-              <span class="text-muted">{{ keypair.publicKey }}</span>
+              1. PUBLIC KEY :
+            </p>
+            <p class="text-secondary font-13 font-weight-600">
+              {{ keypair.publicKey }}
             </p>
             <p class="font-14 font-weight-600 mb-2 p-0">
-              Secret Key :
-              <span class="text-muted">{{ keypair.secretKey }}</span>
+              2. PRIVATE KEY :
+            </p>
+            <p class="text-secondary font-13 font-weight-600">
+              {{ keypair.privateKey }}
             </p>
             <p class="font-14 font-weight-600 mb-2 p-0">
               <span class="text-danger"
@@ -115,7 +121,7 @@
           <base-button
             class="btn btn-warning btn-sm mt-0 d-flex justify-content-center align-items-center font-14 text-light"
             type="submit"
-            v-if="keypair.secretKey != null"
+            v-if="keypair.privateKey != null"
             @click="copyToClipboardFn"
             nativeType="submit"
           >
@@ -137,6 +143,7 @@
               type="submit"
               :loading="isLoading1"
               @click="CreateTransactionSignatureFn"
+              :disabled="!current_tx_password"
               nativeType="submit"
             >
               <i class="mdi mdi-lock text-white mr-1"></i> Save Transaction
@@ -160,7 +167,7 @@
       <div>
         <div v-if="txPasswordHash">
           <b-row class="mb-2">
-            <b-col lg="6" class="mt-0" v-if="showInputTxPWD">
+            <b-col md="6" class="mt-0" v-if="showInputTxPWD">
               <b-form-input
                 type="password"
                 label="*Current Transaction Password"
@@ -169,17 +176,18 @@
                 v-model="raw_old_tx_password"
               ></b-form-input>
             </b-col>
-            <b-col lg="6" class="mt-0" v-else>
-              <b-form-input
+            <b-col lg="10" class="mt-0" v-if="!showInputTxPWD && txSignatureID">
+              <b-form-textarea
+                rows="8"
                 type="password"
                 label="*Transaction Signature Key"
                 placeholder="Transaction Signature Key"
                 class="font-14 font-weight-600"
                 v-model="raw_tx_signature_key"
-              ></b-form-input>
+              ></b-form-textarea>
             </b-col>
           </b-row>
-          <b-row class="mb-3">
+          <b-row class="mb-3" v-if="txSignatureID">
             <b-col lg="6" class="mt-0">
               <span
                 @click="
@@ -187,7 +195,7 @@
                   raw_old_tx_password = null;
                   raw_tx_signature_key = null;
                 "
-                class="text-danger text-decoration-underline cursor-pointer mb-1 ml-1 font-15 font-weight-600"
+                class="text-danger text-decoration-underline cursor-pointer mb-1 ml-1 font-14 font-weight-600"
               >
                 {{
                   showInputTxPWD
@@ -199,7 +207,7 @@
           </b-row>
         </div>
         <b-row>
-          <b-col lg="6" class="mt-0">
+          <b-col md="6" class="mt-0">
             <b-form-input
               type="password"
               label="*New Transaction Password"
@@ -208,7 +216,7 @@
               v-model="raw_tx_password"
             ></b-form-input>
           </b-col>
-          <b-col lg="6" class="mt-2 m-md-0">
+          <b-col md="6" class="mt-2 mt-md-0">
             <b-form-input
               type="password"
               label="*Confirm New Transaction Password"
@@ -218,6 +226,19 @@
             ></b-form-input>
           </b-col>
         </b-row>
+      </div>
+      <div>
+        <p
+          class="text-danger my-3 font-14 font-weight-bold"
+          v-if="
+            confirm_tx_raw_password &&
+              raw_tx_password &&
+              confirm_tx_raw_password.length > 0 &&
+              raw_tx_password != confirm_tx_raw_password
+          "
+        >
+          * Passwords do not match
+        </p>
       </div>
       <base-button
         class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
@@ -235,9 +256,39 @@
       </base-button>
 
       <hr class="my-4" />
+      <div v-if="txPasswordHash">
+        <h6 class="text-muted mb-3">
+          3. Force-reset Transaction Security
+        </h6>
+        <p class="font-14 text-danger font-weight-bold">
+          Warning : You cannot restore previous state and will permanently
+          remove all your blockchain accounts, this will effect your pending
+          transactions.
+          <a href="#"> Learn more.</a>
+        </p>
+
+        <p class="font-15 text-muted">
+          This action will clear your transaction signature, password and all
+          blockchain accounts registered for your account. If you have the
+          keypair of these blockchain accounts, then you can import them latter.
+        </p>
+
+        <base-button
+          class="btn btn-danger mt-3 d-flex justify-content-center align-items-center font-14"
+          type="submit"
+          @click="forceResetTXSecurityFn"
+          :loading="isLoading"
+          nativeType="submit"
+        >
+          <i class="mdi mdi-lock text-white mr-1"></i> Force Reset Transaction
+          Signature
+        </base-button>
+
+        <hr class="my-4" />
+      </div>
     </b-card>
     <div
-      v-else
+      v-if="isLoading"
       style="min-height: 400px;"
       class="d-flex justify-content-center align-items-center"
     >
@@ -247,18 +298,42 @@
         style="width: 120px; height: 120px;"
       ></b-spinner>
     </div>
+    <div
+      v-if="mainError.status"
+      style="min-height: 280px;"
+      class="d-flex justify-content-center align-items-center"
+    >
+      <custom-error
+        :code="mainError.code"
+        :title="mainError.title"
+        :description="mainError.description"
+        :emitBtnTxt="'Refresh and try again'"
+        :emitFn="'onEmit'"
+        @onEmit="initFn"
+      ></custom-error>
+    </div>
   </div>
 </template>
 
 <script>
+import {
+  GetTxSecurityInfoAPI,
+  UpdateTxPasswordAPI,
+  UpdateTxSignatureAPI,
+  ResetTransactionSignatureAPI
+} from "@/services/user.service";
+import CustomError from "../Errors/CustomError.vue";
+import { CreateRSAKeyPair } from "@/services/rsa.service";
 import { mapGetters } from "vuex";
-import { Keypair } from "stellar-sdk";
-import { CreatePaymentChannelAccountAPI } from "@/services/payment.channel.service";
 
 export default {
+  components: {
+    CustomError
+  },
   data() {
     return {
       isLoading: false,
+      CustomErrorisLoading: false,
       isLoading1: false,
       showGenerateKeypair: false,
       txSignatureID: null,
@@ -266,14 +341,20 @@ export default {
       txPasswordHash: null,
       keypair: {
         publicKey: null,
-        secretKey: null
+        privateKey: null
       },
       isLoading2: false,
+      isLoading3: false,
       showInputTxPWD: true,
       raw_old_tx_password: null,
       raw_tx_signature_key: null,
       raw_tx_password: null,
-      confirm_tx_raw_password: null
+      confirm_tx_raw_password: null,
+      mainError: {
+        status: false,
+        code: false,
+        description: null
+      }
     };
   },
   computed: {
@@ -282,25 +363,72 @@ export default {
     })
   },
   mounted() {
-    this.getTransactionSignatureAndPasswordHashFn();
+    this.initFn();
   },
   methods: {
-    getTransactionSignatureAndPasswordHashFn() {
-      // this.txSignatureID =
-      // "GAZNE5YYM7RPTOQODT3ORQDEAVRURMTSRE5RHBUVU2ISVKDB4AMAVMKD";
-      this.txPasswordHash = "";
+    initFn() {
       this.isLoading = false;
-      CreatePaymentChannelAccountAPI()
-        .then(() => this.clearGeneratedKeypairFn())
+      this.CustomErrorisLoading = false;
+      this.isLoading1 = false;
+      this.showGenerateKeypair = false;
+      this.txSignatureID = null;
+      this.current_tx_password = null;
+      this.txPasswordHash = null;
+      this.keypair = {
+        publicKey: null,
+        privateKey: null
+      };
+      this.isLoading2 = false;
+      this.isLoading3 = false;
+      this.showInputTxPWD = true;
+      this.raw_old_tx_password = null;
+      this.raw_tx_signature_key = null;
+      this.raw_tx_password = null;
+      this.confirm_tx_raw_password = null;
+      this.mainError = {
+        status: false,
+        code: false,
+        description: null
+      };
+      this.getTransactionSignatureAndPasswordHashFn();
+    },
+    getTransactionSignatureAndPasswordHashFn() {
+      this.isLoading = true;
+      GetTxSecurityInfoAPI()
+        .then(response => {
+          const {
+            data: {
+              data: { transactionSignatureID, transactionPasswordHash }
+            }
+          } = response;
+          this.txSignatureID = transactionSignatureID;
+          this.txPasswordHash = transactionPasswordHash;
+        })
+        .catch(({ response }) => {
+          if (response) {
+            this.mainError.code = response.status;
+            this.mainError.description = response.data.data.message;
+          } else {
+            this.mainError.code = 404;
+            this.mainError.description = error.message;
+          }
+          this.mainError.status = true;
+        })
         .finally(() => (this.isLoading = false));
     },
-    generateKeypairFn() {
-      let keypair = Keypair.random();
-      this.keypair.publicKey = keypair.publicKey();
-      this.keypair.secretKey = keypair.secret();
+    async generateKeypairFn() {
+      let keypair = await CreateRSAKeyPair();
+      console.log(keypair);
+      if (keypair) {
+        this.keypair.publicKey = keypair.publicKey;
+        this.keypair.privateKey = keypair.privateKey;
+      } else {
+        this.keypair.publicKey = null;
+        this.keypair.privateKey = null;
+      }
     },
     copyToClipboardFn() {
-      let text = `Transaction Signature Credentials For ${this.user.fullname} \n\n***** WARNING: DO NOT SHARE THIS ******\n\nPublic key: ${this.keypair.publicKey}\nSecret key: ${this.keypair.secretKey}`;
+      let text = `Transaction Signature Credentials For ${this.user.fullname} \n\n***** WARNING: DO NOT SHARE THIS ******\n\n1. PUBLIC KEY: \n\n${this.keypair.publicKey}\n\n2. PRIVATE KEY: \n\n${this.keypair.privateKey}`;
       this.copyToClipboad(text);
     },
     CreateTransactionSignatureFn() {
@@ -319,13 +447,15 @@ export default {
         current_tx_password: this.current_tx_password,
         keypair: this.keypair
       };
-      CreatePaymentChannelAccountAPI(payload)
-        .then(() => this.clearGeneratedKeypairFn())
+      UpdateTxSignatureAPI(payload)
+        .then(() => {
+          this.initFn();
+        })
         .finally(() => (this.isLoading1 = false));
     },
     clearGeneratedKeypairFn() {
       this.keypair.publicKey = null;
-      this.keypair.secretKey = null;
+      this.keypair.privateKey = null;
     },
     changeTxPwdFn() {
       if (
@@ -349,7 +479,18 @@ export default {
         raw_tx_signature_key: this.raw_tx_signature_key,
         raw_tx_password: this.raw_tx_password
       };
-      UpdateTxPasswordAPI(payload).finally(() => (this.isLoading2 = false));
+      UpdateTxPasswordAPI(payload)
+        .then(() => this.initFn())
+        .finally(() => (this.isLoading2 = false));
+    },
+    forceResetTXSecurityFn() {
+      this.isLoading3 = true;
+      const payload = {
+        raw_old_tx_password: this.raw_old_tx_password,
+        raw_tx_signature_key: this.raw_tx_signature_key,
+        raw_tx_password: this.raw_tx_password
+      };
+      ResetTransactionSignatureAPI(payload).finally(() => this.initFn());
     }
   }
 };
