@@ -35,12 +35,10 @@
       </p>
 
       <div v-if="!txPasswordHash">
-        <p class="font-15 font-weight-600 mb-2 p-0">
-          <span class="text-danger"
-            >In order to create a transaction signature you must have a
-            transaction password. First create your transaction password and
-            then create your transaction signature.
-          </span>
+        <p class="font-15 font-weight-bold text-danger mb-2 p-0">
+          In order to create a transaction signature you must have a transaction
+          password. First create your transaction password and then create your
+          transaction signature.
         </p>
       </div>
 
@@ -102,7 +100,7 @@
             <p class="text-secondary font-13 font-weight-600">
               {{ keypair.privateKey }}
             </p>
-            <p class="font-14 font-weight-600 mb-2 p-0">
+            <p class="font-15 font-weight-bold mb-2 p-0">
               <span class="text-danger"
                 >This is the last time you will see the signature. Therefore,
                 make sure you save it securely. Once saved, changing signature
@@ -154,108 +152,117 @@
       </div>
 
       <hr class="my-4" />
-      <h6 class="text-muted mb-3">
-        2. Transaction Password
-      </h6>
-      <p class="font-15">
-        Choose a strong password and don't reuse it for other accounts.
-        <a href="#"> Learn more.</a>
-        Use at least 8 characters. Don’t use a password from another site, or
-        something too obvious like your pet’s name.
-      </p>
-
+      <!-- tx pwd -->
       <div>
-        <div v-if="txPasswordHash">
-          <b-row class="mb-2">
-            <b-col md="6" class="mt-0" v-if="showInputTxPWD">
+        <h6 class="text-muted mb-3">
+          2. Transaction Password
+        </h6>
+        <p class="font-15">
+          Choose a strong password and don't reuse it for other accounts.
+          <a href="#"> Learn more.</a>
+          Use at least 8 characters. Don’t use a password from another site, or
+          something too obvious like your pet’s name.
+        </p>
+
+        <div>
+          <div v-if="txPasswordHash">
+            <b-row class="mb-2">
+              <b-col md="6" class="mt-0" v-if="showInputTxPWD">
+                <b-form-input
+                  type="password"
+                  label="*Current Transaction Password"
+                  placeholder="Current Transaction Password"
+                  class="font-14 font-weight-600"
+                  v-model="raw_old_tx_password"
+                ></b-form-input>
+              </b-col>
+              <b-col
+                lg="10"
+                class="mt-0"
+                v-if="!showInputTxPWD && txSignatureID"
+              >
+                <b-form-textarea
+                  rows="8"
+                  type="password"
+                  label="*Transaction Signature Key"
+                  placeholder="Transaction Signature Key"
+                  class="font-14 font-weight-600"
+                  v-model="raw_tx_signature_key"
+                ></b-form-textarea>
+              </b-col>
+            </b-row>
+            <b-row class="mb-3" v-if="txSignatureID">
+              <b-col lg="6" class="mt-0">
+                <span
+                  @click="
+                    showInputTxPWD = !showInputTxPWD;
+                    raw_old_tx_password = null;
+                    raw_tx_signature_key = null;
+                  "
+                  class="text-danger text-decoration-underline cursor-pointer mb-1 ml-1 font-14 font-weight-600"
+                >
+                  {{
+                    showInputTxPWD
+                      ? "Have transaction signature key?"
+                      : "Enter transaction password?"
+                  }}</span
+                >
+              </b-col>
+            </b-row>
+          </div>
+          <b-row>
+            <b-col md="6" class="mt-0">
               <b-form-input
                 type="password"
-                label="*Current Transaction Password"
-                placeholder="Current Transaction Password"
+                label="*New Transaction Password"
+                placeholder="New Transaction Password"
                 class="font-14 font-weight-600"
-                v-model="raw_old_tx_password"
+                v-model="raw_tx_password"
               ></b-form-input>
             </b-col>
-            <b-col lg="10" class="mt-0" v-if="!showInputTxPWD && txSignatureID">
-              <b-form-textarea
-                rows="8"
+            <b-col md="6" class="mt-2 mt-md-0">
+              <b-form-input
                 type="password"
-                label="*Transaction Signature Key"
-                placeholder="Transaction Signature Key"
+                label="*Confirm New Transaction Password"
+                placeholder="Confirm New Transaction Password"
                 class="font-14 font-weight-600"
-                v-model="raw_tx_signature_key"
-              ></b-form-textarea>
-            </b-col>
-          </b-row>
-          <b-row class="mb-3" v-if="txSignatureID">
-            <b-col lg="6" class="mt-0">
-              <span
-                @click="
-                  showInputTxPWD = !showInputTxPWD;
-                  raw_old_tx_password = null;
-                  raw_tx_signature_key = null;
-                "
-                class="text-danger text-decoration-underline cursor-pointer mb-1 ml-1 font-14 font-weight-600"
-              >
-                {{
-                  showInputTxPWD
-                    ? "Have transaction signature key?"
-                    : "Enter transaction password?"
-                }}</span
-              >
+                v-model="confirm_tx_raw_password"
+              ></b-form-input>
             </b-col>
           </b-row>
         </div>
-        <b-row>
-          <b-col md="6" class="mt-0">
-            <b-form-input
-              type="password"
-              label="*New Transaction Password"
-              placeholder="New Transaction Password"
-              class="font-14 font-weight-600"
-              v-model="raw_tx_password"
-            ></b-form-input>
-          </b-col>
-          <b-col md="6" class="mt-2 mt-md-0">
-            <b-form-input
-              type="password"
-              label="*Confirm New Transaction Password"
-              placeholder="Confirm New Transaction Password"
-              class="font-14 font-weight-600"
-              v-model="confirm_tx_raw_password"
-            ></b-form-input>
-          </b-col>
-        </b-row>
-      </div>
-      <div>
-        <p
-          class="text-danger my-3 font-14 font-weight-bold"
-          v-if="
-            confirm_tx_raw_password &&
-              raw_tx_password &&
-              confirm_tx_raw_password.length > 0 &&
+        <div>
+          <p
+            class="text-danger my-3 font-14 font-weight-bold"
+            v-if="
+              confirm_tx_raw_password &&
+                raw_tx_password &&
+                confirm_tx_raw_password.length > 0 &&
+                raw_tx_password != confirm_tx_raw_password
+            "
+          >
+            * Passwords do not match
+          </p>
+        </div>
+        <base-button
+          class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
+          type="submit"
+          @click="changeTxPwdFn"
+          :loading="isLoading2"
+          :disabled="
+            !raw_tx_password ||
+              raw_tx_password.length < 8 ||
               raw_tx_password != confirm_tx_raw_password
           "
+          nativeType="submit"
         >
-          * Passwords do not match
-        </p>
+          <i class="mdi mdi-lock text-white mr-1"></i>
+          {{ txPasswordHash ? "Change " : "Create " }}
+          Transaction Password
+        </base-button>
+        <hr class="my-4" />
       </div>
-      <base-button
-        class="btn btn-primary mt-3 d-flex justify-content-center align-items-center font-14"
-        type="submit"
-        @click="changeTxPwdFn"
-        :loading="isLoading2"
-        :disabled="
-          !raw_tx_password ||
-            raw_tx_password.length < 8 ||
-            raw_tx_password != confirm_tx_raw_password
-        "
-        nativeType="submit"
-      >
-        <i class="mdi mdi-lock text-white mr-1"></i> Change Transaction Password
-      </base-button>
 
-      <hr class="my-4" />
       <div v-if="txPasswordHash">
         <h6 class="text-muted mb-3">
           3. Force-reset Transaction Security
@@ -287,6 +294,7 @@
         <hr class="my-4" />
       </div>
     </b-card>
+    <!-- spinner -->
     <div
       v-if="isLoading"
       style="min-height: 400px;"
@@ -298,6 +306,7 @@
         style="width: 120px; height: 120px;"
       ></b-spinner>
     </div>
+    <!-- main error -->
     <div
       v-if="mainError.status"
       style="min-height: 280px;"
@@ -484,6 +493,10 @@ export default {
         .finally(() => (this.isLoading2 = false));
     },
     forceResetTXSecurityFn() {
+      let result = window.confirm(
+        "Are you sure you want to reset transaction security? This will clear your transaction signature, password and remove all your existing blockchain accounts and will effect pending transactions."
+      );
+      if (!result) return;
       this.isLoading3 = true;
       const payload = {
         raw_old_tx_password: this.raw_old_tx_password,

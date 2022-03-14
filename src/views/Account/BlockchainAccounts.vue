@@ -1,6 +1,10 @@
 <template>
   <div>
-    <b-card v-if="user && user.nationalID" header-bg-variant="secondary">
+    <b-card
+      v-if="!isLoading && !mainError.status"
+      header-bg-variant="secondary"
+      style="min-height: 600px"
+    >
       <b-row align-v="center" slot="header">
         <b-col cols="8">
           <h5 class="mb-0 text-white font-18">
@@ -26,155 +30,172 @@
         >
       </p>
 
-      <button
-        @click="showCreateAccountModalFn"
-        class="btn btn-outline-primary font-15"
-      >
-        Create Blockchain Account
-      </button>
+      <!-- accounts -->
+      <div v-if="txSignatureID">
+        <button
+          @click="showCreateAccountModalFn"
+          class="btn btn-outline-primary font-15"
+        >
+          Create Blockchain Account
+        </button>
 
-      <div class="mt-4 d-flex flex-column justify-content-start flex-wrap">
-        <div class="d-flex align-items-end">
-          <b-form-checkbox switch size="lg"></b-form-checkbox>
-          <span class="mr-2 font-14 text-mutted font-weight-600"
-            >Wallet Accounts</span
-          >
-        </div>
-        <div class="d-flex align-items-end mt-2">
-          <b-form-checkbox switch size="lg"></b-form-checkbox>
-          <span class="mr-2 font-14 text-mutted font-weight-600"
-            >Payment Channels</span
-          >
-        </div>
-        <div class="d-flex align-items-end mt-2">
-          <b-form-checkbox switch size="lg"></b-form-checkbox>
-          <span class="mr-2 font-14 text-mutted font-weight-600"
-            >Unassigned Accounts</span
-          >
-        </div>
-      </div>
-
-      <b-row>
-        <b-col class="mt-3">
-          <div class="table-card">
-            <b-table
-              hover
-              sticky-header
-              no-border-collapse
-              responsive
-              :items="items"
-              :fields="fields"
-              class="font-14 font-weight-600 mb-0"
-              style="max-height: 580px; max-width: 100%"
-              head-variant="info"
-              :busy="isLoading3"
-              @row-clicked="toggleRowDetails"
-              select-mode="single"
-              ref="selectableTable"
-              show-empty
-              selected-variant="primary"
-              selectable
+        <div class="mt-4 d-flex flex-column justify-content-start flex-wrap">
+          <div class="d-flex align-items-end">
+            <b-form-checkbox switch size="lg"></b-form-checkbox>
+            <span class="mr-2 font-14 text-mutted font-weight-600"
+              >Wallet Accounts</span
             >
-              <template #table-busy>
-                <div class="text-center text-danger my-2">
-                  <b-spinner class="align-middle"></b-spinner>
-                  <strong>Loading...</strong>
-                </div>
-              </template>
+          </div>
+          <div class="d-flex align-items-end mt-2">
+            <b-form-checkbox switch size="lg"></b-form-checkbox>
+            <span class="mr-2 font-14 text-mutted font-weight-600"
+              >Payment Channels</span
+            >
+          </div>
+          <div class="d-flex align-items-end mt-2">
+            <b-form-checkbox switch size="lg"></b-form-checkbox>
+            <span class="mr-2 font-14 text-mutted font-weight-600"
+              >Unassigned Accounts</span
+            >
+          </div>
+        </div>
 
-              <template #empty>
-                <div class="d-flex text-center justify-content-center">
-                  <span>
-                    There are no accounts yet.
-                    <a
-                      @click="scrollTo('#create-account')"
-                      class="font-14 font-weight-600 text-decoration-underline"
-                    >
-                      Create or import your first blockchain account....
-                    </a>
-                  </span>
-                </div>
-              </template>
+        <b-row>
+          <b-col class="mt-3">
+            <div class="table-card">
+              <b-table
+                hover
+                sticky-header
+                no-border-collapse
+                responsive
+                :items="items"
+                :fields="fields"
+                class="font-14 font-weight-600 mb-0"
+                style="max-height: 580px; max-width: 100%"
+                head-variant="info"
+                :busy="isLoading3"
+                @row-clicked="toggleRowDetails"
+                select-mode="single"
+                ref="selectableTable"
+                show-empty
+                selected-variant="primary"
+                selectable
+              >
+                <template #table-busy>
+                  <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Loading...</strong>
+                  </div>
+                </template>
 
-              <template #cell(status)="data">
-                <b-badge
-                  :variant="
-                    data.value == 'LOCKED'
-                      ? 'danger'
-                      : data.value == 'ONHOLD'
-                      ? 'warning'
-                      : 'success'
-                  "
-                  class="py-2 font-10"
-                  style="width: 80px;"
-                >
-                  {{ data.value }}</b-badge
-                >
-              </template>
+                <template #empty>
+                  <div class="d-flex text-center justify-content-center">
+                    <span>
+                      There are no accounts yet.
+                      <a
+                        @click="scrollTo('#create-account')"
+                        class="font-14 font-weight-600 text-decoration-underline"
+                      >
+                        Create or import your first blockchain account....
+                      </a>
+                    </span>
+                  </div>
+                </template>
 
-              <template #row-details="row">
-                <div
-                  class="d-flex flex-column justify-content-start align-content-start"
-                >
-                  <div
-                    class="d-flex flex-column justify-content-start align-content-start  font-14 text-white"
+                <template #cell(status)="data">
+                  <b-badge
+                    :variant="
+                      data.value == 'LOCKED'
+                        ? 'danger'
+                        : data.value == 'ONHOLD'
+                        ? 'warning'
+                        : 'success'
+                    "
+                    class="py-2 font-10"
+                    style="width: 80px;"
                   >
-                    <div class="d-flex align-items-end">
-                      <span class="mr-2 font-weight-bold"
-                        >Account Identifier</span
-                      >
-                      <span>{{ row.item._id }}</span>
-                    </div>
-                    <div class="d-flex align-items-end mt-2">
-                      <span class="mr-2 font-weight-bold">Account Name</span>
-                      <span>{{ row.item.account_name }}</span>
-                    </div>
-                    <div class="d-flex align-items-end mt-2">
-                      <span class="mr-2 font-weight-bold">Account ID</span>
-                      <span>{{ row.item.publicKey }}</span>
-                    </div>
-                    <div class="d-flex align-items-end mt-2">
-                      <span class="mr-2 font-weight-bold">Account Balance</span>
-                      <span>{{ row.item.balance }}</span>
-                    </div>
-                    <div class="d-flex align-items-end mt-2">
-                      <b-form-checkbox switch size="lg"></b-form-checkbox>
-                      <span class="mr-2 text-mutted font-weight-600"
-                        >Wallet Account</span
-                      >
-                    </div>
-                    <div class="d-flex align-items-end mt-2">
-                      <b-form-checkbox switch size="lg"></b-form-checkbox>
-                      <span class="mr-2 text-mutted font-weight-600"
-                        >Payment Channel</span
-                      >
-                    </div>
-                    <div class="d-flex align-items-end mt-2">
-                      <b-form-checkbox switch size="lg"></b-form-checkbox>
-                      <span class="mr-2 text-mutted font-weight-600"
-                        >Unassigned Account</span
-                      >
-                    </div>
-                    <div class="d-flex align-items-end mt-3">
-                      <button
-                        class="btn btn-sm btn-primary font-14 border border-light"
-                      >
-                        Save changes
-                      </button>
-                      <button class="btn btn-sm btn-outline-light font-14 ml-2">
-                        Explore services
-                      </button>
+                    {{ data.value }}</b-badge
+                  >
+                </template>
+
+                <template #row-details="row">
+                  <div
+                    class="d-flex flex-column justify-content-start align-content-start"
+                  >
+                    <div
+                      class="d-flex flex-column justify-content-start align-content-start  font-14 text-white"
+                    >
+                      <div class="d-flex align-items-end">
+                        <span class="mr-2 font-weight-bold"
+                          >Account Identifier</span
+                        >
+                        <span>{{ row.item._id }}</span>
+                      </div>
+                      <div class="d-flex align-items-end mt-2">
+                        <span class="mr-2 font-weight-bold">Account Name</span>
+                        <span>{{ row.item.account_name }}</span>
+                      </div>
+                      <div class="d-flex align-items-end mt-2">
+                        <span class="mr-2 font-weight-bold">Account ID</span>
+                        <span>{{ row.item.publicKey }}</span>
+                      </div>
+                      <div class="d-flex align-items-end mt-2">
+                        <span class="mr-2 font-weight-bold"
+                          >Account Balance</span
+                        >
+                        <span>{{ row.item.balance }}</span>
+                      </div>
+                      <div class="d-flex align-items-end mt-2">
+                        <b-form-checkbox switch size="lg"></b-form-checkbox>
+                        <span class="mr-2 text-mutted font-weight-600"
+                          >Wallet Account</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-end mt-2">
+                        <b-form-checkbox switch size="lg"></b-form-checkbox>
+                        <span class="mr-2 text-mutted font-weight-600"
+                          >Payment Channel</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-end mt-2">
+                        <b-form-checkbox switch size="lg"></b-form-checkbox>
+                        <span class="mr-2 text-mutted font-weight-600"
+                          >Unassigned Account</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-end mt-3">
+                        <button
+                          class="btn btn-sm btn-primary font-14 border border-light"
+                        >
+                          Save changes
+                        </button>
+                        <button
+                          class="btn btn-sm btn-outline-light font-14 ml-2"
+                        >
+                          Explore services
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-            </b-table>
-          </div>
-        </b-col>
-      </b-row>
+                </template>
+              </b-table>
+            </div>
+          </b-col>
+        </b-row>
+      </div>
+      <div v-else>
+        <p class="text-danger font-15 font-weight-bold">
+          In order to create / import blockchain accounts you must enable
+          transaction security on your account and must have a transaction
+          signature which will be used to sign transactions online. First enable
+          transaction security and create your transaction signature then you
+          can create / import blockchain accounts.
+        </p>
+      </div>
     </b-card>
+    <!-- spinner -->
     <div
-      v-else
+      v-if="isLoading"
       style="min-height: 400px;"
       class="d-flex justify-content-center align-items-center"
     >
@@ -183,6 +204,21 @@
         label="Spinning"
         style="width: 120px; height: 120px;"
       ></b-spinner>
+    </div>
+    <!-- main error -->
+    <div
+      v-if="mainError.status"
+      style="min-height: 280px;"
+      class="d-flex justify-content-center align-items-center"
+    >
+      <custom-error
+        :code="mainError.code"
+        :title="mainError.title"
+        :description="mainError.description"
+        :emitBtnTxt="'Refresh and try again'"
+        :emitFn="'onEmit'"
+        @onEmit="initFn"
+      ></custom-error>
     </div>
     <create-blockchain-account
       :isShow="isShowCreateAccountModal"
@@ -197,15 +233,28 @@ import { Keypair } from "stellar-sdk";
 import { CreatePaymentChannelAccountAPI } from "@/services/payment.channel.service";
 import axios from "axios";
 import CreateBlockchainAccount from "@/views/modals/CreateBlockchainAccount.vue";
+import CustomError from "../Errors/CustomError.vue";
+import { GetTxSecurityInfoAPI } from "@/services/user.service";
 
 export default {
   components: {
-    CreateBlockchainAccount
+    CreateBlockchainAccount,
+    CustomError
   },
   data() {
     return {
+      isLoading: false,
+      isLoading1: false,
+      isLoading2: false,
       isLoading3: false,
+      txSignatureID: null,
+      txPasswordHash: null,
       isShowCreateAccountModal: false,
+      mainError: {
+        status: false,
+        code: false,
+        description: null
+      },
       fields: [
         {
           key: "index",
@@ -334,9 +383,49 @@ export default {
     })
   },
   mounted() {
-    this.getAllAccountsFn();
+    this.initFn();
   },
   methods: {
+    initFn() {
+      this.isLoading = false;
+      this.isLoading1 = false;
+      this.isLoading2 = false;
+      this.isLoading3 = false;
+      this.txSignatureID = null;
+      this.txPasswordHash = null;
+      this.isShowCreateAccountModal = false;
+      this.mainError = {
+        status: false,
+        code: false,
+        description: null
+      };
+      this.getTransactionSignatureAndPasswordHashFn();
+    },
+    getTransactionSignatureAndPasswordHashFn() {
+      this.isLoading = true;
+      GetTxSecurityInfoAPI()
+        .then(response => {
+          const {
+            data: {
+              data: { transactionSignatureID, transactionPasswordHash }
+            }
+          } = response;
+          this.txSignatureID = transactionSignatureID;
+          this.txPasswordHash = transactionPasswordHash;
+          if (transactionSignatureID) this.getAllAccountsFn();
+        })
+        .catch(({ response }) => {
+          if (response) {
+            this.mainError.code = response.status;
+            this.mainError.description = response.data.data.message;
+          } else {
+            this.mainError.code = 404;
+            this.mainError.description = error.message;
+          }
+          this.mainError.status = true;
+        })
+        .finally(() => (this.isLoading = false));
+    },
     showCreateAccountModalFn() {
       this.isShowCreateAccountModal = !this.isShowCreateAccountModal;
     },
