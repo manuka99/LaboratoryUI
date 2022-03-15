@@ -93,8 +93,10 @@
               </b-row>
             </div>
 
+              <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
+
             <base-button
-              class="btn btn-primary mt-4 btn-lg  d-flex justify-content-center align-items-center font-16"
+              class="btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
               type="submit"
               :disabled="!account_name"
               @click="isStep1 = false"
@@ -303,8 +305,10 @@
               Channel
             </base-button>
 
+            <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
+
             <base-button
-              class="btn btn-primary mt-4 btn-lg  d-flex justify-content-center align-items-center font-16"
+              class="btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16 m-0"
               type="submit"
               @click="isStep1 = true"
               nativeType="submit"
@@ -315,11 +319,11 @@
           </div>
 
           <div
-            v-if="!isLoading && txSignatureID && accountType == null"
+            v-if="!isLoading && !txSignatureID"
             class="mt-3"
           ></div>
 
-          <hr class="my-4" style="height: 2px; width: 100%;" />
+          <hr class="my-3" style="height: 2px; width: 100%;" />
         </section>
       </div>
     </b-modal>
@@ -333,6 +337,8 @@ import { CreateBlockchainAccountAPI } from "@/services/bc.accounts.service";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
 import { EncryptWithRawPublicKey } from "@/services/rsa.service";
+import { FindBlockchainAccountsAPI } from "@/services/bc.accounts.service";
+import { GetAccountNativeBalance } from "@/services/stellar.service";
 
 export default {
   components: {
@@ -366,18 +372,7 @@ export default {
       },
       sponsorID: null,
       isLoading2: false,
-      sponsors: [
-        { value: null, text: "Select sponsoring account" },
-        {
-          value: "GCY43FQN245VTVQHIYEP3U35OGB6LUTIXXOWWNDBOPLY6722EUWVD4ZZ",
-          text: "James-GCY43FQN245VTVQHIYEP3U35OGB6LUTIXXOWWNDBOPLY6722EUWVD4ZZ"
-        },
-        {
-          value: "GBNWAAZY3VJEU6FOQKYNAZSVBAXIG6QRU6LD75PNSD5Q447W6UPXX6GP",
-          text:
-            "Michael Bond-GBNWAAZY3VJEU6FOQKYNAZSVBAXIG6QRU6LD75PNSD5Q447W6UPXX6GP"
-        }
-      ],
+      sponsors: [{ value: null, text: "Select sponsoring account" }],
       showImportKeypair: false,
 
       // modals
@@ -420,12 +415,13 @@ export default {
       },
       deep: true
     },
-    accountType() {
+    accountType(val) {
       this.clearGeneratedKeypairFn();
       this.clearImportedKeypairFn();
       this.sponsorID = null;
       this.sponsors = null;
       this.isLoading2 = null;
+      if (val == "channel") this.getAllAccountsFn();
     }
   },
   mounted() {
@@ -508,6 +504,56 @@ export default {
           .then(() => this.initFn())
           .finally(() => (this.isLoading1 = false));
       }
+    },
+    getAllAccountsFn() {
+      this.isLoading2 = true;
+      const payload = {
+        accountType: "wallet"
+      };
+      this.sponsors = [];
+      FindBlockchainAccountsAPI(payload)
+        .then(response => {
+          let bcAccounts = response.data.data.bcAccounts;
+          var newAccounts = [
+            { value: null, text: "Select sponsoring account" }
+          ];
+          if (bcAccounts && bcAccounts.length > 0) {
+            let bcs = bcAccounts.map(account => {
+              return {
+                value: account.publicKey,
+                text: `${account.name} ${account.publicKey.substr(
+                  0,
+                  10
+                )}......${account.publicKey.substr(-5)}`,
+                item: account
+              };
+            });
+            newAccounts = [...newAccounts, ...bcs];
+            this.sponsors = newAccounts;
+            this.updateAccountBalances();
+          }
+        })
+        .finally(() => (this.isLoading2 = false));
+    },
+    async updateAccountBalances() {
+      for (let index = 0; index < this.sponsors.length; index++) {
+        const account = this.sponsors[index];
+        if (account.item) {
+          const balance = await GetAccountNativeBalance(account.item.publicKey);
+          const blnText = balance == null ? "(0 XLM)" : "(" + balance + " XLM)";
+          account.text = account.text + " " + blnText;
+        }
+      }
+    },
+    replaceAccount(data) {
+      let i = this.sponsors.findIndex(
+        crnt => crnt.item && crnt.item._id == data.item._id
+      );
+      this.items = [
+        ...this.sponsors.slice(0, i),
+        data,
+        ...this.sponsors.slice(i + 1)
+      ];
     },
     createPaymentChannelFn() {
       if (!this.account_name) {

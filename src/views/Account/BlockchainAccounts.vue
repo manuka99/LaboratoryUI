@@ -532,7 +532,6 @@ export default {
     },
     replaceAccount(data) {
       let i = this.items.findIndex(crnt => crnt.item._id == data.item._id);
-      console.log(i);
       this.items = [
         ...this.items.slice(0, i),
         data,
