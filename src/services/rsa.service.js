@@ -1,4 +1,4 @@
-import { pki } from "node-forge";
+import { pki, util } from "node-forge";
 
 const PUBLIC_KEY_HEADER = "-----BEGIN PUBLIC KEY-----";
 const PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----";
@@ -28,4 +28,29 @@ export const CreateRSAKeyPair = async () => {
       }
     });
   });
+};
+
+export const PublicKeyFromRawPublic = (rawPublicKey) => {
+  try {
+    var publicKey = pki.publicKeyFromPem(
+      PUBLIC_KEY_HEADER + rawPublicKey + PUBLIC_KEY_FOOTER
+    );
+    return publicKey;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const EncryptWithRawPublicKey = (rawPublicKey, rawData) => {
+  try {
+    const publicKey = PublicKeyFromRawPublic(rawPublicKey);
+    var encrypted = publicKey.encrypt(
+      util.encodeUtf8(rawData),
+      "RSAES-PKCS1-V1_5"
+    );
+    var encryptedBase64 = util.encode64(encrypted);
+    return encryptedBase64;
+  } catch (error) {
+    return null;
+  }
 };

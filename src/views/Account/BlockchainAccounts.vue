@@ -41,23 +41,40 @@
 
         <div class="mt-4 d-flex flex-column justify-content-start flex-wrap">
           <div class="d-flex align-items-end">
-            <b-form-checkbox switch size="lg"></b-form-checkbox>
+            <b-form-checkbox
+              switch
+              size="lg"
+              v-model="isWallet"
+            ></b-form-checkbox>
             <span class="mr-2 font-14 text-mutted font-weight-600"
               >Wallet Accounts</span
             >
           </div>
           <div class="d-flex align-items-end mt-2">
-            <b-form-checkbox switch size="lg"></b-form-checkbox>
+            <b-form-checkbox
+              switch
+              size="lg"
+              v-model="isChannel"
+            ></b-form-checkbox>
             <span class="mr-2 font-14 text-mutted font-weight-600"
               >Payment Channels</span
             >
           </div>
-          <div class="d-flex align-items-end mt-2">
-            <b-form-checkbox switch size="lg"></b-form-checkbox>
-            <span class="mr-2 font-14 text-mutted font-weight-600"
-              >Unassigned Accounts</span
-            >
-          </div>
+        </div>
+
+        <div class="mt-3" style="width: 100%; max-width: 480px">
+          <b-input-group>
+            <b-input-group-prepend>
+              <b-input-group-text>
+                <b-icon icon="search" />
+              </b-input-group-text>
+            </b-input-group-prepend>
+            <b-form-input
+              type="text"
+              placeholder="Search..."
+              v-model="search"
+            ></b-form-input>
+          </b-input-group>
         </div>
 
         <b-row>
@@ -73,7 +90,7 @@
                 class="font-14 font-weight-600 mb-0"
                 style="max-height: 580px; max-width: 100%"
                 head-variant="info"
-                :busy="isLoading3"
+                :busy="isLoading1"
                 @row-clicked="toggleRowDetails"
                 select-mode="single"
                 ref="selectableTable"
@@ -82,24 +99,61 @@
                 selectable
               >
                 <template #table-busy>
-                  <div class="text-center text-danger my-2">
-                    <b-spinner class="align-middle"></b-spinner>
+                  <div
+                    class="text-center text-white my-2 font-20 d-flex justify-content-center align-items-center"
+                    style="min-height: 280px"
+                  >
+                    <b-spinner class="align-middle mr-2"></b-spinner>
                     <strong>Loading...</strong>
                   </div>
                 </template>
 
                 <template #empty>
-                  <div class="d-flex text-center justify-content-center">
-                    <span>
+                  <div
+                    class="d-flex text-center text-white d-flex justify-content-center align-items-center font-18"
+                    style="min-height: 280px"
+                  >
+                    <span v-if="!search">
                       There are no accounts yet.
                       <a
-                        @click="scrollTo('#create-account')"
-                        class="font-14 font-weight-600 text-decoration-underline"
+                        @click="showCreateAccountModalFn"
+                        v-if="!search"
+                        class="text-white font-weight-600 text-decoration-underline"
                       >
-                        Create or import your first blockchain account....
+                        Create or Import your first blockchain account
                       </a>
                     </span>
+                    <span v-else>
+                      No blockchain accounts were found with the above filters
+                    </span>
                   </div>
+                </template>
+
+                <template #cell(balance)="data">
+                  <b-badge
+                    v-if="data.value == 'processing'"
+                    variant="secondary"
+                    class="py-2 font-10 text-white"
+                    style="min-width: 120px;"
+                  >
+                    processing...</b-badge
+                  >
+                  <b-badge
+                    v-if="data.value == 'N/A'"
+                    variant="danger"
+                    class="py-2 font-10 text-white"
+                    style="min-width: 120px;"
+                  >
+                    Failed / No Account</b-badge
+                  >
+                  <b-badge
+                    v-if="data.value != 'processing' && data.value != 'N/A'"
+                    variant="primary"
+                    class="py-2 font-10 text-white"
+                    style="min-width: 120px;"
+                  >
+                    {{ data.value.toLocaleString() }} XLM
+                  </b-badge>
                 </template>
 
                 <template #cell(status)="data">
@@ -127,51 +181,55 @@
                     >
                       <div class="d-flex align-items-end">
                         <span class="mr-2 font-weight-bold"
-                          >Account Identifier</span
+                          >Account Identifier:</span
                         >
-                        <span>{{ row.item._id }}</span>
+                        <span>{{ row.item.item._id }}</span>
                       </div>
                       <div class="d-flex align-items-end mt-2">
-                        <span class="mr-2 font-weight-bold">Account Name</span>
+                        <span class="mr-2 font-weight-bold">Account Name:</span>
                         <span>{{ row.item.account_name }}</span>
                       </div>
                       <div class="d-flex align-items-end mt-2">
-                        <span class="mr-2 font-weight-bold">Account ID</span>
-                        <span>{{ row.item.publicKey }}</span>
+                        <span class="mr-2 font-weight-bold">Account ID:</span>
+                        <span>{{ row.item.item.publicKey }}</span>
                       </div>
                       <div class="d-flex align-items-end mt-2">
                         <span class="mr-2 font-weight-bold"
-                          >Account Balance</span
-                        >
+                          >Account Balance:
+                        </span>
                         <span>{{ row.item.balance }}</span>
                       </div>
                       <div class="d-flex align-items-end mt-2">
-                        <b-form-checkbox switch size="lg"></b-form-checkbox>
+                        <b-form-checkbox
+                          switch
+                          size="lg"
+                          :checked="row.item.item.accountType == 'wallet'"
+                        ></b-form-checkbox>
                         <span class="mr-2 text-mutted font-weight-600"
                           >Wallet Account</span
                         >
                       </div>
                       <div class="d-flex align-items-end mt-2">
-                        <b-form-checkbox switch size="lg"></b-form-checkbox>
+                        <b-form-checkbox
+                          switch
+                          size="lg"
+                          :checked="row.item.item.accountType == 'channel'"
+                        ></b-form-checkbox>
                         <span class="mr-2 text-mutted font-weight-600"
                           >Payment Channel</span
                         >
                       </div>
-                      <div class="d-flex align-items-end mt-2">
-                        <b-form-checkbox switch size="lg"></b-form-checkbox>
-                        <span class="mr-2 text-mutted font-weight-600"
-                          >Unassigned Account</span
-                        >
-                      </div>
                       <div class="d-flex align-items-end mt-3">
                         <button
-                          class="btn btn-sm btn-primary font-14 border border-light"
+                          v-if="row.item.item.accountType == 'wallet'"
+                          @click="
+                            showFundAccountModalFn(row.item.item.publicKey)
+                          "
+                          class="btn btn-sm btn-primary font-14 border border-light mr-2"
                         >
-                          Save changes
+                          Fund account (XLM)
                         </button>
-                        <button
-                          class="btn btn-sm btn-outline-light font-14 ml-2"
-                        >
+                        <button class="btn btn-sm btn-outline-light font-14">
                           Explore services
                         </button>
                       </div>
@@ -179,6 +237,25 @@
                   </div>
                 </template>
               </b-table>
+            </div>
+
+            <div>
+              <base-button
+                class="btn btn-outline-primary w-100 mt-3"
+                type="submit"
+                v-if="!isAllLoaded"
+                :loading="isLoading2"
+                :disabled="isLoading2"
+                @click="loadMoreFn"
+                nativeType="submit"
+              >
+                Load more...
+              </base-button>
+              <div v-else>
+                <p class="font-weight-bold text-muted font-18 text-center mt-3">
+                  ..... End of records .....
+                </p>
+              </div>
             </div>
           </b-col>
         </b-row>
@@ -221,35 +298,54 @@
       ></custom-error>
     </div>
     <create-blockchain-account
-      :isShow="isShowCreateAccountModal"
+      v-if="createAccountModal.isShow"
+      v-model="createAccountModal"
       @onClose="onCloseCreateAccountModalFn"
+    />
+    <FundBlockchainAccount
+      v-if="fundAccountModal.isShow"
+      v-model="fundAccountModal"
+      @onClose="onCloseFundAccountModalFn"
     />
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { Keypair } from "stellar-sdk";
-import { CreatePaymentChannelAccountAPI } from "@/services/payment.channel.service";
-import axios from "axios";
+import { mapGetters } from "vuex";
 import CreateBlockchainAccount from "@/views/modals/CreateBlockchainAccount.vue";
 import CustomError from "../Errors/CustomError.vue";
 import { GetTxSecurityInfoAPI } from "@/services/user.service";
+import { FindBlockchainAccountsAPI } from "@/services/bc.accounts.service";
+import { GetAccountNativeBalance } from "@/services/stellar.service";
+import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 
 export default {
   components: {
     CreateBlockchainAccount,
-    CustomError
+    CustomError,
+    FundBlockchainAccount
   },
   data() {
     return {
       isLoading: false,
       isLoading1: false,
       isLoading2: false,
-      isLoading3: false,
+      isLoading1: false,
       txSignatureID: null,
       txPasswordHash: null,
-      isShowCreateAccountModal: false,
+      isWallet: true,
+      isChannel: false,
+      isAllLoaded: false,
+      search: undefined,
+      page: 0,
+      searchTimeout: null,
+      createAccountModal: {
+        isShow: false
+      },
+      fundAccountModal: {
+        destination: "",
+        isShow: false
+      },
       mainError: {
         status: false,
         code: false,
@@ -293,88 +389,7 @@ export default {
           class: "text-start bg-white"
         }
       ],
-      items: [
-        {
-          index: 1,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "AVAILABLE"
-        },
-        {
-          index: 2,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "ONHOLD"
-        },
-        {
-          index: 3,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "LOCKED"
-        },
-        {
-          index: 4,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "AVAILABLE"
-        },
-        {
-          index: 5,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "AVAILABLE"
-        },
-        {
-          index: 6,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "LOCKED"
-        },
-        {
-          index: 7,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "LOCKED"
-        },
-        {
-          index: 8,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "AVAILABLE"
-        },
-        {
-          index: 9,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "AVAILABLE"
-        },
-        {
-          index: 10,
-          _id: "SSDSKJK2O23837Q7HWJNA7Q61NBW822",
-          account_name: "Test 1",
-          publicKey: "GDEDFXPDM5HEJVTWR6422JKUATBG5YYTQDXU4Z723WSZI3Y7CWG3BU6S",
-          balance: "100.0078563",
-          status: "AVAILABLE"
-        }
-      ]
+      items: []
     };
   },
   computed: {
@@ -382,18 +397,44 @@ export default {
       user: "user/getUser"
     })
   },
+  watch: {
+    isWallet() {
+      this.getAllAccountsFn(0);
+    },
+    isChannel() {
+      this.getAllAccountsFn(0);
+    },
+    search() {
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = null;
+      }
+      this.searchTimeout = setTimeout(() => {
+        this.getAllAccountsFn(0);
+      }, 2000);
+    }
+  },
   mounted() {
     this.initFn();
   },
   methods: {
+    showCreateAccountModalFn() {
+      this.createAccountModal.isShow = !this.createAccountModal.isShow;
+    },
+    showFundAccountModalFn(destination) {
+      this.fundAccountModal.isShow = true;
+      this.fundAccountModal.destination = destination;
+    },
+    onCloseFundAccountModalFn(data) {
+      if (data.refresh) this.getAllAccountsFn();
+    },
     initFn() {
       this.isLoading = false;
       this.isLoading1 = false;
       this.isLoading2 = false;
-      this.isLoading3 = false;
       this.txSignatureID = null;
       this.txPasswordHash = null;
-      this.isShowCreateAccountModal = false;
+      this.createAccountModal.isShow = false;
       this.mainError = {
         status: false,
         code: false,
@@ -426,31 +467,77 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
-    showCreateAccountModalFn() {
-      this.isShowCreateAccountModal = !this.isShowCreateAccountModal;
-    },
     onCloseCreateAccountModalFn(data) {
       // alert(data && data.refresh ? data.refresh : "");
-      this.isShowCreateAccountModal = !this.isShowCreateAccountModal;
     },
-    getAllAccountsFn() {
-      // this.isLoading3 = true;
-      // CreatePaymentChannelAccountAPI(payload)
-      //   .then(() => {})
-      //   .finally(() => (this.isLoading3 = false));
+    loadMoreFn() {
+      this.getAllAccountsFn(this.page + 1);
+    },
+    getAllAccountsFn(page = this.page) {
+      this.isLoading1 = true;
+      let accountType = [];
 
-      this.items = this.items.map((object, index) => {
-        object.short_id = `${object._id.substr(0, 5)}......${object._id.substr(
-          -5
-        )}`;
-        object.shortPublicKey = `${object.publicKey.substr(
-          0,
-          10
-        )}......${object.publicKey.substr(-5)}`;
-        object._showDetails = false;
-        object.index = index + 1;
-        return object;
-      });
+      if (this.isWallet) accountType.push("wallet");
+      if (this.isChannel) accountType.push("channel");
+
+      const payload = {
+        accountType: accountType.join(","),
+        search: this.search,
+        page
+      };
+
+      if (page == 0) this.items = [];
+
+      this.isAllLoaded = false;
+      FindBlockchainAccountsAPI(payload)
+        .then(response => {
+          let bcAccounts = response.data.data.bcAccounts;
+          if (bcAccounts && bcAccounts.length > 0) {
+            this.page = page;
+            let newAccounts = bcAccounts.map((account, index) => {
+              return {
+                _showDetails: false,
+                index: this.items.length + 1 + index,
+                account_name: account.name,
+                balance: "processing",
+                status: account.isLocked
+                  ? account.lockSequence
+                    ? "LOCKED"
+                    : "ONHOLD"
+                  : "AVAILABLE",
+                short_id: `${account._id.substr(
+                  0,
+                  5
+                )}......${account._id.substr(-5)}`,
+                shortPublicKey: `${account.publicKey.substr(
+                  0,
+                  10
+                )}......${account.publicKey.substr(-5)}`,
+                item: account
+              };
+            });
+            this.items = this.items.concat(newAccounts);
+            this.updateAccountBalances();
+          } else this.isAllLoaded = true;
+        })
+        .finally(() => (this.isLoading1 = false));
+    },
+    async updateAccountBalances() {
+      for (let index = 0; index < this.items.length; index++) {
+        const account = this.items[index];
+        const balance = await GetAccountNativeBalance(account.item.publicKey);
+        account.balance = balance == null ? "N/A" : balance;
+        this.replaceAccount(account);
+      }
+    },
+    replaceAccount(data) {
+      let i = this.items.findIndex(crnt => crnt.item._id == data.item._id);
+      console.log(i);
+      this.items = [
+        ...this.items.slice(0, i),
+        data,
+        ...this.items.slice(i + 1)
+      ];
     },
     toggleRowDetails(row) {
       var rowState = row._showDetails;

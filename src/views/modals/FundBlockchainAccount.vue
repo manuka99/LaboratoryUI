@@ -72,7 +72,6 @@
 </template>
 
 <script>
-import { Keypair } from "stellar-sdk";
 import axios from "axios";
 
 export default {
@@ -117,6 +116,7 @@ export default {
               solid: true,
               toaster: "b-toaster-bottom-right"
             });
+            this.hideModalFn(true);
           })
           .catch(({ response, ...error }) => {
             var errMessage =
@@ -136,11 +136,11 @@ export default {
           .finally(() => (this.isLoading = false));
       }
     },
-    hideModalFn() {
+    hideModalFn(refresh = false) {
       this.value.destination = null;
       this.value.isShow = false;
       this.$emit("onClose", {
-        refresh: true
+        refresh
       });
     }
   }
