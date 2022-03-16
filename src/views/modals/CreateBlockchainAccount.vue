@@ -235,7 +235,7 @@
                 <div v-if="!isLoading2" class="mt-2">
                   <a
                     @click="getAllSponsorAccountsFn"
-                    class="font-14 font-weight-600 text-decoration-underline mt-2"
+                    class="font-14 font-weight-600 text-decoration-underline mt-2 cursor-pointer"
                   >
                     Refresh account list and balances?
                   </a>
@@ -247,7 +247,7 @@
                       fundAccountModal.destination = sponsorID;
                       showFundAccountModalFn();
                     "
-                    class="font-14 font-weight-600 text-decoration-underline m-0 p-0"
+                    class="font-14 font-weight-600 text-decoration-underline m-0 p-0 cursor-pointer"
                   >
                     Fund selected sponsoring account?
                   </a>

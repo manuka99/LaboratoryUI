@@ -181,6 +181,23 @@
                     <div
                       class="d-flex flex-column justify-content-start align-content-start  font-14 text-white"
                     >
+                      <div class="d-flex align-items-center mb-2">
+                        <b-form-select
+                          size="sm"
+                          v-model="accountActionOption"
+                          :options="accountActionOptions"
+                          class="w-auto mr-2"
+                        ></b-form-select>
+                        <base-button
+                          v-if="accountActionOption"
+                          @click="performAccountActionFn(row.item)"
+                          :loading="row.item.actionLoading"
+                          :disabled="row.item.actionLoading"
+                          class="btn btn-sm btn-danger font-12 border border-light mr-2"
+                        >
+                          Continue
+                        </base-button>
+                      </div>
                       <div class="d-flex align-items-end">
                         <span class="mr-2 font-weight-bold"
                           >Account Identifier:</span
@@ -319,7 +336,10 @@ import { mapGetters } from "vuex";
 import CreateBlockchainAccount from "@/views/modals/CreateBlockchainAccount.vue";
 import CustomError from "../Errors/CustomError.vue";
 import { GetTxSecurityInfoAPI } from "@/services/user.service";
-import { FindBlockchainAccountsAPI } from "@/services/bc.accounts.service";
+import {
+  FindBlockchainAccountsAPI,
+  RemoveBlockchainAccountAPI
+} from "@/services/bc.accounts.service";
 import { GetAccountNativeBalance } from "@/services/stellar.service";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 
@@ -354,6 +374,12 @@ export default {
         code: false,
         description: null
       },
+      accountActionOption: null,
+      accountActionOptions: [
+        { value: null, text: "Select action..." },
+        { value: "merge", text: "Merge Account (Blockchain)" },
+        { value: "remove", text: "Remove Account (MetaSpeck)" }
+      ],
       fields: [
         {
           key: "index",
@@ -500,6 +526,7 @@ export default {
             let newAccounts = bcAccounts.map((account, index) => {
               return {
                 _showDetails: false,
+                actionLoading: false,
                 index: this.items.length + 1 + index,
                 account_name: account.name,
                 balance: "processing",
@@ -530,16 +557,22 @@ export default {
         const account = this.items[index];
         const balance = await GetAccountNativeBalance(account.item.publicKey);
         account.balance = balance == null ? "N/A" : balance;
-        this.replaceAccount(account);
+        this.replaceAccountFn(account.item._id, account);
       }
     },
-    replaceAccount(data) {
-      let i = this.items.findIndex(crnt => crnt.item._id == data.item._id);
-      this.items = [
-        ...this.items.slice(0, i),
-        data,
-        ...this.items.slice(i + 1)
-      ];
+    replaceAccountFn(_id, data) {
+      let i = this.items.findIndex(crnt => crnt.item && crnt.item._id == _id);
+      if (i != -1) {
+        if (data) {
+          this.items = [
+            ...this.items.slice(0, i),
+            data,
+            ...this.items.slice(i + 1)
+          ];
+        } else {
+          this.items = [...this.items.slice(0, i), ...this.items.slice(i + 1)];
+        }
+      }
     },
     toggleRowDetails(row) {
       var rowState = row._showDetails;
@@ -548,6 +581,24 @@ export default {
         return object;
       });
       if (rowState == false) row._showDetails = true;
+    },
+
+    performAccountActionFn(item) {
+      switch (this.accountActionOption) {
+        case "merge":
+          item.actionLoading = true;
+          setTimeout(() => (item.actionLoading = false), 10000);
+          break;
+        case "remove":
+          item.actionLoading = true;
+          RemoveBlockchainAccountAPI(item.item._id)
+            .then(res => this.replaceAccountFn(res.data.data.id, null))
+            .finally(() => (item.actionLoading = false));
+          break;
+        default:
+          alert("Action not available, please refresh and try again");
+          break;
+      }
     }
   }
 };
