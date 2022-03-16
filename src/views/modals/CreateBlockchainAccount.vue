@@ -1,10 +1,12 @@
 <template>
   <div>
     <fund-blockchain-account
+      v-if="fundAccountModal.isShow"
       v-model="fundAccountModal"
       @onClose="onCloseFundAccountModalFn"
     />
     <SignTransactionModal
+      v-if="signTransactionModal.isShow"
       v-model="signTransactionModal"
       @onClose="onCloseSignTransactionModalFn"
     />
@@ -93,7 +95,7 @@
               </b-row>
             </div>
 
-              <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
+            <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
 
             <base-button
               class="btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
@@ -174,17 +176,6 @@
                     generatedKeypair.secretKey
                   }}</span>
                 </p>
-                <!-- <a
-              @click="
-                fundAccountModal.destination = generatedKeypair.publicKey;
-                scrollTo('#fund-account');
-                showFundAccountModalFn();
-              "
-              class="font-14 font-weight-600 text-decoration-underline mt-2"
-            >
-              Fund this account on the test network using the friendbot tool
-              below
-            </a> -->
               </div>
 
               <base-button
@@ -201,15 +192,90 @@
             </div>
 
             <div
-              class="mt-2"
               v-if="
                 accountType == 'channel' && generatedKeypair.secretKey != null
               "
+              style="margin-bottom: 32px"
             >
-              <b-form-select
-                v-model="sponsorID"
-                :options="sponsors"
-              ></b-form-select>
+              <h3 class="text-muted font-15 mt-4">
+                2. Sponsoring Payment Channel Creation
+              </h3>
+              <div class="mt-3 w-auto">
+                <div
+                  v-if="isLoading2"
+                  style="min-height: 60px; margin-left: 32px"
+                  class="d-flex justify-content-start align-items-center"
+                >
+                  <b-spinner
+                    variant="primary"
+                    label="Spinning"
+                    style="width: 32px; height: 32px;"
+                  ></b-spinner>
+                </div>
+                <div v-if="!isLoading2 && sponsors.length <= 1">
+                  <p class="text-danger font-14 font-weight-bold">
+                    There are no sponsoring accounts created yet. In order to
+                    create a transaction/payment channel, an account must
+                    sponsor its creation. Any wallet account can sponsor payment
+                    channels. Create a wallet account and try again.
+                    <a
+                      target="_blank"
+                      href="https://developers.stellar.org/docs/glossary/sponsored-reserves/"
+                      >Learn more</a
+                    >
+                  </p>
+                </div>
+                <b-form-select
+                  v-if="!isLoading2 && sponsors.length > 1"
+                  v-model="sponsorID"
+                  :options="sponsors"
+                  class="w-auto"
+                ></b-form-select>
+
+                <div v-if="!isLoading2" class="mt-2">
+                  <a
+                    @click="getAllSponsorAccountsFn"
+                    class="font-14 font-weight-600 text-decoration-underline mt-2"
+                  >
+                    Refresh account list and balances?
+                  </a>
+                </div>
+
+                <div v-if="sponsorID" class="mt-1">
+                  <a
+                    @click="
+                      fundAccountModal.destination = sponsorID;
+                      showFundAccountModalFn();
+                    "
+                    class="font-14 font-weight-600 text-decoration-underline m-0 p-0"
+                  >
+                    Fund selected sponsoring account?
+                  </a>
+                </div>
+
+                <div
+                  v-if="
+                    sponsorID &&
+                      sponsorIDInfo &&
+                      sponsorIDInfo.item &&
+                      sponsorIDInfo.item.balance <= 0
+                  "
+                  class="mt-3"
+                >
+                  <p class="text-danger font-14 font-weight-bold m-0 p-0">
+                    Selected sponsoring account does not have enough funds to
+                    sponsor payment channel creation. An account must have at
+                    least 2.1 XLM to sponsor an account, current account balance
+                    is {{ sponsorIDInfo.item.balance }} XLM. This depends on the
+                    amount of reserves.
+                    <a
+                      target="_blank"
+                      href="https://developers.stellar.org/docs/glossary/minimum-balance/"
+                      >Learn more</a
+                    >
+                  </p>
+                </div>
+              </div>
             </div>
 
             <!-- import key pair -->
@@ -277,8 +343,10 @@
               </div>
             </div>
 
+            <!-- save wallet account -->
             <base-button
-              class="btn btn-success mt-4 btn-lg w-100 d-flex justify-content-center align-items-center font-16"
+              class="btn btn-success btn-lg w-100 d-flex justify-content-center align-items-center font-16"
+              style="margin: 32px 0px"
               type="submit"
               v-if="keypair.secretKey != null && accountType == 'wallet'"
               :loading="isLoading1"
@@ -289,13 +357,18 @@
               Account
             </base-button>
 
+            <!-- create payment channel -->
             <base-button
-              class="btn btn-success mt-4 btn-lg w-100 d-flex justify-content-center align-items-center font-16"
+              class="btn btn-success mt-2 btn-lg w-100 d-flex justify-content-center align-items-center font-16"
+              style="margin-bottom: 32px"
               type="submit"
               v-if="
                 keypair.secretKey != null &&
                   accountType == 'channel' &&
-                  sponsorID != null
+                  sponsorID != null &&
+                  sponsorIDInfo &&
+                  sponsorIDInfo.item &&
+                  sponsorIDInfo.item.balance > 0
               "
               :loading="isLoading1"
               @click="createPaymentChannelFn"
@@ -308,7 +381,7 @@
             <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
 
             <base-button
-              class="btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16 m-0"
+              class="btn btn-danger btn-sm d-flex justify-content-center align-items-center font-16 m-0"
               type="submit"
               @click="isStep1 = true"
               nativeType="submit"
@@ -318,10 +391,7 @@
             </base-button>
           </div>
 
-          <div
-            v-if="!isLoading && !txSignatureID"
-            class="mt-3"
-          ></div>
+          <div v-if="!isLoading && !txSignatureID" class="mt-3"></div>
 
           <hr class="my-3" style="height: 2px; width: 100%;" />
         </section>
@@ -347,6 +417,7 @@ export default {
   },
   data() {
     return {
+      isRefresh: false,
       isStep1: true,
       // init
       isLoading: false,
@@ -370,8 +441,9 @@ export default {
         publicKey: null,
         secretKey: null
       },
-      sponsorID: null,
       isLoading2: false,
+      sponsorID: null,
+      sponsorIDInfo: null,
       sponsors: [{ value: null, text: "Select sponsoring account" }],
       showImportKeypair: false,
 
@@ -421,7 +493,10 @@ export default {
       this.sponsorID = null;
       this.sponsors = null;
       this.isLoading2 = null;
-      if (val == "channel") this.getAllAccountsFn();
+      if (val == "channel") this.getAllSponsorAccountsFn();
+    },
+    sponsorID(val) {
+      this.sponsorIDInfo = this.sponsors.find(cnt => cnt.value == val);
     }
   },
   mounted() {
@@ -450,7 +525,7 @@ export default {
       this.fundAccountModal.isShow = true;
     },
     onCloseFundAccountModalFn(data) {
-      // alert(data && data.refresh ? data.refresh : "");
+      if (data && data.refresh) this.getAllSponsorAccountsFn();
     },
     onCloseSignTransactionModalFn(data) {
       this.savePaymentChannelFn(data);
@@ -501,11 +576,15 @@ export default {
           }
         };
         CreateBlockchainAccountAPI(payload)
-          .then(() => this.initFn())
+          .then(() => {
+            this.initFn();
+            this.isRefresh = true;
+          })
           .finally(() => (this.isLoading1 = false));
       }
     },
-    getAllAccountsFn() {
+    getAllSponsorAccountsFn() {
+      this.sponsorID = null;
       this.isLoading2 = true;
       const payload = {
         accountType: "wallet"
@@ -541,6 +620,7 @@ export default {
         if (account.item) {
           const balance = await GetAccountNativeBalance(account.item.publicKey);
           const blnText = balance == null ? "(0 XLM)" : "(" + balance + " XLM)";
+          account.item.balance = balance == null ? 0 : balance;
           account.text = account.text + " " + blnText;
         }
       }
@@ -636,18 +716,7 @@ export default {
       };
       this.sponsorID = null;
       this.isLoading2 = false;
-      this.sponsors = [
-        { value: null, text: "Select sponsoring account" },
-        {
-          value: "GCY43FQN245VTVQHIYEP3U35OGB6LUTIXXOWWNDBOPLY6722EUWVD4ZZ",
-          text: "James-GCY43FQN245VTVQHIYEP3U35OGB6LUTIXXOWWNDBOPLY6722EUWVD4ZZ"
-        },
-        {
-          value: "GBNWAAZY3VJEU6FOQKYNAZSVBAXIG6QRU6LD75PNSD5Q447W6UPXX6GP",
-          text:
-            "Michael Bond-GBNWAAZY3VJEU6FOQKYNAZSVBAXIG6QRU6LD75PNSD5Q447W6UPXX6GP"
-        }
-      ];
+      this.sponsors = [{ value: null, text: "Select sponsoring account" }];
       this.showImportKeypair = false;
 
       // modals
@@ -670,7 +739,7 @@ export default {
       this.value.isShow = false;
       this.resetCreateAccountFn();
       this.$emit("onClose", {
-        refresh: true
+        refresh: this.isRefresh
       });
     }
   }

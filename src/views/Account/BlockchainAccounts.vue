@@ -39,14 +39,16 @@
           Create Blockchain Account
         </button>
 
-        <div class="mt-4 d-flex flex-column justify-content-start flex-wrap">
+        <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
+
+        <div class="d-flex flex-column justify-content-start flex-wrap">
           <div class="d-flex align-items-end">
             <b-form-checkbox
               switch
               size="lg"
               v-model="isWallet"
             ></b-form-checkbox>
-            <span class="mr-2 font-14 text-mutted font-weight-600"
+            <span class="mr-2 font-15 text-mutted font-weight-600"
               >Wallet Accounts</span
             >
           </div>
@@ -56,7 +58,7 @@
               size="lg"
               v-model="isChannel"
             ></b-form-checkbox>
-            <span class="mr-2 font-14 text-mutted font-weight-600"
+            <span class="mr-2 font-15 text-mutted font-weight-600"
               >Payment Channels</span
             >
           </div>
@@ -203,6 +205,7 @@
                         <b-form-checkbox
                           switch
                           size="lg"
+                          disabled
                           :checked="row.item.item.accountType == 'wallet'"
                         ></b-form-checkbox>
                         <span class="mr-2 text-mutted font-weight-600"
@@ -213,6 +216,7 @@
                         <b-form-checkbox
                           switch
                           size="lg"
+                          disabled
                           :checked="row.item.item.accountType == 'channel'"
                         ></b-form-checkbox>
                         <span class="mr-2 text-mutted font-weight-600"
@@ -330,7 +334,6 @@ export default {
       isLoading: false,
       isLoading1: false,
       isLoading2: false,
-      isLoading1: false,
       txSignatureID: null,
       txPasswordHash: null,
       isWallet: true,
@@ -359,15 +362,15 @@ export default {
           sortDirection: "asc",
           class: "text-start bg-white"
         },
-        {
-          key: "short_id",
-          label: "IDENTIFIER",
-          class: "text-start bg-white"
-        },
+        // {
+        //   key: "short_id",
+        //   label: "IDENTIFIER",
+        //   class: "text-start bg-white"
+        // },
         {
           key: "account_name",
-          label: "NAME",
-          class: "text-start bg-white"
+          label: "ACCOUNT NAME",
+          class: "text-start bg-white text-nowrap"
         },
         {
           key: "shortPublicKey",
@@ -426,7 +429,7 @@ export default {
       this.fundAccountModal.destination = destination;
     },
     onCloseFundAccountModalFn(data) {
-      if (data.refresh) this.getAllAccountsFn();
+      if (data && data.refresh) this.getAllAccountsFn();
     },
     initFn() {
       this.isLoading = false;
@@ -453,7 +456,7 @@ export default {
           } = response;
           this.txSignatureID = transactionSignatureID;
           this.txPasswordHash = transactionPasswordHash;
-          if (transactionSignatureID) this.getAllAccountsFn();
+          if (transactionSignatureID) this.getAllAccountsFn(0);
         })
         .catch(({ response }) => {
           if (response) {
@@ -468,7 +471,7 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     onCloseCreateAccountModalFn(data) {
-      // alert(data && data.refresh ? data.refresh : "");
+      if (data && data.refresh) this.initFn();
     },
     loadMoreFn() {
       this.getAllAccountsFn(this.page + 1);

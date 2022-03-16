@@ -17,7 +17,7 @@
         >
           <i class="mdi mdi-coin"></i> Blockchain Account Funding
         </span>
-        <div class="cursor-pointer" @click="hideModalFn">
+        <div class="cursor-pointer" @click="hideModalFn(false)">
           <i class="mdi mdi-close-box-outline font-32 text-white"></i>
         </div>
       </div>
