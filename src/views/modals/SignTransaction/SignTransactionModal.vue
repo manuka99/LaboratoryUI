@@ -43,7 +43,7 @@
               Learn more.</a
             >
           </p>
-          <hr class="mt-4 mb-3" style="height: 2px; width: 100%;" />
+          <hr style="height: 2px; width: 100%; margin: 26px 0px" />
           <b-row class="w-100 m-0 p-0">
             <b-col cols="12" class="m-0 p-0">
               <!-- info -->
@@ -51,8 +51,10 @@
             </b-col>
             <b-col cols="12" class="m-0 p-0">
               <!-- operations -->
-              <hr class="mt-5 mb-3" style="height: 2px; width: 100%;" />
-              <div class="d-flex flex-column justify-content-start flex-wrap">
+              <hr style="height: 2px; width: 100%; margin: 32px 0px" />
+              <div
+                class="d-flex flex-column justify-content-start flex-wrap w-100"
+              >
                 <div
                   class="d-flex align-items-center p-3 border rounded card"
                   :class="
@@ -79,9 +81,11 @@
                 />
               </div>
             </b-col>
-            <b-col cols="12">
-              <hr class="mt-5 mb-3" style="height: 2px; width: 100%;" />
+            <b-col cols="12" class="m-0 p-0">
+              <hr style="height: 2px; width: 100%; margin: 32px 0px" />
               <!-- signatures -->
+              <TxSignatureInfo :xdr="xdr" />
+              <hr style="height: 2px; width: 100%; margin: 32px 0px" />
             </b-col>
           </b-row>
         </section>
@@ -98,12 +102,14 @@ const {
 } = require("stellar-sdk");
 import TransactionInfo from "@/views/modals/SignTransaction/TransactionInfo.vue";
 import TxActionsInfo from "@/views/modals/SignTransaction/TxActionsInfo.vue";
+import TxSignatureInfo from "@/views/modals/SignTransaction/TxSignatureInfo.vue";
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 
 export default {
   components: {
     TransactionInfo,
-    TxActionsInfo
+    TxActionsInfo,
+    TxSignatureInfo
   },
   data() {
     return {

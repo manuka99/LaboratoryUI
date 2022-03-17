@@ -1,6 +1,6 @@
 <template>
   <div class="w-100">
-    <h5 class="m-0 p-0">Transaction Operations</h5>
+    <h5 class="m-0 p-0">Transaction Signatures</h5>
     <b-form-select
       class="w-auto mt-3"
       style="max-width: 100%"
@@ -8,49 +8,7 @@
       :options="operationOptions"
     ></b-form-select>
     <!-- show operations -->
-    <div
-      style="max-height: 68vh; width: 100%"
-      v-if="selectedOperations"
-      class="overflow-y-auto mt-4 pt-4 px-4 bg-light"
-    >
-      <div
-        class="card mb-4 font-14 font-weight-600 text-muted"
-        v-for="(operation, index) in selectedOperations"
-        :key="index"
-      >
-        <!-- header -->
-        <div class="px-3 py-2 bg-dark text-white">
-          <h6 class="m-1 p-0">
-            Operation {{ index + 1 }} - {{ operation.Type }}
-          </h6>
-        </div>
-        <!-- body -->
-        <div class="p-3">
-          <template v-for="(property, index2) in Object.keys(operation)">
-            <div :key="index2">
-              <div
-                v-if="
-                  Array.isArray(operation[property]) ||
-                    isObject(operation[property])
-                "
-                class="mt-0 mb-2"
-              >
-                <span class="mt-0 mb-2">{{ index2 + 1 }}) {{ property }}</span>
-                <JsonViewer
-                  class="mt-2"
-                  :value="operation[property]"
-                  :expand-depth="3"
-                ></JsonViewer>
-              </div>
-              <p v-else class="mt-0 mb-2">
-                {{ index2 + 1 }}) {{ property }} -
-                {{ operation[property] ? operation[property] : "none" }}
-              </p>
-            </div>
-          </template>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 

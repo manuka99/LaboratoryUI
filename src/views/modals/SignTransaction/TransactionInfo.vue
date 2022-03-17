@@ -105,6 +105,40 @@ export default {
         value: tx.innerTransaction.hash().toString("hex")
       });
       items.push({
+        name: "Inner Transaction Source",
+        value: tx.innerTransaction.source
+      });
+      items.push({
+        name: "Inner Transaction Sequence",
+        value: tx.innerTransaction.sequence
+      });
+      items.push({
+        name: "Inner Transaction Memo",
+        value: tx.innerTransaction.memo.value
+      });
+      items.push({
+        name: "Inner Transaction Timebound (Min)",
+        value: new Date(
+          parseInt(tx.innerTransaction.timeBounds.minTime)
+        ).toLocaleTimeString("en-US", {
+          timeZone: "Asia/Colombo",
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit"
+        })
+      });
+      items.push({
+        name: "Inner Transaction Timebound (Max)",
+        value: new Date(
+          parseInt(tx.innerTransaction.timeBounds.maxTime)
+        ).toLocaleTimeString("en-US", {
+          timeZone: "Asia/Colombo",
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit"
+        })
+      });
+      items.push({
         name: "Inner Transaction XDR",
         value: tx.innerTransaction.toXDR()
       });
@@ -141,6 +175,30 @@ export default {
         value: tx.memo.value
       });
       items.push({
+        name: "Transaction Timebound (Min)",
+        value: new Date(parseInt(tx.timeBounds.minTime)).toLocaleTimeString(
+          "en-US",
+          {
+            timeZone: "Asia/Colombo",
+            year: "2-digit",
+            month: "2-digit",
+            day: "2-digit"
+          }
+        )
+      });
+      items.push({
+        name: "Transaction Timebound (Max)",
+        value: new Date(parseInt(tx.timeBounds.maxTime)).toLocaleTimeString(
+          "en-US",
+          {
+            timeZone: "Asia/Colombo",
+            year: "2-digit",
+            month: "2-digit",
+            day: "2-digit"
+          }
+        )
+      });
+      items.push({
         name: "Transaction Operations",
         value: tx.operations.length
       });
@@ -154,4 +212,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+@media screen and (max-width: 720px) {
+  td {
+    display: inline-block !important;
+    width: 100%;
+  }
+}
+</style>

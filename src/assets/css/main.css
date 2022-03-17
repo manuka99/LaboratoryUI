@@ -136,4 +136,5 @@
 .jv-code {
   background-color: rgb(226, 223, 223);
   padding: 10px !important;
+  overflow-x: auto !important;
 }
