@@ -77,7 +77,7 @@
                 <TxActionsInfo
                   v-if="isShowTXOperations"
                   class="mt-4"
-                  :xdr="isTXTypeFee ? innerTX : xdr"
+                  :xdr="xdr"
                 />
               </div>
             </b-col>
@@ -114,8 +114,7 @@ export default {
   data() {
     return {
       isTXTypeFee: false,
-      isShowTXOperations: false,
-      innerTX: null
+      isShowTXOperations: false
     };
   },
   props: {
@@ -148,10 +147,8 @@ export default {
   methods: {
     initFn() {
       const tx = TransactionBuilder.fromXDR(this.xdr, BLOCKCHAIN_NETWORK_NAME);
-      if (tx instanceof FeeBumpTransaction) {
-        this.isTXTypeFee = true;
-        this.innerTX = tx.innerTransaction.toXDR();
-      } else this.isTXTypeFee = false;
+      if (tx instanceof FeeBumpTransaction) this.isTXTypeFee = true;
+      else this.isTXTypeFee = false;
     },
     hideModalFn() {
       this.value.destination = null;

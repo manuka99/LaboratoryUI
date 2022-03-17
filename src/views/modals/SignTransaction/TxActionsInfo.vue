@@ -98,8 +98,7 @@ export default {
         this.setOperationOptions(tx.innerTransaction);
       else this.setOperationOptions(tx);
     },
-    setOperationOptions() {
-      const tx = TransactionBuilder.fromXDR(this.xdr, BLOCKCHAIN_NETWORK_NAME);
+    setOperationOptions(tx) {
       const txSource = tx.source;
       const xdrOperations = {
         "All Operations": tx.operations,
@@ -112,7 +111,7 @@ export default {
         var source = txSource;
         if (operation.source) source = operation.source;
         // add to list
-        if (xdrOperations[source]) xdrOperations[txSource].push(operation);
+        if (xdrOperations[source]) xdrOperations[source].push(operation);
         else xdrOperations[source] = [operation];
       }
 

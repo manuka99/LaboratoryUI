@@ -1,5 +1,6 @@
 import StellarSdk from "stellar-sdk";
-const server = new StellarSdk.Server("https://horizon-testnet.stellar.org");
+import { BLOCKCHAIN_NETWORK_URI } from "@/services/config";
+const server = new StellarSdk.Server(BLOCKCHAIN_NETWORK_URI);
 
 const getBalance = (account, currency) => {
   let balance = 0;
@@ -34,6 +35,15 @@ export const GetAccountNativeBalance = async id => {
     server
       .loadAccount(id)
       .then(account => resolve(getBalance(account, "XLM")))
+      .catch(() => resolve(null));
+  });
+};
+
+export const GetAccount = async id => {
+  return new Promise(resolve => {
+    server
+      .loadAccount(id)
+      .then(account => resolve(account))
       .catch(() => resolve(null));
   });
 };
