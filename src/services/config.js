@@ -1,5 +1,14 @@
+// app
 export const APP_URL = process.env.VUE_APP_URL;
 export const APP_USER_TOKEN = process.env.VUE_APP_TOKEN;
+// blockchain
+export const BLOCKCHAIN_NAME = "STELLAR";
+export const BLOCKCHAIN_NETWORK_TYPE = "testnet";
+export const BLOCKCHAIN_NETWORK_NAME = "Test SDF Network ; September 2015";
+export const BLOCKCHAIN_NETWORK_URI = "https://horizon-testnet.stellar.org";
+export const BLOCKCHAIN_NETWORK_BASE_FEE_TYPE = "stroop";
+export const BLOCKCHAIN_NETWORK_BASE_FEE_VALUE = 100;
+// error
 export const ErrorCodes = Object.freeze({
   USER_TYPE: "USER_TYPE",
   TWO_FACTOR_AUTH: "TWO_FACTOR_AUTH",

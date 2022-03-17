@@ -405,7 +405,7 @@ import { Keypair } from "stellar-sdk";
 import { GetTxSecurityInfoAPI } from "@/services/user.service";
 import { CreateBlockchainAccountAPI } from "@/services/bc.accounts.service";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
-import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
+import SignTransactionModal from "@/views/modals/SignTransaction/SignTransactionModal.vue";
 import { EncryptWithRawPublicKey } from "@/services/rsa.service";
 import { FindBlockchainAccountsAPI } from "@/services/bc.accounts.service";
 import { GetAccountNativeBalance } from "@/services/stellar.service";
