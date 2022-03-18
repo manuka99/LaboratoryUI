@@ -348,7 +348,7 @@ import {
 } from "@/services/bc.accounts.service";
 import { GetAccountNativeBalance } from "@/services/stellar.service";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
-import SignTransactionModal from "@/views/modals/SignTransaction/SignTransactionModal.vue";
+import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
 
 export default {
   components: {

@@ -146,7 +146,7 @@
             >
           </router-link>
           <router-link
-            to="/activate-phone"
+            to="/txsigner"
             class="border border-primary"
             active-class="border border-white rounded"
           >

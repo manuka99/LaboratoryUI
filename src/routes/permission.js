@@ -17,7 +17,8 @@ export const PermissionedRouting = (to, from, next) => {
     "Already Authorized",
     "Authorize 2FA",
     "Activate Phone",
-    "Account Management"
+    "Account Management",
+    "Sign Transaction"
   ];
   const generalAccountProtectedRoutes = [...protectedAccessRoutes];
   const serviceAccountProtectedRoutes = [...protectedAccessRoutes];
