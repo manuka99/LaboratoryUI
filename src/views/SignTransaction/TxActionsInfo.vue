@@ -63,7 +63,7 @@ const {
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import { FormatTXOperations } from "@/util/common";
 import JsonViewer from "vue-json-viewer";
-import { keys } from "d3";
+import { GroupTxOpsSigners } from "@/services/stellar.service";
 
 export default {
   components: {
@@ -99,35 +99,22 @@ export default {
       else this.setOperationOptions(tx);
     },
     setOperationOptions(tx) {
-      const txSource = tx.source;
-      const xdrOperations = {
-        "All Operations": tx.operations,
-        [txSource]: []
-      };
-
-      // add operations based on account
-      for (let index = 0; index < tx.operations.length; index++) {
-        const operation = tx.operations[index];
-        var source = txSource;
-        if (operation.source) source = operation.source;
-        // add to list
-        if (xdrOperations[source]) xdrOperations[source].push(operation);
-        else xdrOperations[source] = [operation];
-      }
-
-      // format filtered operations
-      var formattedOperationOptions = [];
+      const groupTxOpsSigners = GroupTxOpsSigners(
+        tx.toXDR("base64"),
+        true,
+        true
+      );
+      const formattedOperationOptions = [];
       for (
-        let index2 = 0;
-        index2 < Object.keys(xdrOperations).length;
-        index2++
+        let index = 0;
+        index < Object.keys(groupTxOpsSigners).length;
+        index++
       ) {
-        var key = Object.keys(xdrOperations)[index2];
-        var value = xdrOperations[key];
-        var formattedOperation = FormatTXOperations(value);
+        var key = Object.keys(groupTxOpsSigners)[index];
+        var value = groupTxOpsSigners[key];
         formattedOperationOptions.push({
-          value: formattedOperation,
-          text: key
+          text: key,
+          value
         });
       }
       this.operationOptions = [

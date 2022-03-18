@@ -50,6 +50,7 @@
                   style="resize: auto; width: 480px; max-width: 100%"
                   v-model="importXdr"
                   @input="onImportXdr"
+                  :disabled="loading"
                 ></textarea>
 
                 <p
@@ -76,6 +77,7 @@
                   class="font-14 font-weight-600"
                   v-model="importTxnHash"
                   @input="onImportTxnHash"
+                  :disabled="loading"
                 ></b-form-input>
 
                 <p
@@ -95,12 +97,36 @@
                   class="w-auto"
                   v-model="signingMode"
                   :options="signingModeOptions"
+                  :disabled="loading"
                 ></b-form-select>
               </div>
 
               <hr style="height: 2px; width: 100%; margin: 32px 0px" />
+
+              <base-button
+                class="btn btn-primary font-18 p-2"
+                style="width: 240px"
+                type="submit"
+                :disabled="
+                  importXdrError.status ||
+                    importTxnHashError.status ||
+                    !(importXdr || importTxnHash)
+                "
+                @click="getTxnXdrFn"
+                :loading="loading"
+                nativeType="submit"
+              >
+                <i class="mdi mdi-key-change mr-2"></i>Sign Transaction
+              </base-button>
+
+              <hr style="height: 2px; width: 100%; margin: 32px 0px" />
             </div>
-            <SignTransaction v-if="xdr" :xdr="xdr" />
+            <SignTransactionModal
+              v-if="xdr"
+              :xdr="xdr"
+              v-model="signTransactionModal"
+              @onClose="onCloseSignTransactionModalFn"
+            />
           </div>
         </section>
       </div>
@@ -112,19 +138,19 @@
 const { TransactionBuilder } = require("stellar-sdk");
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import Layout from "@/components/HorizontalLayout/Layout";
-import SignTransaction from "@/views/SignTransaction/SignTransaction.vue";
+import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
 
 export default {
   components: {
     Layout,
-    SignTransaction
+    SignTransactionModal
   },
   data() {
     return {
       xdr: null,
+      loading: null,
       importXdr: null,
       importTxnHash: null,
-      txnTimeout: null,
       importXdrError: {
         status: false,
         description: null
@@ -132,6 +158,10 @@ export default {
       importTxnHashError: {
         status: false,
         description: null
+      },
+      signTransactionModal: {
+        isShow: false,
+        xdr: ""
       },
       signingMode: "offline",
       signingModeOptions: [
@@ -143,18 +173,31 @@ export default {
   watch: {},
   methods: {
     initFn() {},
+    onCloseSignTransactionModalFn(data) {
+      if (data && data.refresh) {
+      }
+    },
     getTxnXdrFn() {
-      let xdr = `AAAAAgAAAAC2bCx393CCpwrwp67OKZjWCHBPgRyy08K8aG1n4DXQ1gAAAMgAAHPRAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACgAAAAU0MzQzNAAAAAAAAAEAAAAEd2UyMgAAAAAAAAAKAAAACTMzNDJmZmRmZAAAAAAAAAEAAAADMzQzAAAAAAAAAAAD4DXQ1gAAAECrRdkUu5K3GIEMlXlVqPpwDsvWmBaoaiuE1MM+3HwlM//y8v0CX4IHYmHzGZYK7/pwgEKvfoEWFZLzAwQv+pkPOiW5hAAAAEBR72uDgeO/6gBV1IMPODvGJstumTRjasUCsEha0Ahvn71ofFKlJ/gw75esapSFgPqMjwJrzyu2z6qbX9E6sYsK8mwYpAAAACAPaprWGHVRiXxRz93wR2BHdGMqsGfZR/zLS/FTmdr+YA==`;
-
-      xdr = "sss";
-
-      this.validateAndSetXDR(xdr, this.importTxnHashError);
+      if (this.importXdr) {
+        this.validateAndSetXDR(this.importXdr, this.importTxnHashError);
+        if (this.xdr) this.signTransactionModal.isShow = true;
+      } else if (this.importTxnHash) {
+        this.loading = true;
+        setTimeout(() => {
+          let xdr = `AAAAAgAAAADqkV14haNBjXREqjX0ulIeUCyzGfPspsKDbWv8z6ssxQAAASwAAJv5AAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAACdK3dl1RnuJCPTNeCgw3QWPBvL4wwPGBViRfJncLJPogAAAAEAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAIQF+AdXMOdfB1Jh2E9qhUPwRGpy/a0p450w4NDbWs38AAAAAEAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAGKHN+T5VvfKESvvsedP6C740egAmOD66gaaPhUBBXB7AAAAAEAAAAAAAAAAA==`;
+          // xdr = "sss";
+          this.validateAndSetXDR(xdr, this.importTxnHashError);
+          this.loading = false;
+          if (this.xdr) this.signTransactionModal.isShow = true;
+        }, 1000);
+      }
     },
     onImportXdr() {
       this.xdr = null;
       this.importTxnHash = null;
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
+      this.loading = false;
       this.validateAndSetXDR(this.importXdr, this.importXdrError);
     },
     onImportTxnHash() {
@@ -162,12 +205,7 @@ export default {
       this.importXdr = null;
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
-      if (this.txnTimeout) clearTimeout(this.txnTimeout);
-      if (this.importTxnHash) {
-        this.txnTimeout = setTimeout(() => {
-          this.getTxnXdrFn();
-        }, 2000);
-      }
+      this.loading = false;
     },
     validateAndSetXDR(xdr, errorObj) {
       try {

@@ -1,18 +1,18 @@
 <template>
-  <div>
+  <div class="w-100">
     <section
-      class="d-flex flex-column align-items-start justify-content-start px-2 w-100"
+      class="d-flex flex-column align-items-start justify-content-start px-0 w-100"
     >
       <div
         v-if="mainError.status"
         style="min-height: 280px;"
-        class="d-flex justify-content-center align-items-center"
+        class="d-flex justify-content-center align-items-center w-100"
       >
         <p class="text-danger font-weight-600 font-18">
           {{ mainError.description }}
         </p>
       </div>
-      <div v-else>
+      <div v-else class="w-100">
         <p class="font-15 text-muted m-0 p-0">
           The transaction signer lets you add signatures to a Stellar
           transaction. Signatures are used in the network to prove that the
@@ -28,8 +28,8 @@
           >
         </p>
         <hr style="height: 2px; width: 100%; margin: 26px 0px" />
-        <b-row class="w-100 m-0 p-0">
-          <b-col cols="12" class="m-0 p-0">
+        <b-row class="w-100 m-0 p-0 w-100">
+          <b-col cols="12" class="m-0 p-0 ">
             <!-- info -->
             <TransactionInfo :xdr="xdr" />
           </b-col>
@@ -136,7 +136,6 @@ export default {
           this.xdr,
           BLOCKCHAIN_NETWORK_NAME
         );
-        console.log("tx", tx);
         if (tx instanceof FeeBumpTransaction) this.isTXTypeFee = true;
         else this.isTXTypeFee = false;
         // disable error

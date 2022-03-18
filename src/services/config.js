@@ -8,6 +8,8 @@ export const BLOCKCHAIN_NETWORK_NAME = "Test SDF Network ; September 2015";
 export const BLOCKCHAIN_NETWORK_URI = "https://horizon-testnet.stellar.org";
 export const BLOCKCHAIN_NETWORK_BASE_FEE_TYPE = "stroop";
 export const BLOCKCHAIN_NETWORK_BASE_FEE_VALUE = 100;
+export const BLOCKCHAIN_NETWORK_BASE_RESERVE_TYPE = "lumen";
+export const BLOCKCHAIN_NETWORK_BASE_RESERVE_VALUE = 0.5;
 // error
 export const ErrorCodes = Object.freeze({
   USER_TYPE: "USER_TYPE",

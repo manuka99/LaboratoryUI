@@ -14,7 +14,11 @@
 <script>
 const { TransactionBuilder, FeeBumpTransaction } = require("stellar-sdk");
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
-import { GetAccount } from "@/services/stellar.service";
+import {
+  GroupTxOpsSigners,
+  CalculateTxAccountReserves,
+  AccountRiskLevelForTransaction
+} from "@/services/stellar.service";
 
 export default {
   data() {
@@ -51,85 +55,50 @@ export default {
           { accountID: tx.feeSource, fee: tx.fee, reserves: 0, signatures: [] }
         ];
       } else {
-        const txSource = tx.source;
-        const signatureInfo = [
-          {
-            accountID: txSource,
-            fee: tx.fee,
-            reserves: 0,
-            operations: 0,
+        const groupTxOpsSigners = GroupTxOpsSigners(this.xdr);
+        const allSignatureInfo = [];
+        for (
+          let index = 0;
+          index < Object.keys(groupTxOpsSigners).length;
+          index++
+        ) {
+          var key = Object.keys(groupTxOpsSigners)[index];
+          var value = groupTxOpsSigners[key];
+          allSignatureInfo.push({
+            accountID: key,
+            fee: tx.source == key ? tx.fee : 0,
+            reserves: "processing",
+            operations: value.length,
+            risk: "processing",
             signatures: []
-          }
-        ];
-        for (let index = 0; index < tx.operations.length; index++) {
-          const operation = tx.operations[index];
-          var source = txSource;
-          if (operation.source) source = operation.source;
-          // add to list
-          var i = signatureInfo.findIndex(crnt => crnt.accountID == source);
-          if (i == -1) {
-            signatureInfo.push({
-              accountID: source,
-              fee: 0,
-              reserves: 0,
-              operations: 0,
-              signatures: []
-            });
-            i = signatureInfo.length - 1;
-          }
-          signatureInfo[i].operations = signatureInfo[i].operations + 1;
+          });
         }
-        this.signatureInfo = signatureInfo;
-        this.calculateAllAccountReserves(tx.operations);
+        this.signatureInfo = allSignatureInfo;
+        this.calculateAllAccountRisk();
+        this.calculateAllAccountReserves();
       }
     },
-    async calculateAllAccountReserves(operations) {
-      const newSignatureInfo = [];
+    async calculateAllAccountReserves() {
       for (let index = 0; index < this.signatureInfo.length; index++) {
         const signatureInfo = this.signatureInfo[index];
-        for (let index2 = 0; index2 < operations.length; index2++) {
-          const operation = operations[index2];
-          var reserve = await this.calculateAccountReserves(
-            signatureInfo.accountID,
-            operation
-          );
-          signatureInfo.reserves = signatureInfo.reserves + reserve;
-        }
+        var reserves = await CalculateTxAccountReserves(
+          signatureInfo.accountID,
+          this.xdr
+        );
+        signatureInfo.reserves = `${reserves} XLM`;
       }
-      this.signatureInfo = newSignatureInfo;
+      console.log(this.signatureInfo);
     },
-    async calculateAccountReserves(accountID, operation) {
-      const account = await GetAccount(accountID);
-      console.log(account);
-      if (!account) return 0;
-      switch (operation.type) {
-        case "createAccount":
-          break;
-
-        case "manageData":
-          break;
-
-        case "changeTrust":
-          break;
-
-        case "beginSponsoringFutureReserves":
-          break;
-
-        case "setOptions":
-          break;
-
-        case "createClaimableBalance":
-          break;
-
-        case "manageSellOffer":
-          break;
-
-        case "createPassiveSellOffer":
-          break;
-
-        default:
-          break;
+    async calculateAllAccountRisk() {
+      for (let index = 0; index < this.signatureInfo.length; index++) {
+        const signatureInfo = this.signatureInfo[index];
+        var risk = await AccountRiskLevelForTransaction(
+          signatureInfo.accountID,
+          this.xdr
+        );
+        signatureInfo.risk = risk;
       }
+      console.log(this.signatureInfo);
     },
     isObject(property) {
       return property instanceof Object;
