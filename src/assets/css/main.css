@@ -38,6 +38,46 @@
   font-size: 36px;
 }
 
+.fontc-10 {
+  font-size: clamp(10px, 3.5vw, 20px);
+}
+.fontc-11 {
+  font-size: clamp(11px, 3.5vw, 20px);
+}
+.fontc-12 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-13 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-14 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-15 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-16 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-18 {
+  font-size: clamp(14px, 3.5vw, 18px);
+}
+.fontc-20 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-22 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-26 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-32 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+.fontc-36 {
+  font-size: clamp(15px, 3.5vw, 20px);
+}
+
 .btn-ripple {
   display: inline-block;
   position: relative;

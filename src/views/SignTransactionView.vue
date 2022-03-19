@@ -101,10 +101,10 @@
                 ></b-form-select>
               </div>
 
-              <hr style="height: 2px; width: 100%; margin: 32px 0px" />
+              <hr style="height: 2px; width: 100%; margin: 32px 0px 24px 0px" />
 
               <base-button
-                class="btn btn-primary font-18 p-2"
+                class="btn btn-primary font-18 p-2 m-0"
                 style="width: 240px"
                 type="submit"
                 :disabled="
@@ -119,7 +119,7 @@
                 <i class="mdi mdi-key-change mr-2"></i>Sign Transaction
               </base-button>
 
-              <hr style="height: 2px; width: 100%; margin: 32px 0px" />
+              <hr style="height: 2px; width: 100%; margin: 32px 0px 60px 0px" />
             </div>
             <SignTransactionModal
               v-if="xdr"
@@ -184,7 +184,7 @@ export default {
       } else if (this.importTxnHash) {
         this.loading = true;
         setTimeout(() => {
-          let xdr = `AAAAAgAAAADqkV14haNBjXREqjX0ulIeUCyzGfPspsKDbWv8z6ssxQAAASwAAJv5AAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAACdK3dl1RnuJCPTNeCgw3QWPBvL4wwPGBViRfJncLJPogAAAAEAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAIQF+AdXMOdfB1Jh2E9qhUPwRGpy/a0p450w4NDbWs38AAAAAEAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAGKHN+T5VvfKESvvsedP6C740egAmOD66gaaPhUBBXB7AAAAAEAAAAAAAAAAA==`;
+          let xdr = `AAAAAgAAAADD+KB6mS5ZaTA7n8Q62BWAbwD7YIs3vY/EqtmkJCIE/AAAArwAAM9gAAAAAQAAAAEAAAAAAAAAAAAAAABiNfVBAAAAAQAAABZydHJ0bmYgIGdmZ2ZnNDU0IGVmZGZkAAAAAAAHAAAAAAAAAAAAAAAAc8vVP7OGIIDfE+AYGMxQI/bXLkGQNKJ2w8agyal0OcgAAAAAIC+/AAAAAAEAAAAAc8vVP7OGIIDfE+AYGMxQI/bXLkGQNKJ2w8agyal0OcgAAAAKAAAABmRzZDM0MwAAAAAAAQAAAANzZHMAAAAAAQAAAABzy9U/s4YggN8T4BgYzFAj9tcuQZA0onbDxqDJqXQ5yAAAABEAAAABAAAAAKPTEQBGwF1zJM7Qcgw2eEFlw8VkKoZ0qWYVTgJXG5PoAAAAEAAAAACj0xEARsBdcyTO0HIMNnhBZcPFZCqGdKlmFU4CVxuT6AAAAAEAAAAAo9MRAEbAXXMkztByDDZ4QWXDxWQqhnSpZhVOAlcbk+gAAAAKAAAABTU3NjU2AAAAAAAAAQAAAAR0dDU1AAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAo9MRAEbAXXMkztByDDZ4QWXDxWQqhnSpZhVOAlcbk+gAAAAFAAAAAAAAAAEAAAAAo9MRAEbAXXMkztByDDZ4QWXDxWQqhnSpZhVOAlcbk+gAAAABNDU0NQAAAACj0xEARsBdcyTO0HIMNnhBZcPFZCqGdKlmFU4CVxuT6AAAAAqVB/aAAAAAAAAAAAA=`;
           // xdr = "sss";
           this.validateAndSetXDR(xdr, this.importTxnHashError);
           this.loading = false;

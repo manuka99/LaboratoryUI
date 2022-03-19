@@ -27,7 +27,7 @@
             Learn more.</a
           >
         </p>
-        <hr style="height: 2px; width: 100%; margin: 26px 0px" />
+        <hr style="height: 2px; width: 100%; margin: 20px 0px" />
         <b-row class="w-100 m-0 p-0 w-100">
           <b-col cols="12" class="m-0 p-0 ">
             <!-- info -->
@@ -35,7 +35,7 @@
           </b-col>
           <b-col cols="12" class="m-0 p-0">
             <!-- operations -->
-            <hr style="height: 2px; width: 100%; margin: 32px 0px" />
+            <hr style="height: 2px; width: 100%; margin: 28px 0px" />
             <div
               class="d-flex flex-column justify-content-start flex-wrap w-100"
             >
@@ -48,7 +48,7 @@
                 "
               >
                 <b-form-checkbox switch size="lg" v-model="isShowTXOperations">
-                  <p class="mr-2 m-0 p-0 font-18 text-mutted font-weight-600">
+                  <p class="mr-2 m-0 p-0 fontc-18 text-mutted font-weight-600 text-nowrap">
                     View {{ isTXTypeFee ? "Inner" : "" }} Transaction Operations
                   </p>
                 </b-form-checkbox>
@@ -61,10 +61,37 @@
             </div>
           </b-col>
           <b-col cols="12" class="m-0 p-0">
-            <hr style="height: 2px; width: 100%; margin: 32px 0px" />
             <!-- signatures -->
-            <TxSignatureInfo :xdr="xdr" />
-            <hr style="height: 2px; width: 100%; margin: 32px 0px" />
+            <hr style="height: 2px; width: 100%; margin: 28px 0px" />
+            <div
+              class="d-flex flex-column justify-content-start flex-wrap w-100"
+            >
+              <div
+                class="d-flex align-items-center p-3 border rounded card"
+                :class="
+                  isShowTXSignatures
+                    ? 'bg-success text-white'
+                    : 'bg-info text-white'
+                "
+              >
+                <b-form-checkbox switch size="lg" v-model="isShowTXSignatures">
+                  <p class="mr-2 m-0 p-0 fontc-18 text-mutted font-weight-600 text-nowrap">
+                    View Existing {{ isTXTypeFee ? "Inner" : "" }} Transaction Signatures
+                  </p>
+                </b-form-checkbox>
+              </div>
+              <TxSignatureInfo
+                v-if="isShowTXSignatures"
+                class="mt-4"
+                :xdr="xdr"
+              />
+            </div>
+          </b-col>
+          <b-col cols="12" class="m-0 p-0">
+            <hr style="height: 2px; width: 100%; margin: 28px 0px 20px 0px" />
+            <!-- signatures -->
+            <TxSignerInfo :xdr="xdr" />
+            <hr style="height: 2px; width: 100%; margin: 40px 0px 60px 0px" />
           </b-col>
         </b-row>
       </div>
@@ -81,6 +108,7 @@ const {
 import TransactionInfo from "@/views/SignTransaction/TransactionInfo.vue";
 import TxActionsInfo from "@/views/SignTransaction/TxActionsInfo.vue";
 import TxSignatureInfo from "@/views/SignTransaction/TxSignatureInfo.vue";
+import TxSignerInfo from "@/views/SignTransaction/TxSignerInfo.vue";
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import CustomError from "../Errors/CustomError.vue";
 
@@ -89,12 +117,14 @@ export default {
     TransactionInfo,
     TxActionsInfo,
     TxSignatureInfo,
+    TxSignerInfo,
     CustomError
   },
   data() {
     return {
       isTXTypeFee: false,
       isShowTXOperations: false,
+      isShowTXSignatures: false,
       mainError: {
         status: false,
         code: false,

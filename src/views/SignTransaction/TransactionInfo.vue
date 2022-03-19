@@ -16,9 +16,10 @@
           <td class="text-secondary font-weight-600 bg-white px-3 py-2">
             <div
               class="bg-light px-3 py-2 border border-light rounded font-15"
+              :class="!item.value && 'font-italic'"
               style="word-break: break-all;"
             >
-              {{ item.value }}
+              {{ item.value ? item.value : "none" }}
             </div>
           </td>
         </tr>
@@ -111,32 +112,40 @@ export default {
       items.push({
         name: "Inner Transaction Sequence",
         value: tx.innerTransaction.sequence
+          ? tx.innerTransaction.sequence
+          : null
       });
       items.push({
         name: "Inner Transaction Memo",
         value: tx.innerTransaction.memo.value
+          ? tx.innerTransaction.memo.value
+          : null
       });
       items.push({
         name: "Inner Transaction Timebound (Min)",
-        value: new Date(
-          parseInt(tx.innerTransaction.timeBounds.minTime)
-        ).toLocaleTimeString("en-US", {
-          timeZone: "Asia/Colombo",
-          year: "2-digit",
-          month: "2-digit",
-          day: "2-digit"
-        })
+        value: tx.innerTransaction.timeBounds.minTime
+          ? new Date(
+              parseInt(tx.innerTransaction.timeBounds.minTime)
+            ).toLocaleTimeString("en-US", {
+              timeZone: "Asia/Colombo",
+              year: "2-digit",
+              month: "2-digit",
+              day: "2-digit"
+            })
+          : null
       });
       items.push({
         name: "Inner Transaction Timebound (Max)",
-        value: new Date(
-          parseInt(tx.innerTransaction.timeBounds.maxTime)
-        ).toLocaleTimeString("en-US", {
-          timeZone: "Asia/Colombo",
-          year: "2-digit",
-          month: "2-digit",
-          day: "2-digit"
-        })
+        value: tx.innerTransaction.timeBounds.maxTime
+          ? new Date(
+              parseInt(tx.innerTransaction.timeBounds.maxTime)
+            ).toLocaleTimeString("en-US", {
+              timeZone: "Asia/Colombo",
+              year: "2-digit",
+              month: "2-digit",
+              day: "2-digit"
+            })
+          : null
       });
       items.push({
         name: "Inner Transaction XDR",
@@ -168,35 +177,39 @@ export default {
       });
       items.push({
         name: "Transaction Sequence",
-        value: tx.sequence
+        value: tx.sequence ? tx.sequence : null
       });
       items.push({
         name: "Transaction Memo",
-        value: tx.memo.value
+        value: tx.memo.value ? tx.memo.value : null
       });
       items.push({
         name: "Transaction Timebound (Min)",
-        value: new Date(parseInt(tx.timeBounds.minTime)).toLocaleTimeString(
-          "en-US",
-          {
-            timeZone: "Asia/Colombo",
-            year: "2-digit",
-            month: "2-digit",
-            day: "2-digit"
-          }
-        )
+        value: tx.timeBounds.minTime
+          ? new Date(parseInt(tx.timeBounds.minTime)).toLocaleTimeString(
+              "en-US",
+              {
+                timeZone: "Asia/Colombo",
+                year: "2-digit",
+                month: "2-digit",
+                day: "2-digit"
+              }
+            )
+          : null
       });
       items.push({
         name: "Transaction Timebound (Max)",
-        value: new Date(parseInt(tx.timeBounds.maxTime)).toLocaleTimeString(
-          "en-US",
-          {
-            timeZone: "Asia/Colombo",
-            year: "2-digit",
-            month: "2-digit",
-            day: "2-digit"
-          }
-        )
+        value: tx.timeBounds.maxTime
+          ? new Date(parseInt(tx.timeBounds.maxTime)).toLocaleTimeString(
+              "en-US",
+              {
+                timeZone: "Asia/Colombo",
+                year: "2-digit",
+                month: "2-digit",
+                day: "2-digit"
+              }
+            )
+          : null
       });
       items.push({
         name: "Transaction Operations",

@@ -164,7 +164,7 @@ export const CalculateTxAccountReserves = async (accountID, txnXdr) => {
   if (!operations) return null;
 
   const account = await GetAccount(accountID);
-  if (!account) return null;
+  // if (!account) return null;
 
   const txSource = tx.source;
   var reserves = 0;
@@ -187,7 +187,7 @@ export const CalculateTxAccountReserves = async (accountID, txnXdr) => {
       // start of the endSponsoringFutureReserves index
       if (sponsoringEndOpId != -1) {
         sponsoringEndOpId = index + sponsoringEndOpId + 1;
-      }
+      } else sponsoringEndOpId = operations.length - 1
 
       if (accountID != operationSource) {
         // if the current account has not initiated the sponsor, then skip it
@@ -223,9 +223,6 @@ export const CalculateTxAccountReserves = async (accountID, txnXdr) => {
   return reserves;
 };
 
-// Public Key	GALI62CAEUKD74BKUHKEUQX2ISNRQHYOXCBTP4WDWUA6MR6VBJA3MSOA
-// Secret Key	SCSC5F5DX2AV37M7DAGRH4HPGB2AF4YGVILSBCKLEPGQAPHY7ZYPKV65
-
 export const CalculateOperationReserves = (
   account,
   operation,
@@ -243,6 +240,7 @@ export const CalculateOperationReserves = (
 
     case "manageData":
       if (
+        !account ||
         operation.value &&
         !Object.keys(account.data_attr).includes(operation.name)
       )
@@ -251,6 +249,7 @@ export const CalculateOperationReserves = (
 
     case "changeTrust":
       if (
+        !account ||
         operation.limit > 0 &&
         account.balances.findIndex(
           cnt =>
@@ -275,13 +274,13 @@ export const CalculateOperationReserves = (
         opSignerValue = Buffer.from(opSignerValue).toString("hex");
 
       if (
+        !account ||
         account.signers.findIndex(cnt => {
           var { type, key } = cnt;
           if (type == "sha256_hash")
             key = StellarSdk.StrKey.decodeSha256Hash(key).toString("hex");
           if (type == "preauth_tx")
             key = StellarSdk.StrKey.decodePreAuthTx(key).toString("hex");
-          console.log(key, opSignerValue);
           return type == opSignerType && key == opSignerValue;
         }) == -1
       )
@@ -438,6 +437,8 @@ export const AccountRiskLevelForTransaction = async (accountID, txnXdr) => {
     else if (!signerRisk || operationRisk > signerRisk)
       signerRisk = operationRisk;
   }
+
+  return signerRisk;
 
   switch (signerRisk) {
     case 1:

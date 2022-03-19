@@ -129,4 +129,30 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.table-card {
+  box-shadow: 0 0 1rem 0 rgba(136, 152, 170, 0.15) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  border: 1px solid #8898aa3a;
+}
+
+table th {
+  background-color: #f6f9fc !important;
+  color: #8898aa;
+  font-weight: 600;
+  border-bottom: 0px !important;
+  font-size: 14px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table th {
+  padding: 14px 20px !important;
+}
+
+table td {
+  padding: 20px !important;
+  background-color: #8898aa;
+}
+</style>
