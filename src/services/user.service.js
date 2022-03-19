@@ -1,4 +1,5 @@
 import Api from "./api";
+import { GetTxSecurityPwd } from "@/services/transaction.security";
 
 export const GetRequestUserAPI = () => {
   return Api().get(`/public/auth-user`);
@@ -65,6 +66,10 @@ export const VerifyAndUpdateEmailRequestAPI = payload => {
 };
 
 // transaction
+export const ConfirmTxSecurityPwd = () => {
+  return Api(false, { tx_pwd: GetTxSecurityPwd() }).get(`/general/tx-confirm`);
+};
+
 export const GetTxSecurityInfoAPI = () => {
   return Api().get(`/general/tx-security`);
 };
