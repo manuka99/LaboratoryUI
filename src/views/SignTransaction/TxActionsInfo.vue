@@ -1,8 +1,7 @@
 <template>
-  <div class="w-100">
-    <h5 class="m-0 p-0">Transaction Operations</h5>
+  <div class="w-100 p-4 rounded" style="background: #00b33c">
     <b-form-select
-      class="w-auto mt-3"
+      class="w-auto mt-0"
       style="max-width: 100%"
       v-model="selectedOperations"
       :options="operationOptions"
@@ -11,7 +10,7 @@
     <div
       style="max-height: 68vh; width: 100%"
       v-if="selectedOperations"
-      class="overflow-y-auto mt-4 pt-4 px-4 bg-light"
+      class="overflow-y-auto mt-4 pt-4 px-4 bg-white"
     >
       <div
         class="card mb-4 font-14 font-weight-600 text-muted"

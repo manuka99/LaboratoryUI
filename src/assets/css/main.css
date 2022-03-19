@@ -178,3 +178,7 @@
   padding: 10px !important;
   overflow-x: auto !important;
 }
+
+.word-break-all {
+  word-break: break-all;
+}

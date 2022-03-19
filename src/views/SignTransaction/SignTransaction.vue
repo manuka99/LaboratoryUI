@@ -48,7 +48,9 @@
                 "
               >
                 <b-form-checkbox switch size="lg" v-model="isShowTXOperations">
-                  <p class="mr-2 m-0 p-0 fontc-18 text-mutted font-weight-600 text-nowrap">
+                  <p
+                    class="mr-2 m-0 p-0 fontc-18 text-mutted font-weight-600 text-nowrap"
+                  >
                     View {{ isTXTypeFee ? "Inner" : "" }} Transaction Operations
                   </p>
                 </b-form-checkbox>
@@ -75,8 +77,10 @@
                 "
               >
                 <b-form-checkbox switch size="lg" v-model="isShowTXSignatures">
-                  <p class="mr-2 m-0 p-0 fontc-18 text-mutted font-weight-600 text-nowrap">
-                    View Existing {{ isTXTypeFee ? "Inner" : "" }} Transaction Signatures
+                  <p
+                    class="mr-2 m-0 p-0 fontc-18 text-mutted font-weight-600 text-nowrap"
+                  >
+                    View {{ isTXTypeFee ? "Inner" : "" }} Transaction Signatures
                   </p>
                 </b-form-checkbox>
               </div>
@@ -84,13 +88,14 @@
                 v-if="isShowTXSignatures"
                 class="mt-4"
                 :xdr="xdr"
+                :isOnline="isOnline"
               />
             </div>
           </b-col>
           <b-col cols="12" class="m-0 p-0">
-            <hr style="height: 2px; width: 100%; margin: 28px 0px 20px 0px" />
+            <hr style="height: 2px; width: 100%; margin: 36px 0px 26px 0px" />
             <!-- signatures -->
-            <TxSignerInfo :xdr="xdr" />
+            <TxSignerInfo :xdr="xdr" :isOnline="isOnline" />
             <hr style="height: 2px; width: 100%; margin: 40px 0px 60px 0px" />
           </b-col>
         </b-row>
@@ -145,10 +150,8 @@ export default {
       type: String,
       default: "Sign Blockchain Transaction"
     },
-    xdr: {
-      type: String,
-      default: null
-    }
+    xdr: String,
+    isOnline: Boolean
   },
   watch: {
     xdr: {

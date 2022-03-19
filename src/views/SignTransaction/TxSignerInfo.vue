@@ -236,14 +236,14 @@ export default {
         },
         {
           key: "reserves",
-          label: "RESERVES",
+          label: "TXN RESERVES",
           sortable: true,
           sortDirection: "desc",
           class: "text-start bg-white"
         },
         {
           key: "risk",
-          label: "RISK",
+          label: "RISK LEVEL",
           sortable: true,
           sortDirection: "desc",
           class: "text-start bg-white"
