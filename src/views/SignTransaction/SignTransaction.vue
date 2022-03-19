@@ -87,7 +87,7 @@
               <TxSignatureInfo
                 v-if="isShowTXSignatures"
                 class="mt-4"
-                :xdr="xdr"
+                :xdr="signedXdr ? signedXdr : xdr"
                 :isOnline="isOnline"
               />
             </div>
@@ -95,7 +95,11 @@
           <b-col cols="12" class="m-0 p-0">
             <hr style="height: 2px; width: 100%; margin: 36px 0px 26px 0px" />
             <!-- signatures -->
-            <TxSignerInfo :xdr="xdr" :isOnline="isOnline" />
+            <TxSignerInfo
+              :xdr="xdr"
+              :isOnline="isOnline"
+              @signed="onTxSignedFn"
+            />
             <hr style="height: 2px; width: 100%; margin: 40px 0px 60px 0px" />
           </b-col>
         </b-row>
@@ -134,7 +138,8 @@ export default {
         status: false,
         code: false,
         description: null
-      }
+      },
+      signedXdr: null
     };
   },
   props: {
@@ -179,6 +184,14 @@ export default {
         this.mainError.description =
           "Unable to parse input XDR into Transaction Envelope";
         this.mainError.status = true;
+      }
+    },
+    onTxSignedFn(signInfo) {
+      const { type, mode, accountID, signature } = signInfo;
+      if (!this.isOnline) this.signedXdr = signature;
+      else {
+        // type - ['secure', 'general']
+        // mode - ['metaspeck', 'direct']
       }
     },
     hideModalFn() {

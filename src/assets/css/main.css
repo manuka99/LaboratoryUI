@@ -137,6 +137,17 @@
   max-width: 100%;
 }
 
+.max-width-400px {
+  max-width: 400px;
+}
+
+.max-width-500px {
+  max-width: 500px;
+}
+
+.max-width-600px {
+  max-width: 600px;
+}
 .max-width-900px {
   max-width: 900px;
 }
