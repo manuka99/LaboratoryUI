@@ -89,6 +89,7 @@
                 class="mt-4"
                 :xdr="signedXdr ? signedXdr : xdr"
                 :isOnline="isOnline"
+                :refreshSignatures="refreshSignatures"
               />
             </div>
           </b-col>
@@ -96,7 +97,7 @@
             <hr style="height: 2px; width: 100%; margin: 36px 0px 26px 0px" />
             <!-- signatures -->
             <TxSignerInfo
-              :xdr="xdr"
+              :xdr="signedXdr ? signedXdr : xdr"
               :isOnline="isOnline"
               @signed="onTxSignedFn"
             />
@@ -139,7 +140,8 @@ export default {
         code: false,
         description: null
       },
-      signedXdr: null
+      signedXdr: null,
+      refreshSignatures: false
     };
   },
   props: {
@@ -165,7 +167,7 @@ export default {
       },
       deep: true,
       immediate: true
-    }
+    },
   },
   methods: {
     initFn() {
@@ -188,8 +190,10 @@ export default {
     },
     onTxSignedFn(signInfo) {
       const { type, mode, accountID, signature } = signInfo;
-      if (!this.isOnline) this.signedXdr = signature;
-      else {
+      if (type == "general") {
+        if (this.isOnline) this.refreshSignatures = !this.refreshSignatures;
+        else this.signedXdr = signature;
+      } else {
         // type - ['secure', 'general']
         // mode - ['metaspeck', 'direct']
       }

@@ -208,191 +208,18 @@
             style="height: 40px"
             v-model="signingType"
             :options="signingTypeOptions"
-            :disabled="loading"
+            :disabled="vmodelSigning.loading"
           ></b-form-select>
         </b-form-group>
       </div>
-
-      <!-- select signer mode -->
-      <div v-if="signingType">
-        <b-form-group
-          id="fieldset-1"
-          description="There are several signing modes in stellar, to get more information visit their official website or contact our team. METASPECK will allow you to sign the transaction using a registered account credential."
-          label="2) Transaction Signing Mode"
-          class="font-16 font-weight-600 w-100 mt-2 max-width-500px"
-          label-for="select-1"
-        >
-          <b-form-select
-            id="select-1"
-            class="w-auto min-width-300px"
-            style="height: 40px"
-            v-model="signingMode"
-            :options="signingModeOptions"
-            :disabled="loading"
-          ></b-form-select>
-        </b-form-group>
-      </div>
-
-      <!-- select metaspeck mode -->
-      <div v-if="signingMode == 'metaspeck'">
-        <b-form-select
-          class="w-auto mt-0 min-width-300px"
-          style="height: 40px"
-          v-model="selectedAccount"
-          :options="signingAccountOptions"
-          :disabled="loading"
-        ></b-form-select>
-      </div>
-
-      <div v-if="signingMode == 'metaspeck' && selectedAccount">
-        <base-button
-          class="mt-4 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
-          type="submit"
-          nativeType="submit"
-          :disabled="loading"
-          @click="signWithMETASPECK"
-        >
-          Sign with METASPECK
-        </base-button>
-      </div>
-
-      <!-- select secretKey mode online -->
-      <div v-if="signingMode == 'secretKey' && isOnline">
-        <b-form-select
-          class="w-auto mt-0 min-width-300px"
-          style="height: 40px"
-          v-model="selectedAccount"
-          :options="signingAccountOptions"
-          :disabled="loading"
-        ></b-form-select>
-      </div>
-
-      <div v-if="signingMode == 'secretKey' && isOnline && selectedAccount">
-        <b-form-group
-          id="fieldset-1"
-          description="Secret key is the your accounts's private key. If the account has multiple signers then check the signer's risk level to select the most suitable private key."
-          label="Account Signer's Secret Key"
-          class="font-15 font-weight-600 w-100 mt-3 max-width-500px"
-          label-for="input-0"
-          :valid-feedback="secretKey.message"
-          :invalid-feedback="secretKey.message"
-          :state="secretKey.status"
-        >
-          <b-form-input
-            id="input-0"
-            type="password"
-            placeholder="Enter Secret Key (Starting with S)"
-            v-model="secretKey.value"
-            :state="secretKey.status"
-            :disabled="loading"
-            trim
-          ></b-form-input>
-        </b-form-group>
-      </div>
-
-      <div
-        v-if="
-          signingMode == 'secretKey' &&
-            isOnline &&
-            selectedAccount &&
-            secretKey.value
-        "
-      >
-        <base-button
-          class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
-          type="submit"
-          nativeType="submit"
-          @click="signWithSecretKey"
-          :disabled="loading"
-        >
-          Sign with Secret Key
-        </base-button>
-      </div>
-
-      <!-- select secretKey mode offline -->
-      <div v-if="signingMode == 'secretKey' && !isOnline">
-        <b-form-group
-          id="fieldset-1"
-          description="Secret key is the your accounts's private key. If the account has multiple signers then check the signer's risk level to select the most suitable private key."
-          label="Account Signer's Secret Key"
-          class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
-          label-for="input-1"
-          :valid-feedback="secretKey.message"
-          :invalid-feedback="secretKey.message"
-          :state="secretKey.status"
-        >
-          <b-form-input
-            id="input-1"
-            type="password"
-            placeholder="Enter Secret Key (Starting with S)"
-            v-model="secretKey.value"
-            :state="secretKey.status"
-            :disabled="loading"
-            trim
-          ></b-form-input>
-        </b-form-group>
-      </div>
-
-      <div v-if="signingMode == 'secretKey' && !isOnline && secretKey.value">
-        <base-button
-          class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
-          type="submit"
-          nativeType="submit"
-          @click="signWithSecretKey"
-          :disabled="loading"
-        >
-          Sign with Secret Key
-        </base-button>
-      </div>
-
-      <!-- select hashx mode offline -->
-      <div v-if="signingMode == 'hashx' && !isOnline">
-        <b-form-group
-          id="fieldset-1"
-          description="Hash Preimage (HEX) is the value of X where the hash of X is added as one of your accounts's signer. If the account has multiple signers then check the signer's risk level to select the most suitable key."
-          label="Account's Hash Preimage"
-          class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
-          label-for="input-2"
-          :valid-feedback="hashxPreimage.message"
-          :invalid-feedback="hashxPreimage.message"
-          :state="hashxPreimage.status"
-        >
-          <b-form-input
-            id="input-2"
-            type="password"
-            placeholder="Enter Hash Preimage (HEX)"
-            v-model="hashxPreimage.value"
-            :state="hashxPreimage.status"
-            :disabled="loading"
-            trim
-          ></b-form-input>
-        </b-form-group>
-      </div>
-
-      <div v-if="signingMode == 'hashx' && !isOnline && hashxPreimage.value">
-        <base-button
-          class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
-          type="submit"
-          nativeType="submit"
-          @click="signWithHashX"
-          :disabled="loading"
-        >
-          Sign with Hash Preimage
-        </base-button>
-      </div>
-
-      <!-- select albedo mode offline -->
-      <div v-if="signingMode == 'albedo' && !isOnline">
-        <base-button
-          class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
-          type="submit"
-          nativeType="submit"
-          @click="signWithAlbedoFn"
-          :disabled="loading"
-        >
-          Sign with Albedo
-        </base-button>
-      </div>
+      <SignGeneral
+        v-if="signingType == 'general'"
+        :xdr="xdr"
+        :isOnline="isOnline"
+        :signatureInfo="signatureInfo"
+        v-model="vmodelSigning"
+        @signed="emitSignedDataFn"
+      />
     </div>
     <FundBlockchainAccount
       v-if="fundAccountModal.isShow"
@@ -402,10 +229,12 @@
 </template>
 
 <script>
-import { TransactionBuilder, FeeBumpTransaction, Keypair } from "stellar-sdk";
+import { TransactionBuilder, FeeBumpTransaction } from "stellar-sdk";
+import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import JsonViewer from "vue-json-viewer";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
-import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
+import SignGeneral from "@/views/SignTransaction/Signing/SignGeneral.vue";
+
 import {
   GroupTxOpsSigners,
   CalculateTxAccountReserves,
@@ -415,12 +244,15 @@ import {
 export default {
   components: {
     JsonViewer,
-    FundBlockchainAccount
+    FundBlockchainAccount,
+    SignGeneral
   },
   data() {
     return {
       signatureInfo: null,
-      loading: false,
+      vmodelSigning: {
+        loading: false
+      },
       fundAccountModal: {
         destination: "",
         isShow: false
@@ -472,71 +304,12 @@ export default {
           value: "secure",
           text: "Pre Authorize Transaction (Secure)"
         }
-      ],
-      signingMode: null,
-      selectedAccount: null,
-      secretKey: {
-        value: null,
-        status: null,
-        message: null
-      },
-      hashxPreimage: {
-        value: null,
-        status: null,
-        message: null
-      }
+      ]
     };
   },
   props: {
     xdr: String,
     isOnline: Boolean
-  },
-  computed: {
-    signingModeOptions() {
-      if (!this.signingType) return null;
-      var options = [
-        {
-          value: null,
-          text: "Select Signing Mode"
-        },
-        {
-          value: "metaspeck",
-          text: "METASPECK"
-        },
-        {
-          value: "secretKey",
-          text: "Secret Key"
-        }
-      ];
-      if (!this.isOnline) {
-        options.push({
-          value: "hashx",
-          text: "Hash X"
-        });
-        options.push({
-          value: "albedo",
-          text: "ALBEDO"
-        });
-      }
-      return options;
-    },
-    signingAccountOptions() {
-      console.log(this.signatureInfo);
-      if (!this.signatureInfo) return null;
-      return [
-        {
-          value: null,
-          text: "Select Signing Account"
-        }
-      ].concat(
-        this.signatureInfo.map(signatureInfo => {
-          return {
-            value: signatureInfo.accountID,
-            text: signatureInfo.shortPublicKey
-          };
-        })
-      );
-    }
   },
   watch: {
     xdr: {
@@ -545,45 +318,6 @@ export default {
       },
       deep: true,
       immediate: true
-    },
-    signingType() {
-      this.signingMode = null;
-      this.selectedAccount = null;
-      this.secretKey = {
-        value: null,
-        status: null,
-        message: null
-      };
-      this.hashxPreimage = {
-        value: null,
-        status: null,
-        message: null
-      };
-    },
-    signingMode() {
-      this.selectedAccount = null;
-      this.secretKey = {
-        value: null,
-        status: null,
-        message: null
-      };
-      this.hashxPreimage = {
-        value: null,
-        status: null,
-        message: null
-      };
-    },
-    selectedAccount() {
-      this.secretKey = {
-        value: null,
-        status: null,
-        message: null
-      };
-      this.hashxPreimage = {
-        value: null,
-        status: null,
-        message: null
-      };
     }
   },
   methods: {
@@ -672,20 +406,8 @@ export default {
     getShortPublicKey(pk) {
       return `${pk.substr(0, 10)}......${pk.substr(-10)}`;
     },
-    signWithMETASPECK() {},
-    signWithSecretKey() {
-      const tx = TransactionBuilder.fromXDR(this.xdr, BLOCKCHAIN_NETWORK_NAME);
-      try {
-        var keypair = Keypair.fromSecret(this.secretKey);
-        tx.sign(keypair);
-        tx.toXDR();
-      } catch (error) {}
-      tx.sign();
-    },
-    signWithHashX() {},
-    signWithAlbedoFn() {},
-    isObject(property) {
-      return property instanceof Object;
+    emitSignedDataFn(data) {
+      this.$emit("signed", data);
     }
   }
 };

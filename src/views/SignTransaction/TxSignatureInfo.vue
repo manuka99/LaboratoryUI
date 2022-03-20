@@ -1,29 +1,72 @@
 <template>
   <div class="w-100 p-4 rounded" style="background: #00b33c">
-    <h5 class="mt-1 mb-0 p-0 text-white font-18">a) Existing Transaction Signatures</h5>
+    <h5 class="mt-1 mb-0 p-0 text-white font-18">
+      a) Existing Transaction Signatures
+    </h5>
     <!-- txXdrSignatures -->
     <div
-      class="card mt-4 p-0 d-flex flex-sm-row flex-nowrap align-items-stretch"
-      v-for="(txXdrSignature, index) in txXdrSignatures"
-      :key="index"
+      style="max-height: 48vh; width: 100%; overflow-y: auto"
+      class="mt-4 bg-white border rounded pt-3 px-3"
     >
-      <!-- header -->
       <div
-        class="p-3 bg-light d-flex justify-content-center align-items-center"
+        class="card mb-3 p-0 d-flex flex-sm-row flex-nowrap align-items-stretch"
+        v-for="(txXdrSignature, index) in txXdrSignatures"
+        :key="index"
       >
-        <span class="font-weight-600 font-16">{{ index + 1 }} </span>
-      </div>
-      <!-- body -->
-      <div
-        class="d-flex flex-column p-3 justify-content-center align-items-start"
-      >
-        <div>
-          <span class="font-weight-600 font-16">Hint: </span>
-          <span class="font-15">{{ txXdrSignature.hint }}</span>
+        <!-- header -->
+        <div
+          class="p-3 bg-light d-flex justify-content-center align-items-center"
+        >
+          <span class="font-weight-600 font-16">{{ index + 1 }} </span>
         </div>
-        <div>
-          <span class="font-weight-600 font-15">Signature: </span>
-          <span class="font-15 word-break-all">{{ txXdrSignature.sign }}</span>
+        <!-- body -->
+        <div
+          class="d-flex flex-column p-2 justify-content-center align-items-start"
+        >
+          <div>
+            <span class="font-weight-600 font-14">Hint: </span>
+            <span class="font-14">{{ txXdrSignature.hint }}</span>
+          </div>
+          <div>
+            <span class="font-weight-600 font-15">Signature: </span>
+            <span class="font-14 word-break-all">{{
+              txXdrSignature.sign
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <div v-if="!showSignedXdr">
+        <button
+          @click="showSignedXdr = true"
+          class="btn btn-primary font-14 font-weight-600 cursor-pointer text-white border-white"
+        >
+          View Signed Transaction XDR
+        </button>
+      </div>
+      <div v-if="showSignedXdr">
+        <button
+          @click="showSignedXdr = false"
+          class="btn btn-danger mb-3 font-14 font-weight-600 cursor-pointer text-white border-white"
+        >
+          Hide Signed Transaction XDR
+        </button>
+        <div
+          class="border rounded p-3 font-13 font-weight-600 bg-light word-break-all"
+        >
+          {{ xdr }}
+
+          <base-button
+            class="btn btn-warning btn-sm mt-2 d-flex justify-content-start align-items-center font-14 text-light"
+            type="submit"
+            @click="copyToClipboadFn"
+            nativeType="submit"
+          >
+            <i class="mdi mdi-content-copy text-white mr-1"></i> Copy to
+            Clipboard
+          </base-button>
         </div>
       </div>
     </div>
@@ -42,12 +85,14 @@ export default {
   data() {
     return {
       txXdrSignatures: [],
+      showSignedXdr: false,
       onlineSignatures: []
     };
   },
   props: {
     xdr: String,
-    isOnline: Boolean
+    isOnline: Boolean,
+    refreshSignatures: Boolean
   },
   watch: {
     xdr: {
@@ -88,6 +133,9 @@ export default {
           sign
         };
       });
+    },
+    copyToClipboadFn() {
+      this.copyToClipboad(this.xdr);
     },
     getOnlineSignatures() {
       const tx = TransactionBuilder.fromXDR(this.xdr, BLOCKCHAIN_NETWORK_NAME);

@@ -10,21 +10,21 @@
     <div
       style="max-height: 68vh; width: 100%"
       v-if="selectedOperations"
-      class="overflow-y-auto mt-4 pt-4 px-4 bg-white"
+      class="overflow-y-auto mt-4 pt-3 px-3 bg-white rounded border"
     >
       <div
-        class="card mb-4 font-14 font-weight-600 text-muted"
+        class="card mb-3 font-14 font-weight-600 text-muted rounded"
         v-for="(operation, index) in selectedOperations"
         :key="index"
       >
         <!-- header -->
-        <div class="px-3 py-2 bg-dark text-white">
-          <h6 class="m-1 p-0">
+        <div class="px-2 py-1 bg-dark text-white">
+          <h6 class="m-1 p-0 font-15">
             Operation {{ index + 1 }} - {{ operation.Type }}
           </h6>
         </div>
         <!-- body -->
-        <div class="p-3">
+        <div class="p-2">
           <template v-for="(property, index2) in Object.keys(operation)">
             <div :key="index2">
               <div
