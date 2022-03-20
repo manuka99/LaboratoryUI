@@ -28,8 +28,6 @@
         label="Account Signer's Public Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-0"
-        :invalid-feedback="selectedAccountState.message"
-        :state="selectedAccountState.status"
       >
       </b-form-group>
       <div class="max-width-500px">
@@ -52,6 +50,20 @@
           >
         </datalist>
       </div>
+
+      <p
+        v-if="selectedAccountState.status"
+        class="text-success font-weight-bold mt-3 font-14 font-italic"
+      >
+        Transaction was signed successfully.
+      </p>
+
+      <p
+        v-if="selectedAccountState.status == false"
+        class="text-danger font-weight-bold mt-3 font-14 font-italic"
+      >
+        {{ selectedAccountState.message }}
+      </p>
     </div>
 
     <div v-if="signingMode == 'metaspeck' && selectedAccount">
@@ -74,8 +86,6 @@
         label="Account Signer's Public Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-0"
-        :invalid-feedback="selectedAccountState.message"
-        :state="selectedAccountState.status"
       >
       </b-form-group>
       <div class="max-width-500px">
@@ -107,8 +117,6 @@
         label="Account Signer's Secret Key"
         class="font-15 font-weight-600 w-100 mt-3 max-width-500px"
         label-for="input-0"
-        :invalid-feedback="secretKeyState.message"
-        :state="secretKeyState.status"
       >
         <b-form-input
           id="input-0"
@@ -126,6 +134,13 @@
         class="text-success font-weight-bold font-14 font-italic"
       >
         Transaction was signed successfully.
+      </p>
+
+      <p
+        v-if="secretKeyState.status == false"
+        class="text-danger font-weight-bold font-14 font-italic"
+      >
+        {{ secretKeyState.message }}
       </p>
     </div>
 
@@ -153,7 +168,6 @@
         label="Account Signer's Secret Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-1"
-        :invalid-feedback="secretKeyState.message"
         :state="secretKeyState.status"
       >
         <b-form-input
@@ -171,6 +185,13 @@
         class="text-success font-weight-bold font-14 font-italic"
       >
         Transaction was signed successfully.
+      </p>
+
+      <p
+        v-if="secretKeyState.status == false"
+        class="text-danger font-weight-bold font-14 font-italic"
+      >
+        {{ secretKeyState.message }}
       </p>
     </div>
 
@@ -194,7 +215,6 @@
         label="Account's Hash Preimage"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-2"
-        :invalid-feedback="hashxPreimageState.message"
         :state="hashxPreimageState.status"
       >
         <b-form-input
@@ -213,6 +233,13 @@
         class="text-success font-weight-bold font-14 font-italic"
       >
         Transaction was signed successfully.
+      </p>
+
+      <p
+        v-if="hashxPreimageState.status == false"
+        class="text-danger font-weight-bold font-14 font-italic"
+      >
+        {{ hashxPreimageState.message }}
       </p>
     </div>
 
@@ -259,6 +286,7 @@
 import { TransactionBuilder, Keypair } from "stellar-sdk";
 import albedo from "@albedo-link/intent";
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
+import { SignTransactionAPI } from "@/services/transaction.service";
 export default {
   data() {
     return {
@@ -312,6 +340,7 @@ export default {
       };
     },
     selectedAccount() {
+      this.selectedAccountState.status = null;
       this.secretKey = null;
       this.secretKeyState = {
         status: null,
@@ -369,7 +398,37 @@ export default {
     }
   },
   methods: {
-    signWithMETASPECK() {},
+    signWithMETASPECK() {
+      this.value.loading = true;
+      let payload = {
+        isOnline: this.isOnline,
+        accountID: this.selectedAccount,
+        xdr: this.xdr,
+        network: BLOCKCHAIN_NETWORK_NAME
+      };
+      SignTransactionAPI(payload)
+        .then(res => {
+          this.selectedAccountState.status = true;
+          setTimeout(() => {
+            this.selectedAccount = null;
+            this.selectedAccountState.status = null;
+          }, 4000);
+          this.emitSignedDataFn(res.data.data.signature);
+        })
+        .catch(error => {
+          this.selectedAccountState.message = error.message;
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.data
+          ) {
+            this.selectedAccountState.message =
+              error.response.data.data.message;
+          }
+          this.selectedAccountState.status = false;
+        })
+        .finally(() => (this.value.loading = false));
+    },
     async signWithSecretKeyOnline() {
       try {
         this.value.loading = true;
@@ -378,13 +437,13 @@ export default {
           BLOCKCHAIN_NETWORK_NAME
         );
         var keypair = Keypair.fromSecret(this.secretKey);
-        const feeSig = tx.getKeypairSignature(keypair);
+        const sig = tx.getKeypairSignature(keypair);
         this.secretKeyState.status = true;
         setTimeout(() => {
           this.secretKey = null;
           this.secretKeyState.status = null;
         }, 4000);
-        this.emitSignedDataFn(feeSig);
+        this.emitSignedDataFn(sig);
       } catch (error) {
         this.secretKeyState.message = "Invalid private key";
         this.secretKeyState.status = false;
@@ -467,7 +526,7 @@ export default {
     },
     emitSignedDataFn(signature) {
       this.$emit("signed", {
-        type: 'general',
+        type: "general",
         mode: this.signingMode,
         accountID: this.selectedAccount,
         signature
