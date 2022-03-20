@@ -95,7 +95,7 @@
               <div>
                 <b-form-select
                   class="w-auto"
-                  v-model="signingMode"
+                  v-model="isOnline"
                   :options="signingModeOptions"
                   :disabled="loading"
                 ></b-form-select>
@@ -124,6 +124,7 @@
             <SignTransactionModal
               v-if="xdr"
               :xdr="xdr"
+              :isOnline="isOnline"
               v-model="signTransactionModal"
               @onClose="onCloseSignTransactionModalFn"
             />
@@ -163,10 +164,10 @@ export default {
         isShow: false,
         xdr: ""
       },
-      signingMode: "offline",
+      isOnline: false,
       signingModeOptions: [
-        { value: "offline", text: "Offline Transaction Signing" },
-        { value: "online", text: "Online Transaction Signing" }
+        { value: false, text: "Offline Transaction Signing" },
+        { value: true, text: "Online Transaction Signing" }
       ]
     };
   },

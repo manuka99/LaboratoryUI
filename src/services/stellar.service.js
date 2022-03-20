@@ -187,7 +187,7 @@ export const CalculateTxAccountReserves = async (accountID, txnXdr) => {
       // start of the endSponsoringFutureReserves index
       if (sponsoringEndOpId != -1) {
         sponsoringEndOpId = index + sponsoringEndOpId + 1;
-      } else sponsoringEndOpId = operations.length - 1
+      } else sponsoringEndOpId = operations.length - 1;
 
       if (accountID != operationSource) {
         // if the current account has not initiated the sponsor, then skip it
@@ -213,7 +213,7 @@ export const CalculateTxAccountReserves = async (accountID, txnXdr) => {
     }
 
     if (accountID == operationSource)
-      reserves = reserves + CalculateOperationReserves(account, operation);
+      reserves = reserves + CalculateOperationReserves(account, operation, false);
 
     index++;
   }
@@ -230,7 +230,7 @@ export const CalculateOperationReserves = (
 ) => {
   var reserves = 0;
 
-  if (isCompareSource && account.account_id != operation.source)
+  if (isCompareSource && (!account || account.account_id != operation.source))
     return reserves;
 
   switch (operation.type) {
@@ -241,8 +241,8 @@ export const CalculateOperationReserves = (
     case "manageData":
       if (
         !account ||
-        operation.value &&
-        !Object.keys(account.data_attr).includes(operation.name)
+        (operation.value &&
+          !Object.keys(account.data_attr).includes(operation.name))
       )
         reserves = 1;
       break;
@@ -250,12 +250,12 @@ export const CalculateOperationReserves = (
     case "changeTrust":
       if (
         !account ||
-        operation.limit > 0 &&
-        account.balances.findIndex(
-          cnt =>
-            cnt.asset_code == operation.line.code &&
-            cnt.asset_issuer == operation.line.issuer
-        ) == -1
+        (operation.limit > 0 &&
+          account.balances.findIndex(
+            cnt =>
+              cnt.asset_code == operation.line.code &&
+              cnt.asset_issuer == operation.line.issuer
+          ) == -1)
       )
         reserves = 1;
       break;

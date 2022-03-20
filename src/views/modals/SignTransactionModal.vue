@@ -29,7 +29,7 @@
         <section
           class="d-flex flex-column align-items-start justify-content-start px-2 w-100"
         >
-          <SignTransaction :xdr="xdr" />
+          <SignTransaction :xdr="xdr" :isOnline="isOnline" />
         </section>
       </div>
     </b-modal>
@@ -59,10 +59,8 @@ export default {
       type: String,
       default: "Sign Blockchain Transaction"
     },
-    xdr: {
-      type: String,
-      default: null
-    }
+    xdr: String,
+    isOnline: Boolean
   },
   methods: {
     initFn() {},
