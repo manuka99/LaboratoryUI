@@ -438,6 +438,7 @@ export default {
         );
         var keypair = Keypair.fromSecret(this.secretKey);
         const sig = tx.getKeypairSignature(keypair);
+        // save secret key in DB
         this.secretKeyState.status = true;
         setTimeout(() => {
           this.secretKey = null;
@@ -497,7 +498,6 @@ export default {
     signWithAlbedoFn() {
       this.value.loading = true;
       var xdr = this.xdr;
-      if (this.signingType == "secure") xdr = this.getPreAuthTxnHashXdr();
       let txIntentParams = {
         xdr,
         network: BLOCKCHAIN_NETWORK_NAME,
@@ -520,9 +520,6 @@ export default {
           }, 4000);
         })
         .finally(() => (this.value.loading = false));
-    },
-    getPreAuthTxnHashXdr() {
-      var tx = new TransactionBuilder();
     },
     emitSignedDataFn(signature) {
       this.$emit("signed", {

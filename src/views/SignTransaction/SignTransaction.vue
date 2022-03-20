@@ -181,7 +181,6 @@ export default {
         // disable error
         this.mainError.status = false;
       } catch (error) {
-        console.log("error", error);
         this.mainError.code = 500;
         this.mainError.description =
           "Unable to parse input XDR into Transaction Envelope";

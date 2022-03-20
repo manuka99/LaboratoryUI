@@ -1,27 +1,7 @@
 <template>
   <div>
-    <!-- select signer type -->
-    <div>
-      <b-form-group
-        id="fieldset-1"
-        description="Transaction signer's signature can be placed directly or can be authorized. If the transaction was authorized it can be revoked at any time if the transaction is not yet submitted. Authorizing a transaction will increase the account reserves by 0.5 XLM. This reserve will only be held until the transaction is submited or authorization is not revoked."
-        label="1) Transaction Signer Type"
-        class="font-16 font-weight-600 w-100 mt-4 max-width-500px"
-        label-for="select-0"
-      >
-        <b-form-select
-          id="select-0"
-          class="w-auto min-width-300px"
-          style="height: 40px"
-          v-model="signingType"
-          :options="signingTypeOptions"
-          :disabled="loading"
-        ></b-form-select>
-      </b-form-group>
-    </div>
-
     <!-- select signer mode -->
-    <div v-if="signingType">
+    <div>
       <b-form-group
         id="fieldset-1"
         description="There are several signing modes in stellar, to get more information visit their official website or contact our team. METASPECK will allow you to sign the transaction using a registered account credential."
@@ -35,7 +15,7 @@
           style="height: 40px"
           v-model="signingMode"
           :options="signingModeOptions"
-          :disabled="loading"
+          :disabled="value.loading"
         ></b-form-select>
       </b-form-group>
     </div>
@@ -48,8 +28,6 @@
         label="Account Signer's Public Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-0"
-        :invalid-feedback="selectedAccountState.message"
-        :state="selectedAccountState.status"
       >
       </b-form-group>
       <div class="max-width-500px">
@@ -59,7 +37,7 @@
           placeholder="Enter Signer's Public Key (Starting with G)"
           v-model="selectedAccount"
           :state="selectedAccountState.status"
-          :disabled="loading"
+          :disabled="value.loading"
           list="fsdf54dgvbvbv"
         ></b-form-input>
 
@@ -72,6 +50,20 @@
           >
         </datalist>
       </div>
+
+      <p
+        v-if="selectedAccountState.status"
+        class="text-success font-weight-bold mt-3 font-14 font-italic"
+      >
+        Transaction was signed successfully.
+      </p>
+
+      <p
+        v-if="selectedAccountState.status == false"
+        class="text-danger font-weight-bold mt-3 font-14 font-italic"
+      >
+        {{ selectedAccountState.message }}
+      </p>
     </div>
 
     <div v-if="signingMode == 'metaspeck' && selectedAccount">
@@ -79,7 +71,7 @@
         class="mt-4 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
         type="submit"
         nativeType="submit"
-        :disabled="loading"
+        :disabled="value.loading"
         @click="signWithMETASPECK"
       >
         Sign with METASPECK
@@ -94,8 +86,6 @@
         label="Account Signer's Public Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-0"
-        :invalid-feedback="selectedAccountState.message"
-        :state="selectedAccountState.status"
       >
       </b-form-group>
       <div class="max-width-500px">
@@ -105,7 +95,7 @@
           placeholder="Enter Signer's Public Key (Starting with G)"
           v-model="selectedAccount"
           :state="selectedAccountState.status"
-          :disabled="loading"
+          :disabled="value.loading"
           list="fsdf54dgvbvbv"
         ></b-form-input>
 
@@ -127,8 +117,6 @@
         label="Account Signer's Secret Key"
         class="font-15 font-weight-600 w-100 mt-3 max-width-500px"
         label-for="input-0"
-        :invalid-feedback="secretKeyState.message"
-        :state="secretKeyState.status"
       >
         <b-form-input
           id="input-0"
@@ -136,7 +124,7 @@
           placeholder="Enter Secret Key (Starting with S)"
           v-model="secretKey"
           :state="secretKeyState.status"
-          :disabled="loading"
+          :disabled="value.loading"
           trim
         ></b-form-input>
       </b-form-group>
@@ -146,6 +134,13 @@
         class="text-success font-weight-bold font-14 font-italic"
       >
         Transaction was signed successfully.
+      </p>
+
+      <p
+        v-if="secretKeyState.status == false"
+        class="text-danger font-weight-bold font-14 font-italic"
+      >
+        {{ secretKeyState.message }}
       </p>
     </div>
 
@@ -159,7 +154,7 @@
         type="submit"
         nativeType="submit"
         @click="signWithSecretKeyOnline"
-        :disabled="loading"
+        :disabled="value.loading"
       >
         Sign with Secret Key
       </base-button>
@@ -173,7 +168,6 @@
         label="Account Signer's Secret Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-1"
-        :invalid-feedback="secretKeyState.message"
         :state="secretKeyState.status"
       >
         <b-form-input
@@ -182,7 +176,7 @@
           placeholder="Enter Secret Key (Starting with S)"
           v-model="secretKey"
           :state="secretKeyState.status"
-          :disabled="loading"
+          :disabled="value.loading"
           trim
         ></b-form-input>
       </b-form-group>
@@ -192,6 +186,13 @@
       >
         Transaction was signed successfully.
       </p>
+
+      <p
+        v-if="secretKeyState.status == false"
+        class="text-danger font-weight-bold font-14 font-italic"
+      >
+        {{ secretKeyState.message }}
+      </p>
     </div>
 
     <div v-if="signingMode == 'secretKey' && !isOnline && secretKey">
@@ -200,7 +201,7 @@
         type="submit"
         nativeType="submit"
         @click="signWithSecretKeyOffline"
-        :disabled="loading"
+        :disabled="value.loading"
       >
         Sign with Secret Key
       </base-button>
@@ -214,7 +215,6 @@
         label="Account's Hash Preimage"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
         label-for="input-2"
-        :invalid-feedback="hashxPreimageState.message"
         :state="hashxPreimageState.status"
       >
         <b-form-input
@@ -223,7 +223,7 @@
           placeholder="Enter Hash Preimage (HEX)"
           v-model="hashxPreimage"
           :state="hashxPreimageState.status"
-          :disabled="loading"
+          :disabled="value.loading"
           trim
         ></b-form-input>
       </b-form-group>
@@ -234,6 +234,13 @@
       >
         Transaction was signed successfully.
       </p>
+
+      <p
+        v-if="hashxPreimageState.status == false"
+        class="text-danger font-weight-bold font-14 font-italic"
+      >
+        {{ hashxPreimageState.message }}
+      </p>
     </div>
 
     <div v-if="signingMode == 'hashx' && !isOnline && hashxPreimage">
@@ -242,7 +249,7 @@
         type="submit"
         nativeType="submit"
         @click="signWithHashX"
-        :disabled="loading"
+        :disabled="value.loading"
       >
         Sign with Hash Preimage
       </base-button>
@@ -267,7 +274,7 @@
         type="submit"
         nativeType="submit"
         @click="signWithAlbedoFn"
-        :disabled="loading"
+        :disabled="value.loading"
       >
         Sign with Albedo
       </base-button>
@@ -276,7 +283,307 @@
 </template>
 
 <script>
-export default {};
+import {
+  TransactionBuilder,
+  Keypair,
+  Memo,
+  Operation,
+  TimeoutInfinite
+} from "stellar-sdk";
+import albedo from "@albedo-link/intent";
+import {
+  BLOCKCHAIN_NETWORK_NAME,
+  BLOCKCHAIN_NETWORK_BASE_FEE_VALUE
+} from "@/services/config";
+import { GetAccount, SubmitXdr } from "@/services/stellar.service";
+import { SignTransactionAPI } from "@/services/transaction.service";
+export default {
+  data() {
+    return {
+      signingMode: null,
+      selectedAccount: null,
+      selectedAccountState: {
+        status: null,
+        message: null
+      },
+      secretKey: null,
+      secretKeyState: {
+        status: null,
+        message: null
+      },
+      hashxPreimage: null,
+      hashxPreimageState: {
+        status: null,
+        message: null
+      },
+      albedoState: {
+        status: null,
+        message: null
+      }
+    };
+  },
+  props: {
+    xdr: String,
+    isOnline: Boolean,
+    signatureInfo: Array,
+    value: {
+      type: Object,
+      default: function() {
+        return {
+          loading: false
+        };
+      }
+    }
+  },
+  watch: {
+    signingMode() {
+      this.selectedAccount = null;
+      this.secretKey = null;
+      this.secretKeyState = {
+        status: null,
+        message: null
+      };
+      this.hashxPreimage = null;
+      this.hashxPreimageState = {
+        status: null,
+        message: null
+      };
+    },
+    selectedAccount() {
+      this.selectedAccountState.status = null;
+      this.secretKey = null;
+      this.secretKeyState = {
+        status: null,
+        message: null
+      };
+      this.hashxPreimage = null;
+      this.hashxPreimageState = {
+        status: null,
+        message: null
+      };
+    },
+    secretKey() {
+      this.secretKeyState.status = null;
+    },
+    hashxPreimage() {
+      this.hashxPreimageState.status = null;
+    }
+  },
+  computed: {
+    signingModeOptions() {
+      var options = [
+        {
+          value: null,
+          text: "Select Signing Mode"
+        },
+        {
+          value: "metaspeck",
+          text: "METASPECK"
+        },
+        {
+          value: "secretKey",
+          text: "Secret Key"
+        }
+      ];
+      if (!this.isOnline) {
+        options.push({
+          value: "hashx",
+          text: "Hash X"
+        });
+        options.push({
+          value: "albedo",
+          text: "ALBEDO"
+        });
+      }
+      return options;
+    },
+    signingAccountOptions() {
+      if (!this.signatureInfo) return null;
+      return this.signatureInfo.map(signatureInfo => {
+        return {
+          value: signatureInfo.accountID,
+          text: signatureInfo.shortPublicKey
+        };
+      });
+    }
+  },
+  methods: {
+    signWithMETASPECK() {
+      this.value.loading = true;
+      let payload = {
+        isOnline: this.isOnline,
+        accountID: this.selectedAccount,
+        xdr: this.xdr,
+        network: BLOCKCHAIN_NETWORK_NAME
+      };
+      SignTransactionAPI(payload)
+        .then(res => {
+          this.selectedAccountState.status = true;
+          setTimeout(() => {
+            this.selectedAccount = null;
+            this.selectedAccountState.status = null;
+          }, 4000);
+          this.emitSignedDataFn(res.data.data.signature);
+        })
+        .catch(error => {
+          this.selectedAccountState.message = error.message;
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.data
+          ) {
+            this.selectedAccountState.message =
+              error.response.data.data.message;
+          }
+          this.selectedAccountState.status = false;
+        })
+        .finally(() => (this.value.loading = false));
+    },
+    async signWithSecretKeyOnline() {
+      try {
+        this.value.loading = true;
+        const tx = TransactionBuilder.fromXDR(
+          this.xdr,
+          BLOCKCHAIN_NETWORK_NAME
+        );
+        var keypair = Keypair.fromSecret(this.secretKey);
+        const sig = tx.getKeypairSignature(keypair);
+        // save secret key in DB
+        this.secretKeyState.status = true;
+        setTimeout(() => {
+          this.secretKey = null;
+          this.secretKeyState.status = null;
+        }, 4000);
+        this.emitSignedDataFn(sig);
+      } catch (error) {
+        this.secretKeyState.message = "Invalid private key";
+        this.secretKeyState.status = false;
+      } finally {
+        this.value.loading = false;
+      }
+    },
+    signWithSecretKeyOffline() {
+      try {
+        this.value.loading = true;
+        const tx = TransactionBuilder.fromXDR(
+          this.xdr,
+          BLOCKCHAIN_NETWORK_NAME
+        );
+        var keypair = Keypair.fromSecret(this.secretKey);
+        tx.sign(keypair);
+        this.secretKeyState.status = true;
+        setTimeout(() => {
+          this.secretKey = null;
+          this.secretKeyState.status = null;
+        }, 4000);
+        this.emitSignedDataFn(tx.toXDR());
+      } catch (error) {
+        this.secretKeyState.message = "Invalid private key";
+        this.secretKeyState.status = false;
+      } finally {
+        this.value.loading = false;
+      }
+    },
+    signWithHashX() {
+      try {
+        this.value.loading = true;
+        const tx = TransactionBuilder.fromXDR(
+          this.xdr,
+          BLOCKCHAIN_NETWORK_NAME
+        );
+        tx.signHashX(this.hashxPreimage);
+        this.hashxPreimageState.status = true;
+        setTimeout(() => {
+          this.hashxPreimage = null;
+          this.hashxPreimageState.status = null;
+        }, 4000);
+        this.emitSignedDataFn(tx.toXDR());
+      } catch (error) {
+        this.hashxPreimageState.message = "Invalid value of Hash X";
+        this.hashxPreimageState.status = false;
+      } finally {
+        this.value.loading = false;
+      }
+    },
+    async signWithAlbedoFn() {
+      this.value.loading = true;
+      const xdr = await this.getPreAuthTxnHashXdr();
+      if (!xdr) {
+        this.albedoState.message =
+          "Account does not exist, make sure you select a funded account.";
+        this.albedoState.status = false;
+        this.value.loading = false;
+        return;
+      }
+      let txIntentParams = {
+        xdr,
+        network: BLOCKCHAIN_NETWORK_NAME,
+        submit: false
+      };
+      albedo
+        .tx(txIntentParams)
+        .then(res => {
+          SubmitXdr(res.signed_envelope_xdr)
+            .then(() => {
+              this.emitSignedDataFn(res.signed_envelope_xdr);
+              this.albedoState.status = true;
+              setTimeout(() => {
+                this.albedoState.status = null;
+              }, 4000);
+            })
+            .catch(e => {
+              this.albedoState.message = e.message;
+              this.albedoState.status = false;
+            });
+        })
+        .catch(e => {
+          this.albedoState.message = e.message;
+          this.albedoState.status = false;
+          setTimeout(() => {
+            this.albedoState.status = null;
+          }, 4000);
+        })
+        .finally(() => (this.value.loading = false));
+    },
+    async getPreAuthTxnHashXdr() {
+      const preAuthTx = this.getTxHash(this.xdr);
+      const sourceAccount = await GetAccount(this.selectedAccount);
+      if (!sourceAccount) return null;
+      var transaction = new TransactionBuilder(sourceAccount, {
+        fee: BLOCKCHAIN_NETWORK_BASE_FEE_VALUE,
+        networkPassphrase: BLOCKCHAIN_NETWORK_NAME
+      });
+
+      transaction.addMemo(Memo.hash(preAuthTx));
+      transaction.setTimeout(TimeoutInfinite);
+      transaction.addOperation(
+        Operation.setOptions({
+          signer: {
+            preAuthTx,
+            weight:
+              sourceAccount.thresholds.high_threshold == 0
+                ? 1
+                : sourceAccount.thresholds.high_threshold
+          }
+        })
+      );
+
+      return transaction.build().toXDR();
+    },
+    getTxHash(xdr) {
+      const tx = TransactionBuilder.fromXDR(xdr, BLOCKCHAIN_NETWORK_NAME);
+      return tx.hash().toString("hex");
+    },
+    emitSignedDataFn(signature) {
+      this.$emit("signed", {
+        type: "general",
+        mode: this.signingMode,
+        accountID: this.selectedAccount,
+        signature
+      });
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped></style>

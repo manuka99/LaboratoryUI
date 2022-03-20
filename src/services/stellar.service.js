@@ -53,6 +53,20 @@ export const GetAccount = async id => {
   });
 };
 
+// submit txn
+export const SubmitXdr = async xdr => {
+  return new Promise((resolve, reject) => {
+    const transaction = StellarSdk.TransactionBuilder.fromXDR(
+      xdr,
+      BLOCKCHAIN_NETWORK_NAME
+    );
+    server
+      .submitTransaction(transaction)
+      .then(res => resolve(res))
+      .catch(err => reject(err));
+  });
+};
+
 // group operations based on signers
 export const GroupTxOpsSigners = (
   txnXdr,
@@ -213,7 +227,8 @@ export const CalculateTxAccountReserves = async (accountID, txnXdr) => {
     }
 
     if (accountID == operationSource)
-      reserves = reserves + CalculateOperationReserves(account, operation, false);
+      reserves =
+        reserves + CalculateOperationReserves(account, operation, false);
 
     index++;
   }

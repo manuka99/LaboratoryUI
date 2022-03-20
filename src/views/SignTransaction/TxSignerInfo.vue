@@ -220,6 +220,14 @@
         v-model="vmodelSigning"
         @signed="emitSignedDataFn"
       />
+      <SignSecure
+        v-if="signingType == 'secure'"
+        :xdr="xdr"
+        :isOnline="isOnline"
+        :signatureInfo="signatureInfo"
+        v-model="vmodelSigning"
+        @signed="emitSignedDataFn"
+      />
     </div>
     <FundBlockchainAccount
       v-if="fundAccountModal.isShow"
@@ -234,6 +242,7 @@ import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import JsonViewer from "vue-json-viewer";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 import SignGeneral from "@/views/SignTransaction/Signing/SignGeneral.vue";
+import SignSecure from "@/views/SignTransaction/Signing/SignSecure.vue";
 
 import {
   GroupTxOpsSigners,
@@ -245,7 +254,8 @@ export default {
   components: {
     JsonViewer,
     FundBlockchainAccount,
-    SignGeneral
+    SignGeneral,
+    SignSecure,
   },
   data() {
     return {
