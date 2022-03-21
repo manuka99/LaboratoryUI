@@ -74,7 +74,7 @@
                 <b-form-input
                   type="text"
                   placeholder="Example 214ca2dbcbeb4b32....."
-                  class="font-14 font-weight-600"
+                  class="font-14 font-weight-600 max-width-500px"
                   v-model="importTxnHash"
                   @input="onImportTxnHash"
                   :disabled="loading"
