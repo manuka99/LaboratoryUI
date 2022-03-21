@@ -72,6 +72,7 @@
         type="submit"
         nativeType="submit"
         :disabled="value.loading"
+        :loading="value.loading"
         @click="signWithMETASPECK"
       >
         Sign with METASPECK
@@ -153,6 +154,7 @@
         class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
         type="submit"
         nativeType="submit"
+        :loading="value.loading"
         @click="signWithSecretKeyOnline"
         :disabled="value.loading"
       >
@@ -200,6 +202,7 @@
         class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
         type="submit"
         nativeType="submit"
+        :loading="value.loading"
         @click="signWithSecretKeyOffline"
         :disabled="value.loading"
       >
@@ -248,6 +251,7 @@
         class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
         type="submit"
         nativeType="submit"
+        :loading="value.loading"
         @click="signWithHashX"
         :disabled="value.loading"
       >
@@ -273,6 +277,7 @@
         class="mt-0 px-4 btn btn-primary btn-sm d-flex justify-content-center align-items-center font-16"
         type="submit"
         nativeType="submit"
+        :loading="value.loading"
         @click="signWithAlbedoFn"
         :disabled="value.loading"
       >
