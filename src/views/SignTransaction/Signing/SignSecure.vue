@@ -523,7 +523,7 @@ export default {
     },
     emitSignedDataFn(signature) {
       this.$emit("signed", {
-        type: "general",
+        type: "secure",
         mode: this.signingMode,
         accountID: this.selectedAccount,
         signature

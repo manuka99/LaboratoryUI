@@ -167,7 +167,7 @@ export default {
       },
       deep: true,
       immediate: true
-    },
+    }
   },
   methods: {
     initFn() {
@@ -193,8 +193,7 @@ export default {
         if (this.isOnline) this.refreshSignatures = !this.refreshSignatures;
         else this.signedXdr = signature;
       } else {
-        // type - ['secure', 'general']
-        // mode - ['metaspeck', 'direct']
+        this.refreshSignatures = !this.refreshSignatures;
       }
     },
     hideModalFn() {

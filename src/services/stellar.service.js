@@ -466,3 +466,34 @@ export const AccountRiskLevelForTransaction = async (accountID, txnXdr) => {
       return null;
   }
 };
+
+// get transaction pre auth signatures
+export const TransactionPreAuthSignatures = async txnXdr => {
+  const tx = StellarSdk.TransactionBuilder.fromXDR(
+    txnXdr,
+    BLOCKCHAIN_NETWORK_NAME
+  );
+  const txHash = tx.hash().toString("hex");
+  const signers = Object.keys(GroupTxOpsSigners(txnXdr));
+  const preAuthSigners = {};
+  for (let index = 0; index < signers.length; index++) {
+    const signer = signers[index];
+    let account = await GetAccount(signer);
+    if (account && account.signers) {
+      const thresholds = account.thresholds;
+      const sign = account.signers.find(signerV2 => {
+        if(signerV2.type != "preauth_tx") return false;
+        let signerV2Key = StellarSdk.StrKey.decodePreAuthTx(
+          signerV2.key
+        ).toString("hex");
+        return signerV2Key == txHash;
+      });
+      if (sign)
+        preAuthSigners[signer] = {
+          thresholds,
+          sign
+        };
+    }
+  }
+  return preAuthSigners;
+};
