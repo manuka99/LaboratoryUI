@@ -330,7 +330,7 @@ import {
   UpdateTxPasswordAPI,
   UpdateTxSignatureAPI,
   ResetTransactionSignatureAPI
-} from "@/services/user.service";
+} from "@/services/auth.service";
 import CustomError from "../Errors/CustomError.vue";
 import { CreateRSAKeyPair } from "@/services/rsa.service";
 import { mapGetters } from "vuex";

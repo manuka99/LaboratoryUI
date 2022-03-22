@@ -103,7 +103,7 @@ import { mapActions, mapGetters } from "vuex";
 import {
   ConfirmMobileRequestAPI,
   ConfirmMobileAPI
-} from "@/services/user.service";
+} from "@/services/auth.service";
 import BaseButton from "../../components/BaseButton.vue";
 
 export default {

@@ -75,7 +75,7 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
-import { RecoverPasswordAPI } from "@/services/user.service";
+import { RecoverPasswordAPI } from "@/services/auth.service";
 
 export default {
   components: {

@@ -106,7 +106,7 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
-import { LoginAPI } from "@/services/user.service";
+import { LoginAPI } from "@/services/auth.service";
 import { mapActions } from "vuex";
 
 export default {

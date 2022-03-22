@@ -81,7 +81,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { Confirm2FAAPI } from "@/services/user.service";
+import { Confirm2FAAPI } from "@/services/auth.service";
 import BaseButton from "../../components/BaseButton.vue";
 
 export default {

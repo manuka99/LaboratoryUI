@@ -95,7 +95,7 @@
 >DeActivate2FA
 
 <script>
-import { Revoke2FAAPI } from "@/services/user.service";
+import { Revoke2FAAPI } from "@/services/auth.service";
 export default {
   components: {},
   data() {

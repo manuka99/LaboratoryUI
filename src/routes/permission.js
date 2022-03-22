@@ -42,7 +42,7 @@ export const PermissionedRouting = (to, from, next) => {
 
   if (userDetails && userDetails.data) {
     switch (userDetails.data.type) {
-      case "GENERAL":
+      case "general":
         protectedAccessRoutes = generalAccountProtectedRoutes;
         break;
       case "SERVICE":

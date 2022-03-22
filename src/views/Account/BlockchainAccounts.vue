@@ -341,7 +341,7 @@
 import { mapGetters } from "vuex";
 import CreateBlockchainAccount from "@/views/modals/CreateBlockchainAccount.vue";
 import CustomError from "../Errors/CustomError.vue";
-import { GetTxSecurityInfoAPI } from "@/services/user.service";
+import { GetTxSecurityInfoAPI } from "@/services/auth.service";
 import {
   FindBlockchainAccountsAPI,
   RemoveBlockchainAccountAPI

@@ -181,9 +181,8 @@
 import { mapGetters } from "vuex";
 import {
   UpdateAccountPasswordAPI,
-  UpdateTxPasswordAPI,
   VerifyAndUpdateEmailRequestAPI
-} from "@/services/user.service";
+} from "@/services/auth.service";
 
 export default {
   data() {

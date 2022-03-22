@@ -113,8 +113,8 @@
 
 <script>
 import Layout from "@/components/HorizontalLayout/Layout";
-import { GetUserByNicAPI } from "@/services/explorer.user.service";
-import { ResetPasswordAPI } from "@/services/user.service";
+import { GetUserByNicAPI } from "@/services/general.user.service";
+import { ResetPasswordAPI } from "@/services/auth.service";
 import { mapActions } from "vuex";
 
 export default {

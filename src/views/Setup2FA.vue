@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { Register2FAAPI } from "@/services/user.service";
+import { Register2FAAPI } from "@/services/auth.service";
 export default {
   components: {},
   data() {

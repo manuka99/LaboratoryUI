@@ -75,7 +75,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { ConfirmTxSecurityPwd } from "@/services/user.service";
+import { ConfirmTxSecurityPwd } from "@/services/auth.service";
 import { TX_PWD_SIGNATURE_ID } from "@/services/config";
 import { EncryptWithRawPublicKey } from "@/services/rsa.service";
 import { SetTxSecurityPwd } from "@/services/transaction.security";

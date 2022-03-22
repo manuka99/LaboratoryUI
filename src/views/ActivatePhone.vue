@@ -186,7 +186,7 @@ import { mapGetters, mapActions } from "vuex";
 import {
   UpdateTempPhoneAPI,
   VerifyAndUpdatePhoneAPI
-} from "@/services/user.service";
+} from "@/services/auth.service";
 
 export default {
   components: {

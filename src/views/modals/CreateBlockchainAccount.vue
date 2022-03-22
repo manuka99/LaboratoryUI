@@ -402,7 +402,7 @@
 
 <script>
 import { Keypair } from "stellar-sdk";
-import { GetTxSecurityInfoAPI } from "@/services/user.service";
+import { GetTxSecurityInfoAPI } from "@/services/auth.service";
 import { CreateBlockchainAccountAPI } from "@/services/bc.accounts.service";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";

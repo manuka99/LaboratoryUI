@@ -1,5 +1,5 @@
 import { APP_USER_TOKEN } from "@/services/config";
-import { GetRequestUserAPI, LogoutAPI } from "@/services/user.service";
+import { GetRequestUserAPI, LogoutAPI } from "@/services/auth.service";
 import router from "@/routes/router";
 import Store from "@/store";
 import { PermissionedRouting } from "../../routes/permission";

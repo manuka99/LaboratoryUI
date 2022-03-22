@@ -77,7 +77,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { ConfirmPasswordAPI } from "@/services/user.service";
+import { ConfirmPasswordAPI } from "@/services/auth.service";
 import BaseButton from "../../components/BaseButton.vue";
 
 export default {

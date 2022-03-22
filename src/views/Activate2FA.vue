@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import { Activate2FAAPI } from "@/services/user.service";
+import { Activate2FAAPI } from "@/services/auth.service";
 export default {
   components: {},
   props: {
