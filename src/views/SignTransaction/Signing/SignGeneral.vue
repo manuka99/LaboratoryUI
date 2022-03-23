@@ -291,7 +291,7 @@
 import { TransactionBuilder, Keypair } from "stellar-sdk";
 import albedo from "@albedo-link/intent";
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
-import { SignTransactionAPI } from "@/services/transaction.service";
+import { SignTransactionAPI, AddSignAPI } from "@/services/transaction.service";
 export default {
   data() {
     return {
@@ -442,18 +442,31 @@ export default {
           BLOCKCHAIN_NETWORK_NAME
         );
         var keypair = Keypair.fromSecret(this.secretKey);
-        const sig = tx.getKeypairSignature(keypair);
+        const sign = tx.getKeypairSignature(keypair);
         // save secret key in DB
-        this.secretKeyState.status = true;
-        setTimeout(() => {
-          this.secretKey = null;
-          this.secretKeyState.status = null;
-        }, 4000);
-        this.emitSignedDataFn(sig);
+        AddSignAPI({
+          accountID: this.selectedAccount,
+          txnHash: tx.hash().toString("hex"),
+          network: BLOCKCHAIN_NETWORK_NAME,
+          sign
+        })
+          .then(() => {
+            this.secretKeyState.status = true;
+            setTimeout(() => {
+              this.secretKey = null;
+              this.secretKeyState.status = null;
+            }, 4000);
+            this.emitSignedDataFn(sign);
+          })
+          .catch(() => {
+            this.secretKeyState.message = "Error: Unable to add the signature.";
+            this.secretKeyState.status = false;
+            this.value.loading = false;
+          })
+          .finally(() => (this.value.loading = false));
       } catch (error) {
         this.secretKeyState.message = "Invalid private key";
         this.secretKeyState.status = false;
-      } finally {
         this.value.loading = false;
       }
     },

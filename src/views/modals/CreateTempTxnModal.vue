@@ -93,7 +93,7 @@
             @click="onSubmitFn"
             nativeType="submit"
           >
-            <i class="mdi mdi-arrow-right-thick text-white mr-1"></i> Save
+            <i class="mdi mdi-content-save text-white mr-1"></i> Save
             Transaction
           </base-button>
 
