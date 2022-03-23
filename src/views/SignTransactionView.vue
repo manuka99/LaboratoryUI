@@ -97,11 +97,35 @@
                   class="w-auto"
                   v-model="isOnline"
                   :options="signingModeOptions"
-                  :disabled="loading"
+                  :disabled="loading || isDisableSelect"
                 ></b-form-select>
               </div>
 
               <hr style="height: 2px; width: 100%; margin: 32px 0px 24px 0px" />
+
+              <div v-if="isCreateTempTxnMsg">
+                <p
+                  class="text-danger font-weight-600 font-15 font-italic mb-3 p-0"
+                >
+                  There is no transaction saved under your account on the cloud.
+                  If this transaction was not saved by anyone else then you can
+                  save this transaction temporary on cloud. Temporary
+                  transactions will only exist for a maximum of 30 days.
+                </p>
+                <base-button
+                  class="btn btn-secondary btn-sm font-15 mt-0 mb-4"
+                  type="submit"
+                  @click="createTempTxnModal.isShow = true"
+                  nativeType="submit"
+                >
+                  <i class="mdi mdi-content-save font-16"></i> Save Transaction
+                  on Cloud
+                </base-button>
+
+                <hr
+                  style="height: 2px; width: 100%; margin: 8px 0px 24px 0px"
+                />
+              </div>
 
               <base-button
                 class="btn btn-primary font-18 p-2 m-0"
@@ -128,6 +152,12 @@
               v-model="signTransactionModal"
               @onClose="onCloseSignTransactionModalFn"
             />
+            <CreateTempTxnModal
+              v-if="createTempTxnModal.isShow"
+              :xdr="xdr"
+              v-model="createTempTxnModal"
+              @onClose="onCloseCreateTempTxnModalFn"
+            />
           </div>
         </section>
       </div>
@@ -138,13 +168,16 @@
 <script>
 const { TransactionBuilder } = require("stellar-sdk");
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
+import { FindTransactionsAPI } from "@/services/transaction.service";
 import Layout from "@/components/HorizontalLayout/Layout";
 import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
+import CreateTempTxnModal from "@/views/modals/CreateTempTxnModal.vue";
 
 export default {
   components: {
     Layout,
-    SignTransactionModal
+    SignTransactionModal,
+    CreateTempTxnModal
   },
   data() {
     return {
@@ -164,33 +197,74 @@ export default {
         isShow: false,
         xdr: ""
       },
+      createTempTxnModal: {
+        isShow: false
+      },
       isOnline: false,
       signingModeOptions: [
         { value: false, text: "Offline Transaction Signing" },
         { value: true, text: "Online Transaction Signing" }
-      ]
+      ],
+      isCreateTempTxnMsg: false,
+      isDisableSelect: false
     };
   },
-  watch: {},
+  watch: {
+    isOnline() {
+      this.isCreateTempTxnMsg = false;
+      this.xdr = null;
+    }
+  },
   methods: {
     initFn() {},
     onCloseSignTransactionModalFn(data) {
       if (data && data.refresh) {
       }
     },
+    onCloseCreateTempTxnModalFn(data) {
+      if (data && data.refresh) {
+        this.getTxnXdrFn();
+      }
+    },
     getTxnXdrFn() {
+      this.isCreateTempTxnMsg = false;
       if (this.importXdr) {
         this.validateAndSetXDR(this.importXdr, this.importTxnHashError);
-        if (this.xdr) this.signTransactionModal.isShow = true;
+        if (this.xdr) {
+          if (this.isOnline) {
+            this.loading = true;
+            FindTransactionsAPI({
+              txnXdr: this.xdr,
+              network: BLOCKCHAIN_NETWORK_NAME
+            })
+              .then(res => {
+                let txns = res.data.data.txns;
+                if (!txns || txns.length == 0) this.isCreateTempTxnMsg = true;
+                else this.signTransactionModal.isShow = true;
+              })
+              .finally(() => (this.loading = false));
+          } else this.signTransactionModal.isShow = true;
+        }
       } else if (this.importTxnHash) {
         this.loading = true;
-        setTimeout(() => {
-          let xdr = `AAAAAgAAAAC2bCx393CCpwrwp67OKZjWCHBPgRyy08K8aG1n4DXQ1gAAAMgAAHPRAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACgAAAAU0MzQzNAAAAAAAAAEAAAAEd2UyMgAAAAAAAAAKAAAACTMzNDJmZmRmZAAAAAAAAAEAAAADMzQzAAAAAAAAAAAD4DXQ1gAAAECrRdkUu5K3GIEMlXlVqPpwDsvWmBaoaiuE1MM+3HwlM//y8v0CX4IHYmHzGZYK7/pwgEKvfoEWFZLzAwQv+pkPOiW5hAAAAEBR72uDgeO/6gBV1IMPODvGJstumTRjasUCsEha0Ahvn71ofFKlJ/gw75esapSFgPqMjwJrzyu2z6qbX9E6sYsK8mwYpAAAACAPaprWGHVRiXxRz93wR2BHdGMqsGfZR/zLS/FTmdr+YA==`;
-          // xdr = "sss";
-          this.validateAndSetXDR(xdr, this.importTxnHashError);
-          this.loading = false;
-          if (this.xdr) this.signTransactionModal.isShow = true;
-        }, 1000);
+        FindTransactionsAPI({
+          txnHash: this.importTxnHash,
+          network: BLOCKCHAIN_NETWORK_NAME
+        })
+          .then(res => {
+            let txns = res.data.data.txns;
+            if (!txns || txns.length == 0) {
+              this.importTxnHashError.description =
+                "Transaction was not found on cloud, this may be due to the transaction been expired, lack of permissions or it does not exist.";
+              this.importTxnHashError.status = true;
+            } else {
+              let xdr = txns[0].txnXdr;
+              this.validateAndSetXDR(xdr, this.importTxnHashError);
+              this.loading = false;
+              if (this.xdr) this.signTransactionModal.isShow = true;
+            }
+          })
+          .finally(() => (this.loading = false));
       }
     },
     onImportXdr() {
@@ -199,7 +273,9 @@ export default {
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
       this.loading = false;
+      this.isCreateTempTxnMsg = false;
       this.validateAndSetXDR(this.importXdr, this.importXdrError);
+      this.isDisableSelect = false;
     },
     onImportTxnHash() {
       this.xdr = null;
@@ -207,6 +283,11 @@ export default {
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
       this.loading = false;
+      this.isCreateTempTxnMsg = false;
+      if (this.importTxnHash) {
+        this.isDisableSelect = true;
+        this.isOnline = true;
+      } else this.isDisableSelect = false;
     },
     validateAndSetXDR(xdr, errorObj) {
       try {
@@ -223,6 +304,8 @@ export default {
     }
   }
 };
+
+//AAAAAgAAAAC2bCx393CCpwrwp67OKZjWCHBPgRyy08K8aG1n4DXQ1gAAAMgAAHPRAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACgAAAAU0MzQzNAAAAAAAAAEAAAAEd2UyMgAAAAAAAAAKAAAACTMzNDJmZmRmZAAAAAAAAAEAAAADMzQzAAAAAAAAAAAD4DXQ1gAAAECrRdkUu5K3GIEMlXlVqPpwDsvWmBaoaiuE1MM+3HwlM//y8v0CX4IHYmHzGZYK7/pwgEKvfoEWFZLzAwQv+pkPOiW5hAAAAEBR72uDgeO/6gBV1IMPODvGJstumTRjasUCsEha0Ahvn71ofFKlJ/gw75esapSFgPqMjwJrzyu2z6qbX9E6sYsK8mwYpAAAACAPaprWGHVRiXxRz93wR2BHdGMqsGfZR/zLS/FTmdr+YA==
 </script>
 
 <style scoped></style>
