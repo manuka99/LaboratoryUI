@@ -20,6 +20,10 @@ export const RemoveSignAPI = payload => {
   return Api().post(`/user/remove-sign`, payload);
 };
 
+export const AcceptRejectSignAPI = payload => {
+  return Api().post(`/user/signature-acceptance`, payload);
+};
+
 export const FindCreatedTransactionsAPI = params => {
   return Api().get(`/user/find-created-transactions`, {
     params

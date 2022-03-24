@@ -404,6 +404,7 @@ export default {
   },
   methods: {
     signWithMETASPECK() {
+      this.clearAllErrors();
       this.value.loading = true;
       let payload = {
         isOnline: this.isOnline,
@@ -436,6 +437,7 @@ export default {
     },
     async signWithSecretKeyOnline() {
       try {
+        this.clearAllErrors();
         this.value.loading = true;
         const tx = TransactionBuilder.fromXDR(
           this.xdr,
@@ -451,6 +453,7 @@ export default {
           sign
         })
           .then(() => {
+            this.selectedAccount = null;
             this.secretKeyState.status = true;
             setTimeout(() => {
               this.secretKey = null;
@@ -472,6 +475,7 @@ export default {
     },
     signWithSecretKeyOffline() {
       try {
+        this.clearAllErrors();
         this.value.loading = true;
         const tx = TransactionBuilder.fromXDR(
           this.xdr,
@@ -494,6 +498,7 @@ export default {
     },
     signWithHashX() {
       try {
+        this.clearAllErrors();
         this.value.loading = true;
         const tx = TransactionBuilder.fromXDR(
           this.xdr,
@@ -514,6 +519,7 @@ export default {
       }
     },
     signWithAlbedoFn() {
+      this.clearAllErrors();
       this.value.loading = true;
       var xdr = this.xdr;
       let txIntentParams = {
@@ -538,6 +544,23 @@ export default {
           }, 4000);
         })
         .finally(() => (this.value.loading = false));
+    },
+    clearAllErrors() {
+      this.selectedAccountState = {
+        status: null,
+        message: null
+      };
+      this.secretKeyState = {
+        status: null,
+        message: null
+      };
+      this.hashxPreimageState = {
+        status: null,
+        message: null
+      };
+      this.albedoState = {
+        status: null
+      };
     },
     emitSignedDataFn(signature) {
       this.$emit("signed", {

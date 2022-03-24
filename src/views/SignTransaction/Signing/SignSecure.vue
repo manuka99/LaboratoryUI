@@ -329,6 +329,7 @@ export default {
   },
   methods: {
     async signWithMETASPECK() {
+      this.clearAllErrors();
       this.value.loading = true;
       var preTxXdr = await this.getPreAuthTxnHashXdr();
       if (!preTxXdr) {
@@ -378,6 +379,7 @@ export default {
     },
     async signWithSecretKeyFn() {
       try {
+        this.clearAllErrors();
         this.value.loading = true;
         var preTxXdr = await this.getPreAuthTxnHashXdr();
         if (!preTxXdr) {
@@ -416,6 +418,7 @@ export default {
     },
     async signWithHashXFn() {
       try {
+        this.clearAllErrors();
         this.value.loading = true;
         var preTxXdr = await this.getPreAuthTxnHashXdr();
         if (!preTxXdr) {
@@ -452,6 +455,7 @@ export default {
       }
     },
     async signWithAlbedoFn() {
+      this.clearAllErrors();
       this.value.loading = true;
       const xdr = await this.getPreAuthTxnHashXdr();
       if (!xdr) {
@@ -520,6 +524,24 @@ export default {
     getTxHash(xdr) {
       const tx = TransactionBuilder.fromXDR(xdr, BLOCKCHAIN_NETWORK_NAME);
       return tx.hash().toString("hex");
+    },
+    clearAllErrors() {
+      this.selectedAccountState = {
+        status: null,
+        message: null
+      };
+      this.secretKeyState = {
+        status: null,
+        message: null
+      };
+      this.hashxPreimageState = {
+        status: null,
+        message: null
+      };
+      this.albedoState = {
+        status: null,
+        message: null
+      };
     },
     emitSignedDataFn(signature) {
       this.$emit("signed", {
