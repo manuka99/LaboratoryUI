@@ -10,6 +10,18 @@ export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+export function formatDateToSL(date) {
+  return new Date(date).toLocaleTimeString(
+    "en-US",
+    {
+      timeZone: "Asia/Colombo",
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit"
+    }
+  );
+}
+
 export function camelCaseToCapitalizeWords(word) {
   return getCamelCaseArray(word)
     .map(val => capitalize(val))

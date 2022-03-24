@@ -97,10 +97,10 @@
           v-model="selectedAccount"
           :state="selectedAccountState.status"
           :disabled="value.loading"
-          list="fsdf54dgvbvbv"
+          list="erer32435dfgddfd33434cddd"
         ></b-form-input>
 
-        <datalist id="fsdf54dgvbvbv">
+        <datalist id="erer32435dfgddfd33434cddd">
           <option
             :value="signingAccountOption.value"
             v-for="(signingAccountOption, i) in signingAccountOptions"
@@ -169,11 +169,11 @@
         description="Secret key is the your accounts's private key. If the account has multiple signers then check the signer's risk level to select the most suitable private key."
         label="Account Signer's Secret Key"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
-        label-for="input-1"
+        label-for="r3fgfg343434"
         :state="secretKeyState.status"
       >
         <b-form-input
-          id="input-1"
+          id="r3fgfg343434"
           type="password"
           placeholder="Enter Secret Key (Starting with S)"
           v-model="secretKey"
@@ -213,15 +213,14 @@
     <!-- select hashx mode offline -->
     <div v-if="signingMode == 'hashx' && !isOnline">
       <b-form-group
-        id="fieldset-1"
         description="Hash Preimage (HEX) is the value of X where the hash of X is added as one of your accounts's signer. If the account has multiple signers then check the signer's risk level to select the most suitable key."
         label="Account's Hash Preimage"
         class="font-15 font-weight-600 w-100 mt-0 max-width-500px"
-        label-for="input-2"
+        label-for="dfdf232"
         :state="hashxPreimageState.status"
       >
         <b-form-input
-          id="input-2"
+          id="dfdf232"
           type="password"
           placeholder="Enter Hash Preimage (HEX)"
           v-model="hashxPreimage"
@@ -333,29 +332,11 @@ export default {
   watch: {
     signingMode() {
       this.selectedAccount = null;
-      this.secretKey = null;
-      this.secretKeyState = {
-        status: null,
-        message: null
-      };
-      this.hashxPreimage = null;
-      this.hashxPreimageState = {
-        status: null,
-        message: null
-      };
     },
     selectedAccount() {
       this.selectedAccountState.status = null;
       this.secretKey = null;
-      this.secretKeyState = {
-        status: null,
-        message: null
-      };
       this.hashxPreimage = null;
-      this.hashxPreimageState = {
-        status: null,
-        message: null
-      };
     },
     secretKey() {
       this.secretKeyState.status = null;

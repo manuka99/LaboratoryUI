@@ -27,6 +27,21 @@
           </p>
         </div>
         <div v-else class="w-100">
+          <div
+            v-if="isOnline && expire_at"
+            class="bg-danger p-2 rounded mb-3 d-flex justify-content-center"
+          >
+            <p class="font-15 font-weight-600 text-white m-0 p-0">
+              Transaction will expire in {{ formatDateToSL(expire_at) }}.
+              <a
+                href="https://developers.stellar.org/docs/glossary/multisig/"
+                target="_blank"
+                class="text-white text-decoration-underline font-15"
+              >
+                Learn more.</a
+              >
+            </p>
+          </div>
           <p class="font-15 text-muted m-0 p-0">
             The transaction signer lets you add signatures to a Stellar
             transaction. Signatures are used in the network to prove that the
@@ -128,7 +143,30 @@
                 @signed="onTxSignedFn"
                 @onError="onErrorFn"
               />
-              <hr style="height: 2px; width: 100%; margin: 40px 0px 60px 0px" />
+              <hr style="height: 2px; width: 100%; margin: 40px 0px 28px 0px" />
+            </b-col>
+            <b-col
+              v-if="!isOnline"
+              cols="12"
+              class="mt-0 mb-4 p-0 d-flex justify-content-end"
+            >
+              <button
+                class="btn btn-danger mr-3 min-width-140px"
+                @click="hideModalFn(null)"
+              >
+                <i class="mdi mdi-close-outline"></i> Close
+              </button>
+              <button
+                class="btn btn-primary min-width-140px"
+                @click="
+                  hideModalFn({
+                    isConfirm: true,
+                    signedXdr: signedXdr
+                  })
+                "
+              >
+                <i class="mdi mdi-checkbox-multiple-marked-outline"></i> Confirm
+              </button>
             </b-col>
           </b-row>
         </div>
@@ -150,6 +188,7 @@ import TxSignerInfo from "@/views/SignTransaction/TxSignerInfo.vue";
 import { FindTransactionsAPI } from "@/services/transaction.service";
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import CustomError from "../Errors/CustomError.vue";
+import { formatDateToSL } from "@/util/common";
 
 export default {
   components: {
@@ -171,7 +210,9 @@ export default {
         description: null
       },
       signedXdr: null,
-      refreshSignatures: false
+      refreshSignatures: false,
+      expire_at: null,
+      formatDateToSL: formatDateToSL
     };
   },
   props: {
@@ -226,6 +267,7 @@ export default {
                 this.mainError.status = true;
               } else {
                 let signedXdr = txns[0].signedTxnXdr;
+                this.expire_at = txns[0].expire_at;
                 if (signedXdr) this.signedXdr = signedXdr;
               }
             })
@@ -258,12 +300,9 @@ export default {
     onErrorFn() {
       this.initFn();
     },
-    hideModalFn() {
-      this.value.destination = null;
+    hideModalFn(data = {}) {
       this.value.isShow = false;
-      this.$emit("onClose", {
-        refresh: true
-      });
+      this.$emit("onClose", data);
     }
   }
 };

@@ -144,6 +144,23 @@
               </base-button>
 
               <hr style="height: 2px; width: 100%; margin: 32px 0px 60px 0px" />
+
+              <div
+                v-if="signedXdr"
+                class="border rounded p-3 font-13 font-weight-600 bg-light word-break-all"
+              >
+                {{ signedXdr }}
+
+                <base-button
+                  class="btn btn-warning btn-sm mt-2 d-flex justify-content-start align-items-center font-14 text-light"
+                  type="submit"
+                  @click="copyToClipboadFn"
+                  nativeType="submit"
+                >
+                  <i class="mdi mdi-content-copy text-white mr-1"></i> Copy to
+                  Clipboard
+                </base-button>
+              </div>
             </div>
             <SignTransactionModal
               v-if="xdr"
@@ -206,20 +223,22 @@ export default {
         { value: true, text: "Online Transaction Signing" }
       ],
       isCreateTempTxnMsg: false,
-      isDisableSelect: false
+      isDisableSelect: false,
+      signedXdr: null
     };
   },
   watch: {
     isOnline() {
       this.isCreateTempTxnMsg = false;
       this.xdr = null;
+      this.signedXdr = null;
     }
   },
   methods: {
     initFn() {},
     onCloseSignTransactionModalFn(data) {
-      if (data && data.refresh) {
-      }
+      console.log(data)
+      if (data && data.signedXdr) this.signedXdr = signedXdr;
     },
     onCloseCreateTempTxnModalFn(data) {
       if (data && data.refresh) {
@@ -269,6 +288,7 @@ export default {
     },
     onImportXdr() {
       this.xdr = null;
+      this.signedXdr = null;
       this.importTxnHash = null;
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
@@ -279,6 +299,7 @@ export default {
     },
     onImportTxnHash() {
       this.xdr = null;
+      this.signedXdr = null;
       this.importXdr = null;
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
@@ -301,6 +322,9 @@ export default {
           "Unable to parse input XDR into Transaction Envelope";
         errorObj.status = true;
       }
+    },
+    copyToClipboadFn() {
+      this.copyToClipboad(this.signedXdr);
     }
   }
 };

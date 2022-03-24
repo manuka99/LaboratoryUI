@@ -20,7 +20,7 @@
           >
             <i class="mdi mdi-key-change mr-2"></i>{{ title }}
           </span>
-          <div class="cursor-pointer" @click="hideModalFn">
+          <div class="cursor-pointer" @click="hideModalFn(null)">
             <i class="mdi mdi-close-box-outline font-32 text-white"></i>
           </div>
         </div>
@@ -29,7 +29,11 @@
         <section
           class="d-flex flex-column align-items-start justify-content-start px-2 w-100"
         >
-          <SignTransaction :xdr="xdr" :isOnline="isOnline" />
+          <SignTransaction
+            :xdr="xdr"
+            :isOnline="isOnline"
+            @onClose="hideModalFn"
+          />
         </section>
       </div>
     </b-modal>
@@ -64,12 +68,10 @@ export default {
   },
   methods: {
     initFn() {},
-    hideModalFn() {
+    hideModalFn(data = {}) {
       this.value.destination = null;
       this.value.isShow = false;
-      this.$emit("onClose", {
-        refresh: true
-      });
+      this.$emit("onClose", data);
     }
   }
 };
