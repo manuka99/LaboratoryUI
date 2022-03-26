@@ -7,6 +7,20 @@ import {
 const server = new StellarSdk.Server(BLOCKCHAIN_NETWORK_URI);
 import { camelCaseToCapitalizeWords, toCamelCaseV1 } from "@/util/common";
 
+export const SubmitTransactionsAPI = async xdr => {
+  return new Promise((resolve, reject) => {
+    const server = new StellarSdk.Server(BLOCKCHAIN_NETWORK_URI);
+    const transaction = new StellarSdk.Transaction(
+      xdr,
+      BLOCKCHAIN_NETWORK_NAME
+    );
+    server
+      .submitTransaction(transaction)
+      .then(res => resolve(res))
+      .catch(err => reject(err));
+  });
+};
+
 const getBalance = (account, currency) => {
   let balance = 0;
   if (currency == "XLM") {
@@ -143,7 +157,7 @@ export const FormatTXOperations = operations => {
   return newOps;
 };
 
-const FormatTXValues = param => {
+export const FormatTXValues = param => {
   if (param instanceof Uint8Array) return Buffer.from(param).toString("hex");
   else if (Buffer.isBuffer(param)) return param.toString();
   else if (Array.isArray(param)) {
@@ -482,7 +496,7 @@ export const TransactionPreAuthSignatures = async txnXdr => {
     if (account && account.signers) {
       const thresholds = account.thresholds;
       const sign = account.signers.find(signerV2 => {
-        if(signerV2.type != "preauth_tx") return false;
+        if (signerV2.type != "preauth_tx") return false;
         let signerV2Key = StellarSdk.StrKey.decodePreAuthTx(
           signerV2.key
         ).toString("hex");

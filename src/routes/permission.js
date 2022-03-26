@@ -3,7 +3,7 @@ import router from "./router";
 import Store from "@/store";
 
 export const PermissionedRouting = (to, from, next) => {
-  const publicRoutes = ["Introduction", "NOTFOUND"];
+  const publicRoutes = ["Introduction", "NOTFOUND", "Submit Transaction"];
   const guestAccessRoutes = [
     ...publicRoutes,
     "Sign In",

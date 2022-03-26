@@ -6,7 +6,7 @@
           class="section register mt-5 mb-5 d-flex flex-column align-items-center justify-content-center card px-3"
         >
           <h4 class="my-4 text-dark font-weight-600">
-            <i class="mdi mdi-key-change mr-2"></i>Sign Blockchain Transaction
+            <i class="mdi mdi-key-change mr-2"></i>Submit Blockchain Transaction
           </h4>
           <div class="mt-0" style="max-width: 100%;">
             <div>
@@ -50,7 +50,7 @@
                   style="resize: auto; width: 480px; max-width: 100%"
                   v-model="importXdr"
                   @input="onImportXdr"
-                  :disabled="loading"
+                  :disabled="loading || loading2"
                 ></textarea>
 
                 <p
@@ -77,7 +77,7 @@
                   class="font-14 font-weight-600 max-width-500px"
                   v-model="importTxnHash"
                   @input="onImportTxnHash"
-                  :disabled="loading"
+                  :disabled="loading || loading2"
                 ></b-form-input>
 
                 <p
@@ -88,78 +88,80 @@
                 </p>
               </div>
 
-              <h5 class="my-4 text-muted" style="font-size: 18px">
-                2) Select Signing Mode
-              </h5>
-
-              <div>
-                <b-form-select
-                  class="w-auto"
-                  v-model="isOnline"
-                  :options="signingModeOptions"
-                  :disabled="loading || isDisableSelect"
-                ></b-form-select>
-              </div>
-
-              <hr style="height: 2px; width: 100%; margin: 32px 0px 24px 0px" />
-
-              <div v-if="isCreateTempTxnMsg">
-                <p
-                  class="text-danger font-weight-600 font-15 font-italic mb-3 p-0"
-                >
-                  There is no transaction saved under your account on the cloud.
-                  If this transaction was not saved by anyone else then you can
-                  save this transaction temporary on cloud. Temporary
-                  transactions will only exist for a maximum of 30 days.
-                </p>
-                <base-button
-                  class="btn btn-secondary btn-sm font-15 mt-0 mb-4"
-                  type="submit"
-                  @click="createTempTxnModal.isShow = true"
-                  nativeType="submit"
-                >
-                  <i class="mdi mdi-content-save font-16"></i> Save Transaction
-                  on Cloud
-                </base-button>
-
-                <hr
-                  style="height: 2px; width: 100%; margin: 8px 0px 24px 0px"
-                />
-              </div>
-
               <base-button
-                class="btn btn-primary font-18 p-2 m-0"
+                class="btn btn-info font-16 p-2 m-0 mt-4"
+                v-if="importTxnHash"
                 style="width: 240px"
                 type="submit"
-                :disabled="
-                  importXdrError.status ||
-                    importTxnHashError.status ||
-                    !(importXdr || importTxnHash)
-                "
+                :disabled="loading || loading2"
                 @click="getTxnXdrFn"
                 :loading="loading"
                 nativeType="submit"
               >
-                <i class="mdi mdi-key-change mr-2"></i>Sign Transaction
+                <i class="mdi mdi-key-change mr-2"></i>Fetch Transaction XDR
               </base-button>
 
               <hr style="height: 2px; width: 100%; margin: 32px 0px 0px 0px" />
 
+              <div v-if="importTxnHash && xdr" class="mt-4">
+                <h6 class="text-decoration-underline mb-3 ml-1">
+                  Fetched Transaction Envelope XDR
+                </h6>
+
+                <div
+                  class="border rounded p-3 font-13 font-weight-600 bg-light word-break-all"
+                >
+                  {{ xdr }}
+
+                  <base-button
+                    class="btn btn-warning btn-sm mt-2 d-flex justify-content-start align-items-center font-14 text-light"
+                    type="submit"
+                    @click="copyToClipboadFn(xdr)"
+                    nativeType="submit"
+                  >
+                    <i class="mdi mdi-content-copy text-white mr-1"></i> Copy to
+                    Clipboard
+                  </base-button>
+                </div>
+              </div>
+
+              <div v-if="xdr">
+                <base-button
+                  class="btn btn-primary font-16 p-2 m-0 mt-4"
+                  v-if="xdr"
+                  style="width: 240px"
+                  type="submit"
+                  :disabled="loading2"
+                  @click="submitTxFn"
+                  :loading="loading2"
+                  nativeType="submit"
+                >
+                  <i class="mdi mdi-key-change mr-2"></i>Submit Transaction
+                </base-button>
+
+                <hr
+                  style="height: 2px; width: 100%; margin: 32px 0px 0px 0px"
+                />
+              </div>
+
               <div class="mt-4 mb-5">
-                <div v-if="signingData && signingData.signedXdr">
+                <div v-if="submittedData">
                   <h6 class="text-decoration-underline mb-3 ml-1">
-                    Signed Transaction Envelope XDR
+                    Submitted Transaction Information
                   </h6>
 
                   <div
                     class="border rounded p-3 font-13 font-weight-600 bg-light word-break-all"
                   >
-                    {{ signingData.signedXdr }}
+                    <JsonViewer
+                      :value="submittedData"
+                      :expand-depth="1"
+                    ></JsonViewer>
 
                     <base-button
                       class="btn btn-warning btn-sm mt-2 d-flex justify-content-start align-items-center font-14 text-light"
                       type="submit"
-                      @click="copyToClipboadFn"
+                      @click="copyToClipboadFn(submittedData)"
                       nativeType="submit"
                     >
                       <i class="mdi mdi-content-copy text-white mr-1"></i> Copy
@@ -169,19 +171,6 @@
                 </div>
               </div>
             </div>
-            <SignTransactionModal
-              v-if="xdr"
-              :xdr="xdr"
-              :isOnline="isOnline"
-              v-model="signTransactionModal"
-              @onClose="onCloseSignTransactionModalFn"
-            />
-            <CreateTempTxnModal
-              v-if="createTempTxnModal.isShow"
-              :xdr="xdr"
-              v-model="createTempTxnModal"
-              @onClose="onCloseCreateTempTxnModalFn"
-            />
           </div>
         </section>
       </div>
@@ -193,20 +182,23 @@
 const { TransactionBuilder } = require("stellar-sdk");
 import { BLOCKCHAIN_NETWORK_NAME } from "@/services/config";
 import { FindTransactionsAPI } from "@/services/transaction.service";
+import {
+  SubmitTransactionsAPI,
+  FormatTXValues
+} from "@/services/stellar.service";
 import Layout from "@/components/HorizontalLayout/Layout";
-import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
-import CreateTempTxnModal from "@/views/modals/CreateTempTxnModal.vue";
+import JsonViewer from "vue-json-viewer";
 
 export default {
   components: {
     Layout,
-    SignTransactionModal,
-    CreateTempTxnModal
+    JsonViewer
   },
   data() {
     return {
       xdr: null,
       loading: null,
+      loading2: null,
       importXdr: null,
       importTxnHash: null,
       importXdrError: {
@@ -217,106 +209,67 @@ export default {
         status: false,
         description: null
       },
-      signTransactionModal: {
-        isShow: false,
-        xdr: ""
+      submitTxError: {
+        status: false,
+        description: null
       },
-      createTempTxnModal: {
-        isShow: false
-      },
-      isOnline: false,
-      signingModeOptions: [
-        { value: false, text: "Offline Transaction Signing" },
-        { value: true, text: "Online Transaction Signing" }
-      ],
-      isCreateTempTxnMsg: false,
-      isDisableSelect: false,
-      signingData: null
+      submittedData: null
     };
-  },
-  watch: {
-    isOnline() {
-      this.isCreateTempTxnMsg = false;
-      this.xdr = null;
-      this.signedXdr = null;
-    }
   },
   methods: {
     initFn() {},
-    onCloseSignTransactionModalFn(data) {
-      this.signingData = data;
-    },
-    onCloseCreateTempTxnModalFn(data) {
-      if (data && data.refresh) {
-        this.getTxnXdrFn();
-      }
-    },
     getTxnXdrFn() {
-      this.isCreateTempTxnMsg = false;
-      if (this.importXdr) {
-        this.validateAndSetXDR(this.importXdr, this.importTxnHashError);
-        if (this.xdr) {
-          if (this.isOnline) {
-            this.loading = true;
-            FindTransactionsAPI({
-              txnXdr: this.xdr,
-              network: BLOCKCHAIN_NETWORK_NAME
-            })
-              .then(res => {
-                let txns = res.data.data.txns;
-                if (!txns || txns.length == 0) this.isCreateTempTxnMsg = true;
-                else this.signTransactionModal.isShow = true;
-              })
-              .finally(() => (this.loading = false));
-          } else this.signTransactionModal.isShow = true;
-        }
-      } else if (this.importTxnHash) {
-        this.loading = true;
-        FindTransactionsAPI({
-          txnHash: this.importTxnHash,
-          network: BLOCKCHAIN_NETWORK_NAME
+      this.loading = true;
+      FindTransactionsAPI({
+        txnHash: this.importTxnHash,
+        network: BLOCKCHAIN_NETWORK_NAME
+      })
+        .then(res => {
+          let txns = res.data.data.txns;
+          if (!txns || txns.length == 0) {
+            this.importTxnHashError.description =
+              "Transaction was not found on cloud, this may be due to the transaction been expired, lack of permissions or it does not exist.";
+            this.importTxnHashError.status = true;
+          } else {
+            let xdr = txns[0].txnXdr;
+            this.validateAndSetXDR(xdr, this.importTxnHashError);
+            this.loading = false;
+          }
         })
-          .then(res => {
-            let txns = res.data.data.txns;
-            if (!txns || txns.length == 0) {
-              this.importTxnHashError.description =
-                "Transaction was not found on cloud, this may be due to the transaction been expired, lack of permissions or it does not exist.";
-              this.importTxnHashError.status = true;
-            } else {
-              let xdr = txns[0].txnXdr;
-              this.validateAndSetXDR(xdr, this.importTxnHashError);
-              this.loading = false;
-              if (this.xdr) this.signTransactionModal.isShow = true;
-            }
-          })
-          .finally(() => (this.loading = false));
-      }
+        .finally(() => (this.loading = false));
     },
     onImportXdr() {
       this.xdr = null;
       this.signedXdr = null;
       this.importTxnHash = null;
-      this.signingData = null;
+      this.submittedData = null;
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
+      this.submitTxError.status = false;
       this.loading = false;
-      this.isCreateTempTxnMsg = false;
       this.validateAndSetXDR(this.importXdr, this.importXdrError);
-      this.isDisableSelect = false;
     },
     onImportTxnHash() {
       this.xdr = null;
       this.signedXdr = null;
       this.importXdr = null;
-      this.signingData = null;
+      this.submittedData = null;
       this.importXdrError.status = false;
       this.importTxnHashError.status = false;
+      this.submitTxError.status = false;
       this.loading = false;
-      this.isCreateTempTxnMsg = false;
-      if (this.importTxnHash) {
-        this.isDisableSelect = true;
-        this.isOnline = true;
-      } else this.isDisableSelect = false;
+    },
+    submitTxFn() {
+      this.loading2 = true;
+      SubmitTransactionsAPI(this.xdr)
+        .then(res => {
+          const formattedData = FormatTXValues(res);
+          this.submittedData = formattedData;
+        })
+        .catch(error => {
+          console.log(error);
+        })
+        .finally(() => (this.loading2 = false));
     },
     validateAndSetXDR(xdr, errorObj) {
       try {
@@ -331,13 +284,11 @@ export default {
         errorObj.status = true;
       }
     },
-    copyToClipboadFn() {
-      this.copyToClipboad(this.signingData.signedXdr);
+    copyToClipboadFn(data) {
+      this.copyToClipboad(data);
     }
   }
 };
-
-//AAAAAgAAAAC2bCx393CCpwrwp67OKZjWCHBPgRyy08K8aG1n4DXQ1gAAAMgAAHPRAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACgAAAAU0MzQzNAAAAAAAAAEAAAAEd2UyMgAAAAAAAAAKAAAACTMzNDJmZmRmZAAAAAAAAAEAAAADMzQzAAAAAAAAAAAD4DXQ1gAAAECrRdkUu5K3GIEMlXlVqPpwDsvWmBaoaiuE1MM+3HwlM//y8v0CX4IHYmHzGZYK7/pwgEKvfoEWFZLzAwQv+pkPOiW5hAAAAEBR72uDgeO/6gBV1IMPODvGJstumTRjasUCsEha0Ahvn71ofFKlJ/gw75esapSFgPqMjwJrzyu2z6qbX9E6sYsK8mwYpAAAACAPaprWGHVRiXxRz93wR2BHdGMqsGfZR/zLS/FTmdr+YA==
 </script>
 
 <style scoped></style>

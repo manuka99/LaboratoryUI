@@ -121,7 +121,7 @@
       >
         <b-form-input
           id="input-0"
-          type="password"
+          :type="privateType"
           placeholder="Enter Secret Key (Starting with S)"
           v-model="secretKey"
           :state="secretKeyState.status"
@@ -174,7 +174,7 @@
       >
         <b-form-input
           id="r3fgfg343434"
-          type="password"
+          :type="privateType"
           placeholder="Enter Secret Key (Starting with S)"
           v-model="secretKey"
           :state="secretKeyState.status"
@@ -221,7 +221,7 @@
       >
         <b-form-input
           id="dfdf232"
-          type="password"
+          :type="privateType"
           placeholder="Enter Hash Preimage (HEX)"
           v-model="hashxPreimage"
           :state="hashxPreimageState.status"
@@ -313,7 +313,8 @@ export default {
       albedoState: {
         status: null,
         message: null
-      }
+      },
+      privateType: null
     };
   },
   props: {
@@ -339,9 +340,11 @@ export default {
       this.hashxPreimage = null;
     },
     secretKey() {
+      this.privateType = "password";
       this.secretKeyState.status = null;
     },
     hashxPreimage() {
+      this.privateType = "password";
       this.hashxPreimageState.status = null;
     }
   },

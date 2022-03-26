@@ -156,13 +156,13 @@
             >
           </router-link>
           <router-link
-            to="/reset-password/wewewe"
+            to="/submit"
             class="border border-primary"
             active-class="border border-white rounded"
           >
             <b-navbar-brand
               class="btn btn-ripple font-15 py-2 px-4 m-0 font-weight-600"
-              >Documentation</b-navbar-brand
+              >Submit Transaction</b-navbar-brand
             >
           </router-link>
         </div>

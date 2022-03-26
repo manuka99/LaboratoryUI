@@ -214,6 +214,7 @@
       </div>
       <SignGeneral
         v-if="signingType == 'general'"
+        id="signGeneral"
         :xdr="xdr"
         :isOnline="isOnline"
         :signatureInfo="signatureInfo"
@@ -222,6 +223,7 @@
       />
       <SignSecure
         v-if="signingType == 'secure'"
+        id="signSecure"
         :xdr="xdr"
         :isOnline="isOnline"
         :signatureInfo="signatureInfo"
