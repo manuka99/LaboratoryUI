@@ -198,6 +198,18 @@
                           Continue
                         </base-button>
                       </div>
+                      <div
+                        v-if="accountActionOption == 'merge'"
+                        class="mt-2 mb-3"
+                      >
+                        <b-form-input
+                          type="text"
+                          label="*Destination Blockchain Account ID"
+                          placeholder="Destination Blockchain Account ID"
+                          class="font-14 font-weight-600"
+                          v-model="row.item.mergeDestinationID"
+                        ></b-form-input>
+                      </div>
                       <div class="d-flex align-items-end">
                         <span class="mr-2 font-weight-bold"
                           >Account Identifier:</span
@@ -332,7 +344,7 @@
       v-if="signTransactionModal.isShow"
       v-model="signTransactionModal"
       @onClose="onCloseSignTransactionModalFn"
-      :xdr="xdr"
+      :xdr="signTransactionModal.xdr"
     />
   </div>
 </template>
@@ -346,7 +358,11 @@ import {
   FindBlockchainAccountsAPI,
   RemoveBlockchainAccountAPI
 } from "@/services/bc.accounts.service";
-import { GetAccountNativeBalance } from "@/services/stellar.service";
+import {
+  GetAccountNativeBalance,
+  MergeTxBuilder,
+  SubmitXdr
+} from "@/services/stellar.service";
 import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
 
@@ -431,7 +447,8 @@ export default {
         }
       ],
       items: [],
-      xdr: null
+      selectedItem: null,
+      mergeDestinationID: null
     };
   },
   computed: {
@@ -458,9 +475,6 @@ export default {
   },
   mounted() {
     this.initFn();
-    this.xdr = `AAAAAgAAAABlW+GwdtQICksF5Pe8dnL1rgU4UFAMD7hcDsE6rKjEHQAABLAAAEk2AAAAAQAAAAEAAAAAYjM0BQAAAABiM1sVAAAAAQAAAAx4eHdld2V3ZXdld2UAAAAMAAAAAAAAAAAAAAAALULpmVQh7NU9HtJokfDT711T4KS3gLca1mAM+YVWzWMAAAAAATEtAAAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAAAAAAAA7msoAAAAAAQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAABVFNUMQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAAX14QAAAAAAAAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAACc2Rzc3cyMwAAAAAAAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAB/hEWYAAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAABgAAAAFmc2RzAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAAlQL5AAAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAACgAAAAZzaWduZXIAAAAAAAEAAAAMMTk5OTIxMDY2NDU2AAAAAQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAgAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAEAAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAARAAAAAQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAA4AAAAAAAAAAAX14QAAAAABAAAAAAAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAUAAAAAAWJ/TQAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAAVAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAAWFkMjMAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAAEAAAAAQAAAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKFVs1jAAAAQBQNpDFLscdyvHQtWaigFej1tQACaIr353GPkQdRk5pGiukKIXBHskRMQQqGDqNdNQsXiwBLe8K0odmkHNR4XAisqMQdAAAAQN4oK6eaHwUMbAYUAXx1+IgV1lEfE1lBfD+VagkUGpsHfvoR2nxTDOvTVWhPOsOmlQOKRPpGa60stpUq0Mg2VQE=`;
-
-    //this.xdr = `AAAABQAAAAAMmkZ0y1u1vQDEjL0FSE6B+Fycq53JrZ/OtOQLy1vN5AAAAAAAAAUUAAAAAgAAAABlW+GwdtQICksF5Pe8dnL1rgU4UFAMD7hcDsE6rKjEHQAABLAAAEk2AAAAAQAAAAEAAAAAYjM0BQAAAABiM1sVAAAAAQAAAAx4eHdld2V3ZXdld2UAAAAMAAAAAAAAAAAAAAAALULpmVQh7NU9HtJokfDT711T4KS3gLca1mAM+YVWzWMAAAAAATEtAAAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAAAAAAAA7msoAAAAAAQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAABVFNUMQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAAX14QAAAAAAAAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAACc2Rzc3cyMwAAAAAAAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAB/hEWYAAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAABgAAAAFmc2RzAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAAlQL5AAAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAACgAAAAZzaWduZXIAAAAAAAEAAAAMMTk5OTIxMDY2NDU2AAAAAQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAgAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAABAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAEAAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAARAAAAAQAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAA4AAAAAAAAAAAX14QAAAAABAAAAAAAAAADR1ZQRlUw72qY58rITbBdlE4iSBKxA8ePAVn9iPEihFQAAAAUAAAAAAWJ/TQAAAAEAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAAVAAAAANHVlBGVTDvapjnyshNsF2UTiJIErEDx48BWf2I8SKEVAAAAAWFkMjMAAAAA0dWUEZVMO9qmOfKyE2wXZROIkgSsQPHjwFZ/YjxIoRUAAAAEAAAAAQAAAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKFVs1jAAAAQBQNpDFLscdyvHQtWaigFej1tQACaIr353GPkQdRk5pGiukKIXBHskRMQQqGDqNdNQsXiwBLe8K0odmkHNR4XAisqMQdAAAAQN4oK6eaHwUMbAYUAXx1+IgV1lEfE1lBfD+VagkUGpsHfvoR2nxTDOvTVWhPOsOmlQOKRPpGa60stpUq0Mg2VQEAAAAAAAAAAA==`;
   },
   methods: {
     showCreateAccountModalFn() {
@@ -474,7 +488,41 @@ export default {
       if (data && data.refresh) this.getAllAccountsFn();
     },
     onCloseSignTransactionModalFn(data) {
-      if (data && data.refresh) this.getAllAccountsFn();
+      this.signTransactionModal.xdr = null;
+      if (data && data.signedXdr) {
+        SubmitXdr(data.signedXdr)
+          .then(() => {
+            this.$bvToast.toast("Account was merged successfully", {
+              title: "Transaction was submitted successfully",
+              autoHideDelay: 6000,
+              appendToast: false,
+              variant: "success",
+              solid: true,
+              toaster: "b-toaster-bottom-right"
+            });
+            this.initFn();
+          })
+          .catch(e =>
+            this.$bvToast.toast(e.message, {
+              title:
+                "Unable to submit the transaction to the blockchain network.",
+              autoHideDelay: 6000,
+              appendToast: false,
+              variant: "danger",
+              solid: true,
+              toaster: "b-toaster-bottom-right"
+            })
+          )
+          .finally(() => {
+            if (this.selectedItem) {
+              this.selectedItem.actionLoading = false;
+              this.selectedItem = null;
+            }
+          });
+      } else if (this.selectedItem) {
+        this.selectedItem.actionLoading = false;
+        this.selectedItem = null;
+      }
     },
     initFn() {
       this.isLoading = false;
@@ -601,12 +649,34 @@ export default {
       });
       if (rowState == false) row._showDetails = true;
     },
-
-    performAccountActionFn(item) {
+    async performAccountActionFn(item) {
+      this.selectedItem = null;
       switch (this.accountActionOption) {
         case "merge":
-          item.actionLoading = true;
-          setTimeout(() => (item.actionLoading = false), 10000);
+          try {
+            item.actionLoading = true;
+            this.selectedItem = item;
+            // create merge transaction
+            const xdr = await MergeTxBuilder(
+              item.mergeDestinationID,
+              item.item.publicKey
+            );
+            if (!xdr) throw new Error("Unable to create the merge transaction");
+            // request sign
+            this.signTransactionModal.xdr = xdr;
+            this.signTransactionModal.isShow = true;
+          } catch (error) {
+            this.$bvToast.toast(error.message, {
+              title: "An error occured when creating merge transaction",
+              autoHideDelay: 6000,
+              appendToast: false,
+              variant: "danger",
+              solid: true,
+              toaster: "b-toaster-bottom-right"
+            });
+            item.actionLoading = false;
+            this.selectedItem = null;
+          }
           break;
         case "remove":
           item.actionLoading = true;

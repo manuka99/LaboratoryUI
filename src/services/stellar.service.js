@@ -523,7 +523,7 @@ export const SponsoringTxBuilder = async (
   const sponsor = await GetAccount(sponsorID);
   if (!sponsor)
     throw new Error(
-      "Error: Account does not exist, fund your account and try again."
+      "Error: Sponsoring Account does not exist, fund your account and try again."
     );
 
   var tx = new StellarSdk.TransactionBuilder(sponsor, {
@@ -554,6 +554,29 @@ export const SponsoringTxBuilder = async (
   );
 
   tx.sign(sponsoredStellarKeypair);
+
+  return tx.toXDR();
+};
+
+export const MergeTxBuilder = async (destinationID, accountID) => {
+  const destination = await GetAccount(destinationID);
+  if (!destination)
+    throw new Error(
+      "Error: Destination Account does not exist, fund your account and try again."
+    );
+
+  var tx = new StellarSdk.TransactionBuilder(destination, {
+    fee: BLOCKCHAIN_NETWORK_BASE_FEE_VALUE,
+    networkPassphrase: BLOCKCHAIN_NETWORK_NAME
+  })
+    .addOperation(
+      StellarSdk.Operation.accountMerge({
+        destination: destinationID,
+        source: accountID
+      })
+    )
+    .setTimeout(StellarSdk.TimeoutInfinite)
+    .build();
 
   return tx.toXDR();
 };
