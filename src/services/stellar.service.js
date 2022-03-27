@@ -2,7 +2,8 @@ import StellarSdk from "stellar-sdk";
 import {
   BLOCKCHAIN_NETWORK_URI,
   BLOCKCHAIN_NETWORK_NAME,
-  BLOCKCHAIN_NETWORK_BASE_RESERVE_VALUE
+  BLOCKCHAIN_NETWORK_BASE_RESERVE_VALUE,
+  BLOCKCHAIN_NETWORK_BASE_FEE_VALUE
 } from "@/services/config";
 const server = new StellarSdk.Server(BLOCKCHAIN_NETWORK_URI);
 import { camelCaseToCapitalizeWords, toCamelCaseV1 } from "@/util/common";
@@ -510,4 +511,49 @@ export const TransactionPreAuthSignatures = async txnXdr => {
     }
   }
   return preAuthSigners;
+};
+
+// XDR Transactions
+
+export const SponsoringTxBuilder = async (
+  sponsorID,
+  sponsoredKeypair,
+  startingBalance
+) => {
+  const sponsor = await GetAccount(sponsorID);
+  if (!sponsor)
+    throw new Error(
+      "Error: Account does not exist, fund your account and try again."
+    );
+
+  var tx = new StellarSdk.TransactionBuilder(sponsor, {
+    fee: BLOCKCHAIN_NETWORK_BASE_FEE_VALUE,
+    networkPassphrase: BLOCKCHAIN_NETWORK_NAME
+  })
+    .addOperation(
+      StellarSdk.Operation.beginSponsoringFutureReserves({
+        sponsoredId: sponsoredKeypair.publicKey
+      })
+    )
+    .addOperation(
+      StellarSdk.Operation.createAccount({
+        destination: sponsoredKeypair.publicKey,
+        startingBalance
+      })
+    )
+    .addOperation(
+      StellarSdk.Operation.endSponsoringFutureReserves({
+        source: sponsoredKeypair.publicKey
+      })
+    )
+    .setTimeout(StellarSdk.TimeoutInfinite)
+    .build();
+
+  const sponsoredStellarKeypair = StellarSdk.Keypair.fromSecret(
+    sponsoredKeypair.secretKey
+  );
+
+  tx.sign(sponsoredStellarKeypair);
+
+  return tx.toXDR();
 };

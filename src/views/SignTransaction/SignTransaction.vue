@@ -161,7 +161,7 @@
                 @click="
                   hideModalFn({
                     isConfirm: true,
-                    signedXdr: signedXdr
+                    signedXdr: signedXdr ? signedXdr : xdr
                   })
                 "
               >

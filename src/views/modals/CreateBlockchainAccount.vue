@@ -8,6 +8,7 @@
     <SignTransactionModal
       v-if="signTransactionModal.isShow"
       v-model="signTransactionModal"
+      :xdr="xdr"
       @onClose="onCloseSignTransactionModalFn"
     />
     <b-modal
@@ -408,7 +409,10 @@ import FundBlockchainAccount from "@/views/modals/FundBlockchainAccount.vue";
 import SignTransactionModal from "@/views/modals/SignTransactionModal.vue";
 import { EncryptWithRawPublicKey } from "@/services/rsa.service";
 import { FindBlockchainAccountsAPI } from "@/services/bc.accounts.service";
-import { GetAccountNativeBalance } from "@/services/stellar.service";
+import {
+  GetAccountNativeBalance,
+  SponsoringTxBuilder
+} from "@/services/stellar.service";
 
 export default {
   components: {
@@ -455,6 +459,7 @@ export default {
       signTransactionModal: {
         isShow: false
       },
+      xdr: null,
 
       // options
       accountTypeOptions: [
@@ -550,7 +555,7 @@ export default {
           solid: true,
           toaster: "b-toaster-bottom-right"
         });
-      } else if (!this.keypair) {
+      } else if (!this.keypair || !this.keypair.secretKey) {
         this.$bvToast.toast("Blockchain account keypair is required", {
           title: "ERROR! There are fields that requires your attention",
           autoHideDelay: 6000,
@@ -635,7 +640,7 @@ export default {
         ...this.sponsors.slice(i + 1)
       ];
     },
-    createPaymentChannelFn() {
+    async createPaymentChannelFn() {
       if (!this.account_name) {
         this.$bvToast.toast("Payment chnanel name is required", {
           title: "ERROR! There are fields that requires your attention",
@@ -645,7 +650,7 @@ export default {
           solid: true,
           toaster: "b-toaster-bottom-right"
         });
-      } else if (!this.keypair) {
+      } else if (!this.keypair || !this.keypair.secretKey) {
         this.$bvToast.toast("Blockchain account keypair is required", {
           title: "ERROR! There are fields that requires your attention",
           autoHideDelay: 6000,
@@ -664,18 +669,64 @@ export default {
           toaster: "b-toaster-bottom-right"
         });
       } else {
-        this.signTransactionModal.isShow = true;
+        // create sponsor transaction
+        try {
+          this.isLoading1 = true;
+          const txXDR = await SponsoringTxBuilder(
+            this.sponsorID,
+            this.keypair,
+            "0"
+          );
+          this.signTransactionModal.isShow = true;
+          this.xdr = txXDR;
+        } catch (err) {
+          this.$bvToast.toast(err.message, {
+            title: "An error occured when creating sponsoring transaction",
+            autoHideDelay: 6000,
+            appendToast: false,
+            variant: "danger",
+            solid: true,
+            toaster: "b-toaster-bottom-right"
+          });
+          this.isLoading1 = false;
+        }
       }
     },
-    savePaymentChannelFn(signData) {
+    async savePaymentChannelFn(signData) {
+      if (!signData || !signData.signedXdr) {
+        this.$bvToast.toast("Operation was cancelled by the user", {
+          title: "Error: Sign Transation",
+          autoHideDelay: 6000,
+          appendToast: false,
+          variant: "danger",
+          solid: true,
+          toaster: "b-toaster-bottom-right"
+        });
+        this.isLoading1 = false;
+        return;
+      }
       this.isLoading1 = true;
+      var encryptedSecret = await EncryptWithRawPublicKey(
+        this.txSignatureID,
+        this.keypair.secretKey
+      );
       let payload = {
         name: this.account_name,
         description: this.account_description,
-        keypair: this.keypair
+        crntTransactionSignatureID: this.txSignatureID,
+        accountType: this.accountType,
+        keypair: {
+          publicKey: this.keypair.publicKey,
+          secretKey: encryptedSecret
+        },
+        sponsorID: this.sponsorID,
+        sponsorTX: signData.signedXdr
       };
       CreateBlockchainAccountAPI(payload)
-        .then(() => this.resetCreateAccountFn())
+        .then(() => {
+          this.initFn();
+          this.isRefresh = true;
+        })
         .finally(() => (this.isLoading1 = false));
     },
     showImportKeypairFn() {

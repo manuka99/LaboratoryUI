@@ -378,8 +378,8 @@ export default {
         isShow: false
       },
       signTransactionModal: {
-        isShow: true,
-        xdr: ""
+        isShow: false,
+        xdr: null
       },
       mainError: {
         status: false,
