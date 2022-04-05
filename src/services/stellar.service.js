@@ -1,9 +1,22 @@
 import StellarSdk from "stellar-sdk";
+const {
+  Operation,
+  Keypair,
+  Transaction,
+  TransactionBuilder,
+  Networks,
+  TimeoutInfinite,
+  Asset,
+  Account,
+  Memo,
+} = require("stellar-sdk");
 import {
   BLOCKCHAIN_NETWORK_URI,
   BLOCKCHAIN_NETWORK_NAME,
   BLOCKCHAIN_NETWORK_BASE_RESERVE_VALUE,
-  BLOCKCHAIN_NETWORK_BASE_FEE_VALUE
+  BLOCKCHAIN_NETWORK_BASE_FEE_VALUE,
+  BCIDPublicKey,
+  BCIDToken,
 } from "@/services/config";
 const server = new StellarSdk.Server(BLOCKCHAIN_NETWORK_URI);
 import { camelCaseToCapitalizeWords, toCamelCaseV1 } from "@/util/common";
@@ -580,3 +593,51 @@ export const MergeTxBuilder = async (destinationID, accountID) => {
 
   return tx.toXDR();
 };
+
+export const CreateBCIDTransactionXDR = async (accountID, nic) => {
+  const account = await GetAccount(accountID);
+  if (!account) return null;
+
+  var nationalIDToken = new Asset(BCIDToken, BCIDPublicKey);
+
+  var transaction = new TransactionBuilder(account, {
+    fee: BLOCKCHAIN_NETWORK_BASE_FEE_VALUE,
+    networkPassphrase: BLOCKCHAIN_NETWORK_NAME,
+  })
+    .addMemo(Memo.text(nic))
+    .addOperation(
+      Operation.changeTrust({
+        asset: nationalIDToken,
+        limit: "1",
+      })
+    )
+    .addOperation(
+      Operation.setTrustLineFlags({
+        asset: nationalIDToken,
+        trustor: accountID,
+        source: nationalIDToken.getIssuer(),
+        flags: { authorized: true },
+      })
+    )
+    .addOperation(
+      Operation.payment({
+        amount: "1",
+        asset: nationalIDToken,
+        source: nationalIDToken.getIssuer(),
+        destination: accountID,
+      })
+    )
+    .addOperation(
+      Operation.setTrustLineFlags({
+        asset: nationalIDToken,
+        trustor: accountID,
+        source: nationalIDToken.getIssuer(),
+        flags: { authorizedToMaintainLiabilities: true, authorized: false },
+      })
+    )
+    .setTimeout(TimeoutInfinite)
+    .build();
+
+  return transaction.toXDR();
+};
+
